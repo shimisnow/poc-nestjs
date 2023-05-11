@@ -1,7 +1,7 @@
 {
-  "name": "poc-nestjs",
-  "$schema": "node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "src",
+  "name": "auth-service",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "auth-service/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -11,12 +11,12 @@
       "options": {
         "target": "node",
         "compiler": "tsc",
-        "outputPath": "dist/poc-nestjs",
-        "main": "src/main.ts",
-        "tsConfig": "tsconfig.app.json",
-        "assets": ["src/assets"],
+        "outputPath": "dist/auth-service",
+        "main": "auth-service/src/main.ts",
+        "tsConfig": "auth-service/tsconfig.app.json",
+        "assets": ["auth-service/src/assets"],
         "isolatedConfig": true,
-        "webpackConfig": "webpack.config.js"
+        "webpackConfig": "auth-service/webpack.config.js"
       },
       "configurations": {
         "development": {},
@@ -27,14 +27,14 @@
       "executor": "@nrwl/js:node",
       "defaultConfiguration": "development",
       "options": {
-        "buildTarget": "poc-nestjs:build"
+        "buildTarget": "auth-service:build"
       },
       "configurations": {
         "development": {
-          "buildTarget": "poc-nestjs:build:development"
+          "buildTarget": "auth-service:build:development"
         },
         "production": {
-          "buildTarget": "poc-nestjs:build:production"
+          "buildTarget": "auth-service:build:production"
         }
       }
     },
@@ -42,14 +42,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["./src/**/*.ts"]
+        "lintFilePatterns": ["auth-service/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectName}"],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "jest.config.app.ts",
+        "jestConfig": "auth-service/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {
