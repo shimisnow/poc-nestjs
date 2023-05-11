@@ -1,7 +1,7 @@
 {
   "name": "auth-service",
-  "$schema": "../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "auth-service/src",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/auth-service/src",
   "projectType": "application",
   "targets": {
     "build": {
@@ -11,12 +11,12 @@
       "options": {
         "target": "node",
         "compiler": "tsc",
-        "outputPath": "dist/auth-service",
-        "main": "auth-service/src/main.ts",
-        "tsConfig": "auth-service/tsconfig.app.json",
-        "assets": ["auth-service/src/assets"],
+        "outputPath": "dist/apps/auth-service",
+        "main": "apps/auth-service/src/main.ts",
+        "tsConfig": "apps/auth-service/tsconfig.app.json",
+        "assets": ["apps/auth-service/src/assets"],
         "isolatedConfig": true,
-        "webpackConfig": "auth-service/webpack.config.js"
+        "webpackConfig": "apps/auth-service/webpack.config.js"
       },
       "configurations": {
         "development": {},
@@ -42,14 +42,14 @@
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["auth-service/**/*.ts"]
+        "lintFilePatterns": ["apps/auth-service/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "auth-service/jest.config.ts",
+        "jestConfig": "apps/auth-service/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {

@@ -1,7 +1,7 @@
 /* eslint-disable */
 export default {
   displayName: 'auth-service-e2e',
-  preset: '../jest.preset.js',
+  preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
@@ -15,5 +15,5 @@ export default {
     '^.+\\.[tj]s$': 'ts-jest',
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../coverage/auth-service-e2e',
+  coverageDirectory: '../../coverage/auth-service-e2e',
 };
