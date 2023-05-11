@@ -15,7 +15,6 @@ import { UserAuthEntity } from '@shared/database/entities/user-auth.entity';
       password: process.env.DATABASE_AUTH_PASSWORD,
       database: process.env.DATABASE_AUTH_DBNAME,
       entities: [UserAuthEntity],
-      synchronize: true,
     }),
   ],
 })

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  database-authentication:
+    image: postgres:15.2
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_AUTH_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_AUTH_PASSWORD}
+      POSTGRES_DB: ${DATABASE_AUTH_DBNAME}
+    ports:
+      - ${DATABASE_AUTH_PORT}:5432
+    volumes:
+      - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
