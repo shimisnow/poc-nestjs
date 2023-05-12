@@ -11,7 +11,30 @@ import { QueryFailedError } from 'typeorm';
 
 @Injectable()
 export class AuthService {
+  /** @ignore */
   constructor(private userAuthsRepository: UserAuthsRepository) {}
+
+  /**
+   * Verifies if the provided username is already registered into database.
+   *
+   * @param username Username to be verified.
+   * @returns Information if username is already registered into database.
+   */
+  async verifyIfUsernameExists(username: string): Promise<boolean> {
+    let result: UserAuthEntity = null;
+
+    try {
+      result = await this.userAuthsRepository.findByUsername(username);
+    } catch (error) {
+      throw new BadGatewayException(error.message);
+    }
+
+    if (!result) {
+      return false;
+    }
+
+    return true;
+  }
 
   async signup(
     userId: number,
