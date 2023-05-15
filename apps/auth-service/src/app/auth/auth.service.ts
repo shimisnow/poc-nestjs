@@ -6,6 +6,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 // eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import * as bcrypt from 'bcrypt';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
@@ -17,7 +18,10 @@ import { UserAuthStatusEnum } from '@shared/database/enums/user-auth-status.enum
 @Injectable()
 export class AuthService {
   /** @ignore */
-  constructor(private userAuthsRepository: UserAuthsRepository) {}
+  constructor(
+    private userAuthsRepository: UserAuthsRepository,
+    private jwtService: JwtService
+  ) {}
 
   /**
    * Verifies if the provided username is already registered into database.
@@ -52,10 +56,14 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    return {
-      accessToken:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuZGVyc29uIiwic3ViIjoxLCJpYXQiOjE2ODM4MzAyNTEsImV4cCI6MTY4MzgzMDMxMX0.eN5Cv2tJ0HGlVNKMtPv5VPeCIA7dd4OEA-8Heh7OJ_c',
+    const payload = {
+      username: user.username,
+      sub: user.userId,
     };
+
+    return {
+      accessToken: await this.jwtService.signAsync(payload),
+    } as LoginSerializer;
   }
 
   async signup(
