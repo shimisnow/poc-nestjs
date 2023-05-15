@@ -2,12 +2,17 @@ import {
   BadGatewayException,
   ConflictException,
   Injectable,
+  UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { QueryFailedError } from 'typeorm';
+// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import * as bcrypt from 'bcrypt';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { SignUpSerializer } from './serializers/signup.serializer';
 import { UserAuthEntity } from '@shared/database/entities/user-auth.entity';
-import { QueryFailedError } from 'typeorm';
+import { LoginSerializer } from './serializers/login.serializer';
+import { UserAuthStatusEnum } from '@shared/database/enums/user-auth-status.enum';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +39,23 @@ export class AuthService {
     }
 
     return true;
+  }
+
+  async login(username: string, password: string): Promise<LoginSerializer> {
+    const user = await this.userAuthsRepository.findByUsername(username);
+
+    if (user?.status !== UserAuthStatusEnum.ACTIVE) {
+      throw new UnauthorizedException();
+    }
+
+    if (await bcrypt.compare(user?.password, password)) {
+      throw new UnauthorizedException();
+    }
+
+    return {
+      accessToken:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuZGVyc29uIiwic3ViIjoxLCJpYXQiOjE2ODM4MzAyNTEsImV4cCI6MTY4MzgzMDMxMX0.eN5Cv2tJ0HGlVNKMtPv5VPeCIA7dd4OEA-8Heh7OJ_c',
+    };
   }
 
   async signup(

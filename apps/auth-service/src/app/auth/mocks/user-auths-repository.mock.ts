@@ -10,11 +10,21 @@ export class UserAuthsRepositoryMock {
           userId: 42,
           username,
           password:
-            '$2b$10$JhiMsN9WN42gT7ofFBcJGO7q9PwhnmMpfz4yGNY1bc3WrHLep.r0W',
+            // test@1234
+            '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
           status: UserAuthStatusEnum.ACTIVE,
         } as UserAuthEntity;
       case 'beatrice':
         return null;
+      case 'thomas':
+        return {
+          userId: 33,
+          username,
+          password:
+            // test@1234
+            '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
+          status: UserAuthStatusEnum.INACTIVE,
+        } as UserAuthEntity;
       default:
         throw new QueryFailedError('', null, new Error('some error'));
     }

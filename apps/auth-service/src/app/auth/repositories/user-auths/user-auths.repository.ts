@@ -18,6 +18,12 @@ export class UserAuthsRepository {
     });
   }
 
+  /**
+   * Finds a entity (user) by its username.
+   *
+   * @param username Username to be found.
+   * @returns Found entity or null.
+   */
   async findByUsername(username: string): Promise<UserAuthEntity> {
     return await this.repository.findOne({
       where: {

@@ -15,6 +15,8 @@ import { VerifyUsernameQueryDto } from './dtos/verify-username-query.dto';
 import { VerifyUsernameError400Serializer } from './serializers/verify-username-error-400.serializer';
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
+import { LoginBodyDto } from './dtos/login-body.dto';
+import { LoginSerializer } from './serializers/login.serializer';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -53,6 +55,11 @@ export class AuthController {
     return {
       available: !result,
     } as VerifyUsernameSerializer;
+  }
+
+  @Post('login')
+  async login(@Body() body: LoginBodyDto): Promise<LoginSerializer> {
+    return await this.authService.login(body.username, body.password);
   }
 
   @Post('signup')
