@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class VerifyUsernameError400Serializer {
+export class LoginError400Serializer {
   @ApiProperty({
     description: 'HTTP code',
     example: 400,

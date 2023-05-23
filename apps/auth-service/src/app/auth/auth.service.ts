@@ -46,7 +46,13 @@ export class AuthService {
   }
 
   async login(username: string, password: string): Promise<LoginSerializer> {
-    const user = await this.userAuthsRepository.findByUsername(username);
+    let user: UserAuthEntity = null;
+
+    try {
+      user = await this.userAuthsRepository.findByUsername(username);
+    } catch (error) {
+      throw new BadGatewayException(error.message);
+    }
 
     if (user?.status !== UserAuthStatusEnum.ACTIVE) {
       throw new UnauthorizedException();
