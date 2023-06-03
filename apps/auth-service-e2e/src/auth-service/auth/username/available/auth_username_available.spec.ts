@@ -4,6 +4,9 @@ describe('GET /auth/username/available', () => {
   const host = `http://localhost:${process.env.AUTH_SERVICE_PORT}`;
   const endpoint = '/auth/username/available';
 
+  console.log(host);
+  console.log(endpoint);
+
   describe('API call WITHOUT errors', () => {
     test('Username available', async () => {
       const response = await request(host)
