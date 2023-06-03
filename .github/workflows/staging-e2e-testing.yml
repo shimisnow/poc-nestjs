@@ -24,7 +24,7 @@ jobs:
         ports:
           - 5432:5432
         volumes:
-          - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
+          - ${{ github.workspace }}/deployment/database/authentication:/docker-entrypoint-initdb.d:ro
 
     steps:
       - uses: actions/checkout@v3
