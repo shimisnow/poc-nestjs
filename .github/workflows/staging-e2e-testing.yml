@@ -1,0 +1,44 @@
+name: Staging - E2E Testing
+
+on:
+  push:
+    branches: [staging]
+  pull_request:
+    branches: [staging]
+
+jobs:
+  e2e-auth-service:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.1.0]
+
+    services:
+      postgres:
+        image: postgres:15.2
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1234567890
+          POSTGRES_DB: authentication
+        ports:
+          - 5432:5432
+        volumes:
+          - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Serve
+        run: npx nx serve auth-service
+
+      - name: E2E test for AUTH SERVICE
+        run: npx nx e2e auth-service
