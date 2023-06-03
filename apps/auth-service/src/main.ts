@@ -13,7 +13,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     })
   );
-  const port = process.env.PORT || 3000;
+  const port = process.env.AUTH_SERVICE_PORT || 3000;
 
   const config = new DocumentBuilder().setTitle('Auth Service').build();
   const document = SwaggerModule.createDocument(app, config);
