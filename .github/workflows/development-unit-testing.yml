@@ -1,4 +1,4 @@
-name: Development Unit Testing
+name: Development - Unit Testing
 
 on:
   push:
@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       - run: npm ci
 
