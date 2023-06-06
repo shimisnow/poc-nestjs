@@ -1,8 +1,10 @@
 import request from 'supertest';
+import jsonwebtoken from 'jsonwebtoken';
 
 describe('POST /auth/login', () => {
   const host = `http://localhost:${process.env.AUTH_SERVICE_PORT}`;
   const endpoint = '/auth/login';
+  const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
   describe('API call WITHOUT errors', () => {
     test('User does not exists', async () => {
@@ -51,6 +53,8 @@ describe('POST /auth/login', () => {
       const body = response.body;
 
       expect(body).toHaveProperty('accessToken');
+      // throws "JsonWebTokenError: invalid signature" if token is invalid
+      jsonwebtoken.verify(body.accessToken, JWT_SECRET_KEY);
     });
   });
 
