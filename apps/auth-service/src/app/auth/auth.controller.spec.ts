@@ -3,7 +3,12 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
-import { BadGatewayException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  ConflictException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 describe('AuthController', () => {
@@ -114,6 +119,55 @@ describe('AuthController', () => {
       try {
         await controller.login({
           username: 'anything',
+          password: 'test@1234',
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadGatewayException);
+      }
+    });
+  });
+
+  describe('auth.controller -> signup()', () => {
+    test('user CAN be created', async () => {
+      const result = await controller.signup({
+        userId: 42,
+        username: 'anderson',
+        password: 'test@1234',
+      });
+
+      expect(result).toHaveProperty('status');
+      expect(result.status).toBeTruthy();
+    });
+
+    test('user CANNOT be created (duplicated)', async () => {
+      try {
+        await controller.signup({
+          userId: 25,
+          username: 'thomas',
+          password: 'test@1234',
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+      }
+    });
+
+    test('user CANNOT be created (database error)', async () => {
+      try {
+        await controller.signup({
+          userId: 33,
+          username: 'jonas',
+          password: 'test@1234',
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnprocessableEntityException);
+      }
+    });
+
+    test('user CANNOT be created (entity database error)', async () => {
+      try {
+        await controller.signup({
+          userId: 11,
+          username: 'marta',
           password: 'test@1234',
         });
       } catch (error) {
