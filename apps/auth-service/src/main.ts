@@ -15,15 +15,17 @@ async function bootstrap() {
   );
   const port = process.env.AUTH_SERVICE_PORT || 3000;
 
-  const config = new DocumentBuilder().setTitle('Auth Service').build();
-  const document = SwaggerModule.createDocument(app, config);
+  if (process.env.AUTH_SERVICE_BUILD_OPENAPI === 'true') {
+    const config = new DocumentBuilder().setTitle('Auth Service').build();
+    const document = SwaggerModule.createDocument(app, config);
 
-  await mkdirSync('apps/auth-service/docs/openapi/', { recursive: true });
-  await writeFileSync(
-    'apps/auth-service/docs/openapi/openapi-docs.json',
-    JSON.stringify(document),
-    { encoding: 'utf8' }
-  );
+    await mkdirSync('apps/auth-service/docs/openapi/', { recursive: true });
+    await writeFileSync(
+      'apps/auth-service/docs/openapi/openapi-docs.json',
+      JSON.stringify(document),
+      { encoding: 'utf8' }
+    );
+  }
 
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}`);

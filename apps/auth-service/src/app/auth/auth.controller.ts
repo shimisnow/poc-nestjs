@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
@@ -20,6 +21,8 @@ import { LoginBodyDto } from './dtos/login-body.dto';
 import { LoginSerializer } from './serializers/login.serializer';
 import { LoginError400Serializer } from './serializers/login-error-400.serializer';
 import { LoginError401Serializer } from './serializers/login-error-401.serializer';
+import { SignUpError400Serializer } from './serializers/signup-error-400.serializer';
+import { SignUpError409Serializer } from './serializers/signup-error-409.serializer';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -61,6 +64,7 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(200)
   @ApiOperation({
     summary:
       'Uses username and password to get a JWT token to use in future API calls',
@@ -92,6 +96,30 @@ export class AuthController {
   }
 
   @Post('signup')
+  @ApiOperation({
+    summary: 'Creates a new user',
+  })
+  @ApiOkResponse({
+    description: 'ID for the created user',
+    type: SignUpSerializer,
+  })
+  @ApiBadRequestResponse({
+    description: 'Error validating request input data',
+    type: SignUpError400Serializer,
+  })
+  @ApiConflictResponse({
+    description: 'User cannot be created. It already exists',
+    type: SignUpError409Serializer,
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'The server has encountered a situation it does not know how to handle. See server logs for details',
+    type: DefaultError500Serializer,
+  })
+  @ApiBadGatewayResponse({
+    description: 'Internal data processing error. Probably a database error',
+    type: DefaultError502Serializer,
+  })
   async signup(@Body() body: SignUpBodyDto): Promise<SignUpSerializer> {
     return await this.authService.signup(
       body.userId,

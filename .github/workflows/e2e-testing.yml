@@ -1,4 +1,4 @@
-name: E2E - Auth Service
+name: E2E Testing (Supertest)
 
 on:
   push:

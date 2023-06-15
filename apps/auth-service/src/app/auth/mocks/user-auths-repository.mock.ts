@@ -1,6 +1,6 @@
 import { UserAuthEntity } from '@shared/database/entities/user-auth.entity';
 import { UserAuthStatusEnum } from '@shared/database/enums/user-auth-status.enum';
-import { QueryFailedError } from 'typeorm';
+import { InsertResult, QueryFailedError } from 'typeorm';
 
 export class UserAuthsRepositoryMock {
   async findByUsername(username: string): Promise<UserAuthEntity> {
@@ -27,6 +27,39 @@ export class UserAuthsRepositoryMock {
         } as UserAuthEntity;
       default:
         throw new QueryFailedError('', null, new Error('some error'));
+    }
+  }
+
+  async insert(entity: UserAuthEntity): Promise<InsertResult> {
+    switch (entity.username) {
+      case 'anderson':
+        return {
+          identifiers: [
+            {
+              userId: entity.userId,
+            },
+          ],
+          generatedMaps: [
+            {
+              status: 'inactive',
+              created_at: new Date('2023-06-15T02:36:39.129Z'),
+              updated_at: new Date('2023-06-15T02:36:39.129Z'),
+            },
+          ],
+          raw: [
+            {
+              status: 'inactive',
+              created_at: new Date('2023-06-15T02:36:39.129Z'),
+              updated_at: new Date('2023-06-15T02:36:39.129Z'),
+            },
+          ],
+        };
+      case 'thomas':
+        throw new QueryFailedError('', null, new Error('duplicate key'));
+      case 'jonas':
+        throw new QueryFailedError('', null, new Error('some error'));
+      default:
+        throw new Error('some error');
     }
   }
 }

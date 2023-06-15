@@ -1,4 +1,4 @@
-name: Development - Unit Testing
+name: Unit Testing (Jest)
 
 on:
   push:

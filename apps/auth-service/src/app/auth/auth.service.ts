@@ -58,7 +58,7 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    if (await bcrypt.compare(user?.password, password)) {
+    if ((await bcrypt.compare(password, user?.password)) === false) {
       throw new UnauthorizedException();
     }
 
