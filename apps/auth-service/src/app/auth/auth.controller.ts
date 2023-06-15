@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
@@ -21,6 +22,7 @@ import { LoginSerializer } from './serializers/login.serializer';
 import { LoginError400Serializer } from './serializers/login-error-400.serializer';
 import { LoginError401Serializer } from './serializers/login-error-401.serializer';
 import { SignUpError400Serializer } from './serializers/signup-error-400.serializer';
+import { SignUpError409Serializer } from './serializers/signup-error-409.serializer';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -104,6 +106,10 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: 'Error validating request input data',
     type: SignUpError400Serializer,
+  })
+  @ApiConflictResponse({
+    description: 'User cannot be created. It already exists',
+    type: SignUpError409Serializer,
   })
   @ApiInternalServerErrorResponse({
     description:

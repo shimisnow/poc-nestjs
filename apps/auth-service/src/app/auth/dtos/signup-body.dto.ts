@@ -8,7 +8,6 @@ export class SignUpBodyDto {
     example: 4233,
   })
   @Type(() => Number)
-  @IsNotEmpty()
   @IsNumber()
   @Min(1)
   userId: number;
