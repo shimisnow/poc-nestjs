@@ -1,4 +1,4 @@
-name: Development Unit Testing
+name: Unit Testing (Jest)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [development]
 
 jobs:
-  build:
+  unit-testing:
     runs-on: ubuntu-latest
 
     strategy:
@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       - run: npm ci
 

@@ -1,46 +1,33 @@
 import request from 'supertest';
 
-describe('GET /auth/username/available', () => {
+describe('GET /auth/signup', () => {
   const host = `http://localhost:${process.env.AUTH_SERVICE_PORT}`;
-  const endpoint = '/auth/username/available';
+  const endpoint = '/auth/signup';
 
   describe('API call WITHOUT errors', () => {
-    test('Username available', async () => {
+    test('User can be created', async () => {
       const response = await request(host)
-        .get(endpoint)
-        .query({
-          username: 'thomas',
+        .post(endpoint)
+        .send({
+          userId: 11,
+          username: 'marta',
+          password: 'test@1234',
         })
         .expect('Content-Type', /json/)
-        .expect(200);
+        .expect(201);
 
       const body = response.body;
 
-      expect(body).toHaveProperty('available');
-      expect(body.available).toBeTruthy();
-    });
-
-    test('Username already in use', async () => {
-      const response = await request(host)
-        .get(endpoint)
-        .query({
-          username: 'anderson',
-        })
-        .expect('Content-Type', /json/)
-        .expect(200);
-
-      const body = response.body;
-
-      expect(body).toHaveProperty('available');
-      expect(body.available).toBeFalsy();
+      expect(body).toHaveProperty('status');
+      expect(body.status).toBeTruthy();
     });
   });
 
   describe('API call WITH errors', () => {
     test('BadRequestResponse: property should not exist', async () => {
       const response = await request(host)
-        .get(endpoint)
-        .query({
+        .post(endpoint)
+        .send({
           name: 'user',
         })
         .expect('Content-Type', /json/)
@@ -57,8 +44,8 @@ describe('GET /auth/username/available', () => {
 
     test('BadRequestResponse: error validating request input data', async () => {
       const response = await request(host)
-        .get(endpoint)
-        .query({
+        .post(endpoint)
+        .send({
           username: '',
         })
         .expect('Content-Type', /json/)
@@ -68,10 +55,21 @@ describe('GET /auth/username/available', () => {
 
       expect(body).toHaveProperty('message');
       expect(body.message).toBeInstanceOf(Array);
-      expect(body.message.length).toBe(1);
       expect(
         body.message.includes('username should not be empty')
       ).toBeTruthy();
+    });
+
+    test('ConflictResponse: duplicated user data', async () => {
+      await request(host)
+        .post(endpoint)
+        .send({
+          userId: 42,
+          username: 'anderson',
+          password: 'test@1234',
+        })
+        .expect('Content-Type', /json/)
+        .expect(409);
     });
   });
 });

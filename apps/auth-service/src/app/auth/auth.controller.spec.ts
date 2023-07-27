@@ -3,8 +3,13 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
-import { BadGatewayException, UnauthorizedException } from '@nestjs/common';
-import { QueryFailedError } from 'typeorm';
+import {
+  BadGatewayException,
+  ConflictException,
+  UnauthorizedException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -17,6 +22,13 @@ describe('AuthController', () => {
         {
           provide: UserAuthsRepository,
           useClass: UserAuthsRepositoryMock,
+        },
+        {
+          provide: JwtService,
+          useValue: {
+            signAsync: (payload) =>
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuZGVyc29uIiwic3ViIjoxLCJpYXQiOjE2ODM4MzAyNTEsImV4cCI6MTY4MzgzMDMxMX0.eN5Cv2tJ0HGlVNKMtPv5VPeCIA7dd4OEA-8Heh7OJ_c',
+          },
         },
       ],
     }).compile();
@@ -110,7 +122,56 @@ describe('AuthController', () => {
           password: 'test@1234',
         });
       } catch (error) {
-        expect(error).toBeInstanceOf(QueryFailedError);
+        expect(error).toBeInstanceOf(BadGatewayException);
+      }
+    });
+  });
+
+  describe('auth.controller -> signup()', () => {
+    test('user CAN be created', async () => {
+      const result = await controller.signup({
+        userId: 42,
+        username: 'anderson',
+        password: 'test@1234',
+      });
+
+      expect(result).toHaveProperty('status');
+      expect(result.status).toBeTruthy();
+    });
+
+    test('user CANNOT be created (duplicated)', async () => {
+      try {
+        await controller.signup({
+          userId: 25,
+          username: 'thomas',
+          password: 'test@1234',
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+      }
+    });
+
+    test('user CANNOT be created (database error)', async () => {
+      try {
+        await controller.signup({
+          userId: 33,
+          username: 'jonas',
+          password: 'test@1234',
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnprocessableEntityException);
+      }
+    });
+
+    test('user CANNOT be created (entity database error)', async () => {
+      try {
+        await controller.signup({
+          userId: 11,
+          username: 'marta',
+          password: 'test@1234',
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadGatewayException);
       }
     });
   });

@@ -8,6 +8,6 @@ services:
       SPEC_URL: openapi-docs.json
       REDOC_OPTIONS: "sort-tags-alphabetically path-in-middle-panel required-props-first side-nav-style='path-only'"
     ports:
-      - 8080:80
+      - 8081:80
     volumes:
       - ./docs/openapi/openapi-docs.json:/usr/share/nginx/html/openapi-docs.json:ro

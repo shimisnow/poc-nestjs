@@ -1,0 +1,69 @@
+name: E2E Testing (Supertest)
+
+on:
+  push:
+    branches: [staging]
+  pull_request:
+    branches: [staging]
+
+jobs:
+  auth-service:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15.2
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 1234567890
+          POSTGRES_DB: authentication
+        ports:
+          - 5433:5432
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create directories inside container
+        run: docker exec ${{ job.services.postgres.id }} mkdir -p /tmp/e2e-auth-service/database-data
+
+      - name: Copy database files to container
+        run: 'docker cp ${{ github.workspace }}/deployment/database/authentication/ ${{ job.services.postgres.id }}:/tmp/e2e-auth-service/database-data'
+
+      - name: Copy shell script files to container
+        run: 'docker cp ${{ github.workspace }}/deployment/e2e-auth-service/import-database-files.sh ${{ job.services.postgres.id }}:/tmp/e2e-auth-service/'
+
+      - name: Set file permissions
+        run: docker exec ${{ job.services.postgres.id }} chmod +x /tmp/e2e-auth-service/import-database-files.sh
+
+      - name: Database setup
+        run: docker exec ${{ job.services.postgres.id }} /tmp/e2e-auth-service/import-database-files.sh
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.1.0
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build service
+        run: npx nx build auth-service
+
+      - name: Load .env variables
+        id: dotenv
+        uses: falti/dotenv-action@v1.0.4
+
+      - name: E2E tests for auth-service
+        run: |
+          node dist/apps/auth-service/main.js &
+          npx nx e2e auth-service-e2e
+        env:
+          AUTH_SERVICE_PORT: ${{ steps.dotenv.outputs.AUTH_SERVICE_PORT }}
+          DATABASE_AUTH_HOST: ${{ steps.dotenv.outputs.DATABASE_AUTH_HOST }}
+          DATABASE_AUTH_PORT: ${{ steps.dotenv.outputs.DATABASE_AUTH_PORT }}
+          DATABASE_AUTH_USERNAME: ${{ steps.dotenv.outputs.DATABASE_AUTH_USERNAME }}
+          DATABASE_AUTH_PASSWORD: ${{ steps.dotenv.outputs.DATABASE_AUTH_PASSWORD }}
+          DATABASE_AUTH_DBNAME: ${{ steps.dotenv.outputs.DATABASE_AUTH_DBNAME }}
+          JWT_SECRET_KEY: ${{ steps.dotenv.outputs.JWT_SECRET_KEY }}
+          JWT_EXPIRES_IN: ${{ steps.dotenv.outputs.JWT_EXPIRES_IN }}

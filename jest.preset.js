@@ -1,4 +1,8 @@
+const nxPreset = require('@nrwl/jest/preset').default;
 
-      const nxPreset = require('@nrwl/jest/preset').default;
-
-      module.exports = { ...nxPreset }
+module.exports = {
+  ...nxPreset,
+  moduleNameMapper: {
+    '^@shared/(.*)$': '<rootDir>/../../shared/src/$1',
+  },
+};
