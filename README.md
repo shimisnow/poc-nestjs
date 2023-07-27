@@ -1,7 +1,5 @@
 # POC NestJS
 
-## Architecture
-
 ## Technologies
 
 - Code organization
@@ -35,3 +33,11 @@
 - Others
 
   - Docker
+
+## Details about
+
+- [Repository organization](docs/markdown/repository-organization.md)
+- [Database structure and TypeORM entities](docs/markdown/database-structure.md)
+- [GitHub Actions](docs/markdown/github-actions.md)
+- [Documentation](docs/markdown/documentation.md)
+- [Testing](docs/markdown/testing.md)

@@ -1,0 +1,3 @@
+# Database structure
+
+## TypeORM entities
