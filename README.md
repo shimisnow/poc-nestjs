@@ -38,6 +38,6 @@
 
 - TO-DO [Repository organization](docs/markdown/repository-organization.md)
 - [Database structure and TypeORM entities](docs/markdown/database-structure.md)
-- TO-DO [GitHub Actions](docs/markdown/github-actions.md)
-- TO-DO [Documentation](docs/markdown/documentation.md)
+- [GitHub Actions](docs/markdown/github-actions.md)
+- [Documentation](docs/markdown/documentation.md)
 - [Testing](docs/markdown/testing.md)
