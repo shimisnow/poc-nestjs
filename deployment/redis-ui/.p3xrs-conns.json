@@ -1,0 +1,16 @@
+{
+  "update": "2023-09-27T22:44:14.854Z",
+  "list": [
+    {
+      "name": "Local Redis",
+      "host": "redis",
+      "port": 6379,
+      "askAuth": false,
+      "id": "P3Xidde2efc8da8101000cc41edd2737397",
+      "tlsWithoutCert": false,
+      "tlsRejectUnauthorized": true,
+      "cluster": false,
+      "nodes": []
+    }
+  ]
+}
