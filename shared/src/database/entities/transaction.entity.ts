@@ -1,4 +1,6 @@
 import {
+  AfterInsert,
+  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
@@ -39,7 +41,6 @@ export class TransactionEntity {
     name: 'amount',
     type: 'integer',
     nullable: false,
-    default: 0,
   })
   amount: number;
 
@@ -49,4 +50,13 @@ export class TransactionEntity {
     nullable: true,
   })
   createdAt?: Date;
+
+  @BeforeInsert()
+  checkAmountByType() {
+    if (this.type == TransactionTypeEnum.DEBT) {
+      if (this.amount > 0) {
+        this.amount *= -1;
+      }
+    }
+  }
 }

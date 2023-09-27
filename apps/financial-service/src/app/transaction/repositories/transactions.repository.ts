@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { InsertResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { TransactionEntity } from '@shared/database/entities/transaction.entity';
 
 @Injectable()
@@ -18,7 +18,7 @@ export class TransactionsRepository {
     });
   }
 
-  async insert(entity: TransactionEntity): Promise<InsertResult> {
-    return await this.repository.insert(entity);
+  async insert(entity: TransactionEntity): Promise<TransactionEntity> {
+    return await this.repository.save(entity);
   }
 }
