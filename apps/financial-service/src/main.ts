@@ -7,12 +7,12 @@ import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(
+  /* app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
     })
-  );
+  ); */
   const port = process.env.FINANCIAL_SERVICE_PORT || 3000;
 
   if (process.env.FINANCIAL_SERVICE_BUILD_OPENAPI === 'true') {

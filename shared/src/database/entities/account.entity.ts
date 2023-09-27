@@ -1,8 +1,9 @@
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({
   name: 'accounts',
 })
+@Index(['accountId', 'userId'], { unique: true })
 export class AccountEntity {
   @PrimaryGeneratedColumn({
     name: 'account_id',
@@ -11,11 +12,10 @@ export class AccountEntity {
   })
   accountId: number;
 
-  @PrimaryColumn({
+  @Column({
     name: 'user_id',
     type: 'integer',
     nullable: false,
-    primaryKeyConstraintName: 'pk_accounts',
   })
   userId: number;
 }

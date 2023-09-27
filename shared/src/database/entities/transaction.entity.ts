@@ -16,7 +16,7 @@ export class TransactionEntity {
     type: 'integer',
     primaryKeyConstraintName: 'pk_transactions',
   })
-  transactionId: number;
+  transactionId?: number;
 
   @PrimaryColumn({
     name: 'account_id',

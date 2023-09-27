@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountEntity } from '@shared/database/entities/account.entity';
 import { BalanceEntity } from '@shared/database/entities/balance.entity';
 import { TransactionEntity } from '@shared/database/entities/transaction.entity';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -14,9 +15,10 @@ import { TransactionEntity } from '@shared/database/entities/transaction.entity'
       username: process.env.DATABASE_FINANCIAL_USERNAME,
       password: process.env.DATABASE_FINANCIAL_PASSWORD,
       database: process.env.DATABASE_FINANCIAL_DBNAME,
-      autoLoadEntities: true,
+      synchronize: true,
       entities: [AccountEntity, BalanceEntity, TransactionEntity],
     }),
+    TransactionModule,
   ],
 })
 export class AppModule {}
