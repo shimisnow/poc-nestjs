@@ -4,6 +4,8 @@ services:
   database-authentication:
     image: postgres:15.2
     restart: always
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${DATABASE_AUTH_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_AUTH_PASSWORD}
@@ -12,3 +14,15 @@ services:
       - ${DATABASE_AUTH_PORT}:5432
     volumes:
       - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
+
+  database-financial:
+    image: postgres:15.2
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DATABASE_FINANCIAL_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_FINANCIAL_PASSWORD}
+      POSTGRES_DB: ${DATABASE_FINANCIAL_DBNAME}
+    ports:
+      - ${DATABASE_FINANCIAL_PORT}:5432
