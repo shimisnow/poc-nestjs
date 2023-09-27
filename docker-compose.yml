@@ -12,7 +12,7 @@ services:
     ports:
       - 7843:7843
     volumes:
-      - /home/user/p3x-redis-ui-settings:/settings
+      - ./deployment/redis-ui:/settings
 
   database-authentication:
     image: postgres:15.2

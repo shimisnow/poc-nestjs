@@ -1,6 +1,9 @@
 # Database structure
 
-SQL files with database structure can be found at [deployment/database/authentication](../../deployment/database/authentication)
+SQL files with database structure can be found at:
+
+- [Authentication](../../deployment/database/authentication)
+- [Financial](../../deployment/database/financial)
 
 ## TypeORM entities
 
