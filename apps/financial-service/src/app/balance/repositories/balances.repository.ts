@@ -12,13 +12,12 @@ export class BalancesRepository {
     private balanceRepository: Repository<BalanceEntity>,
 
     @InjectRepository(TransactionEntity)
-    private transactionRepository: Repository<TransactionEntity>
+    private transactionRepository: Repository<TransactionEntity>,
   ) {}
 
   async getBalance(accountId: number): Promise<number> {
-    const { balance, lastTransactionId } = await this.getActualBalance(
-      accountId
-    );
+    const { balance, lastTransactionId } =
+      await this.getActualBalance(accountId);
 
     // eslint-disable-next-line prefer-const
     let { deltaBalance, maxTransactionId } =
@@ -26,21 +25,20 @@ export class BalancesRepository {
 
     const newBalance = Number(balance) + Number(deltaBalance);
 
-    // if there is no transaction after the actual balance in the database, maxTransactionId will be null
-    if (maxTransactionId === null) {
-      maxTransactionId = lastTransactionId;
+    // if there is transactions after the actual balance in the database
+    if (maxTransactionId !== null) {
+      await this.balanceRepository.update(
+        { accountId },
+        { balance: newBalance, lastTransactionId: maxTransactionId },
+      );
     }
-
-    await this.balanceRepository.update(
-      { accountId },
-      { balance: newBalance, lastTransactionId: maxTransactionId }
-    );
 
     return newBalance;
   }
 
   private async getActualBalance(accountId: number): Promise<BalanceEntity> {
     return await this.balanceRepository.findOne({
+      select: ['balance', 'lastTransactionId'],
       where: {
         accountId,
       },
@@ -49,7 +47,7 @@ export class BalancesRepository {
 
   private async calculateBalanceDifference(
     accountId: number,
-    lastTransactionId: number
+    lastTransactionId: number,
   ): Promise<BalanceDifferenceSerializer> {
     const result = await this.transactionRepository
       .createQueryBuilder()
