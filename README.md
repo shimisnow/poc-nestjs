@@ -11,6 +11,10 @@ Key Features:
 - Integrates with redis for cache.
 - Shows how to use OpenAPI documentation.
 
+## Resolved problems
+
+1. [How to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
+
 ## Technologies
 
 - Code organization
