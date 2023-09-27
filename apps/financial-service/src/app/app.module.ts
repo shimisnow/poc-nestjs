@@ -5,6 +5,7 @@ import { AccountEntity } from '@shared/database/entities/account.entity';
 import { BalanceEntity } from '@shared/database/entities/balance.entity';
 import { TransactionEntity } from '@shared/database/entities/transaction.entity';
 import { TransactionModule } from './transaction/transaction.module';
+import { BalanceModule } from './balance/balance.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TransactionModule } from './transaction/transaction.module';
       entities: [AccountEntity, BalanceEntity, TransactionEntity],
     }),
     TransactionModule,
+    BalanceModule,
   ],
 })
 export class AppModule {}

@@ -15,10 +15,18 @@ export class BalanceEntity {
   @Column({
     name: 'balance',
     type: 'integer',
-    nullable: true,
+    nullable: false,
     default: 0,
   })
-  balance?: number;
+  balance: number;
+
+  @Column({
+    name: 'last_transaction_id',
+    type: 'integer',
+    nullable: false,
+    default: 0,
+  })
+  lastTransactionId: number;
 
   @UpdateDateColumn({
     name: 'update_at',
