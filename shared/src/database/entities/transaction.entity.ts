@@ -50,13 +50,4 @@ export class TransactionEntity {
     nullable: true,
   })
   createdAt?: Date;
-
-  @BeforeInsert()
-  checkAmountByType() {
-    if (this.type == TransactionTypeEnum.DEBT) {
-      if (this.amount > 0) {
-        this.amount *= -1;
-      }
-    }
-  }
 }

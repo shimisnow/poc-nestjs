@@ -16,7 +16,6 @@ services:
   database-financial:
     image: postgres:15.2
     restart: always
-      - .env
     environment:
       POSTGRES_USER: ${DATABASE_FINANCIAL_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_FINANCIAL_PASSWORD}
