@@ -14,7 +14,7 @@ export class BalanceEntity {
 
   @Column({
     name: 'balance',
-    type: 'integer',
+    type: 'real',
     nullable: false,
     default: 0,
   })

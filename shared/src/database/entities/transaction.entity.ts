@@ -39,7 +39,7 @@ export class TransactionEntity {
 
   @Column({
     name: 'amount',
-    type: 'integer',
+    type: 'real',
     nullable: false,
   })
   amount: number;
