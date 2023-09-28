@@ -1,4 +1,13 @@
-import { Column, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { AccountEntity } from './account.entity';
+import { TransactionEntity } from './transaction.entity';
 
 @Entity({
   name: 'balances',
@@ -10,7 +19,13 @@ export class BalanceEntity {
     nullable: false,
     primaryKeyConstraintName: 'pk_balances',
   })
-  accountId: number;
+  @OneToOne(() => AccountEntity)
+  @JoinColumn({
+    name: 'account_id',
+    referencedColumnName: 'accountId',
+    foreignKeyConstraintName: 'fk_balances_accounts',
+  })
+  account: AccountEntity;
 
   @Column({
     name: 'balance',
@@ -26,7 +41,13 @@ export class BalanceEntity {
     nullable: false,
     default: 0,
   })
-  lastTransactionId: number;
+  @OneToOne(() => TransactionEntity, (transaction) => transaction.transactionId)
+  @JoinColumn({
+    name: 'last_transaction_id',
+    referencedColumnName: 'transactionId',
+    foreignKeyConstraintName: 'fk_balances_transactions',
+  })
+  lastTransaction: TransactionEntity;
 
   @UpdateDateColumn({
     name: 'update_at',

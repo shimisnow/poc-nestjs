@@ -1,13 +1,13 @@
 import {
-  AfterInsert,
-  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryColumn,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { TransactionTypeEnum } from '../enums/transaction-type.enum';
+import { AccountEntity } from './account.entity';
 
 @Entity({
   name: 'transactions',
@@ -20,13 +20,18 @@ export class TransactionEntity {
   })
   transactionId?: number;
 
-  @PrimaryColumn({
+  @Column({
     name: 'account_id',
     type: 'integer',
     nullable: false,
-    primaryKeyConstraintName: 'pk_transactions',
   })
-  accountId: number;
+  @ManyToOne(() => AccountEntity, (account) => account.accountId)
+  @JoinColumn({
+    name: 'account_id',
+    referencedColumnName: 'accountId',
+    foreignKeyConstraintName: 'fk_transactions_accounts',
+  })
+  account: AccountEntity;
 
   @Column({
     name: 'type',

@@ -5,6 +5,7 @@ import { TransactionsRepository } from './repositories/transactions.repository';
 import { TransactionEntity } from '@shared/database/entities/transaction.entity';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { AccountEntity } from '@shared/database/entities/account.entity';
 
 @Injectable()
 export class TransactionService {
@@ -17,9 +18,15 @@ export class TransactionService {
     body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
     try {
-      const result = await this.transactionsRepository.insert(
-        body as TransactionEntity,
-      );
+      const account = new AccountEntity();
+      account.accountId = body.accountId;
+
+      const transaction = new TransactionEntity();
+      transaction.account = account;
+      transaction.amount = body.amount;
+      transaction.type = body.type;
+
+      const result = await this.transactionsRepository.insert(transaction);
 
       await this.cacheService.del(`balance-acc-${body.accountId}`);
 

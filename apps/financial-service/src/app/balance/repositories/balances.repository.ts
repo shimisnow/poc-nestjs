@@ -4,6 +4,7 @@ import { BalanceEntity } from '@shared/database/entities/balance.entity';
 import { TransactionEntity } from '@shared/database/entities/transaction.entity';
 import { MoreThan, Repository } from 'typeorm';
 import { BalanceDifferenceSerializer } from '../serializers/balance-difference.serializer';
+import { AccountEntity } from '@shared/database/entities/account.entity';
 
 @Injectable()
 export class BalancesRepository {
@@ -22,19 +23,28 @@ export class BalancesRepository {
       throw new NotFoundException('The account does not exist');
     }
 
-    const { balance, lastTransactionId } = result;
+    const { balance, lastTransaction } = result;
 
     // eslint-disable-next-line prefer-const
     let { deltaBalance, maxTransactionId } =
-      await this.calculateBalanceDifference(accountId, lastTransactionId);
+      await this.calculateBalanceDifference(
+        accountId,
+        lastTransaction.transactionId,
+      );
 
     const newBalance = Number(balance) + Number(deltaBalance);
 
     // if there is transactions after the actual balance in the database
     if (maxTransactionId !== null) {
+      const account = new AccountEntity();
+      account.accountId = accountId;
+
+      const transaction = new TransactionEntity();
+      transaction.transactionId = maxTransactionId;
+
       await this.balanceRepository.update(
-        { accountId },
-        { balance: newBalance, lastTransactionId: maxTransactionId },
+        { account },
+        { balance: newBalance, lastTransaction: transaction },
       );
     }
 
@@ -42,10 +52,13 @@ export class BalancesRepository {
   }
 
   private async getActualBalance(accountId: number): Promise<BalanceEntity> {
+    const account = new AccountEntity();
+    account.accountId = accountId;
+
     return await this.balanceRepository.findOne({
-      select: ['balance', 'lastTransactionId'],
+      select: ['balance', 'lastTransaction'],
       where: {
-        accountId,
+        account,
       },
     });
   }
