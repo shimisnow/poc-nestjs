@@ -1,9 +1,10 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   OneToOne,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { AccountEntity } from './account.entity';
@@ -13,12 +14,16 @@ import { TransactionEntity } from './transaction.entity';
   name: 'balances',
 })
 export class BalanceEntity {
-  @PrimaryColumn({
-    name: 'account_id',
+  @PrimaryGeneratedColumn({
+    name: 'balance_id',
     type: 'integer',
-    nullable: false,
     primaryKeyConstraintName: 'pk_balances',
+    comment:
+      'this field exists only because a primary key is required in typeorm. Do not use it',
   })
+  balanceId: number;
+
+  @Index('idx_balances', { unique: true })
   @OneToOne(() => AccountEntity)
   @JoinColumn({
     name: 'account_id',
@@ -41,7 +46,7 @@ export class BalanceEntity {
     nullable: false,
     default: 0,
   })
-  @OneToOne(() => TransactionEntity, (transaction) => transaction.transactionId)
+  @OneToOne(() => TransactionEntity)
   @JoinColumn({
     name: 'last_transaction_id',
     referencedColumnName: 'transactionId',

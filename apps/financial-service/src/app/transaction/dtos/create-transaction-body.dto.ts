@@ -16,7 +16,7 @@ export class CreateTransactionBodyDto {
   @ApiProperty({
     description: 'Transaction type',
     enum: TransactionTypeEnum,
-    example: TransactionTypeEnum.DEBT,
+    example: TransactionTypeEnum.DEBIT,
   })
   @IsNotEmpty()
   @IsEnum(TransactionTypeEnum)

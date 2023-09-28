@@ -56,7 +56,7 @@ export class BalancesRepository {
     account.accountId = accountId;
 
     return await this.balanceRepository.findOne({
-      select: ['balance', 'lastTransaction'],
+      relations: ['lastTransaction'],
       where: {
         account,
       },
@@ -67,11 +67,14 @@ export class BalancesRepository {
     accountId: number,
     lastTransactionId: number,
   ): Promise<BalanceDifferenceSerializer> {
+    const account = new AccountEntity();
+    account.accountId = accountId;
+
     const result = await this.transactionRepository
       .createQueryBuilder()
       .select('sum(amount)', 'deltaBalance')
       .addSelect('max(transaction_id)', 'maxTransactionId')
-      .where({ accountId })
+      .where({ account })
       .andWhere({ transactionId: MoreThan(lastTransactionId) })
       .getRawOne();
 

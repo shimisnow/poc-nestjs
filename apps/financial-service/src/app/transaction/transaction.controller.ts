@@ -1,6 +1,13 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadGatewayResponse,
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateTransactionBodyDto } from './dtos/create-transaction-body.dto';
 import { CreateTransactionSerializer } from './serializers/create-transactions.serializer';
 import { TransactionTypeEnum } from '@shared/database/enums/transaction-type.enum';
@@ -16,7 +23,8 @@ export class TransactionController {
   @Post()
   @ApiOperation({
     summary: 'Register a transaction',
-    description: 'This endpoint receives only positive values. For debt operations, the value will be automatically inverted'
+    description:
+      'This endpoint receives only positive values. For debt operations, the value will be automatically inverted',
   })
   @ApiOkResponse({
     description: 'Information about the created transaction',
@@ -36,12 +44,12 @@ export class TransactionController {
     type: DefaultError502Serializer,
   })
   async createTransaction(
-    @Body() body: CreateTransactionBodyDto
+    @Body() body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
-    if (body.type == TransactionTypeEnum.DEBT) {
+    if (body.type == TransactionTypeEnum.DEBIT) {
       body.amount *= -1;
     }
-    
+
     return await this.transactionService.createTransaction(body);
   }
 }
