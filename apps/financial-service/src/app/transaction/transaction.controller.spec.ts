@@ -28,8 +28,13 @@ describe('TransactionController', () => {
           provide: getRepositoryToken(TransactionEntity),
           useValue: {
             save: (entity: TransactionEntity) => {
-              entity.transactionId = 42;
-              return entity;
+              switch (entity.account.accountId) {
+                case 1234:
+                  entity.transactionId = 42;
+                  return entity;
+                default:
+                  throw new Error('insert or update on table error');
+              }
             },
           },
         },

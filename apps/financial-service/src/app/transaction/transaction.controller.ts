@@ -4,6 +4,7 @@ import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -14,6 +15,7 @@ import { TransactionTypeEnum } from '@shared/database/enums/transaction-type.enu
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
 import { CreateTransactionError400Serializer } from './serializers/create-transaction-error-400.serializer';
+import { CreateTransactionError404Serializer } from './serializers/create-transaction-error-404.serializer';
 
 @Controller('transaction')
 @ApiTags('transaction')
@@ -33,6 +35,10 @@ export class TransactionController {
   @ApiBadRequestResponse({
     description: 'Error validating request input data',
     type: CreateTransactionError400Serializer,
+  })
+  @ApiNotFoundResponse({
+    description: 'Error when the account does not exist',
+    type: CreateTransactionError404Serializer,
   })
   @ApiInternalServerErrorResponse({
     description:

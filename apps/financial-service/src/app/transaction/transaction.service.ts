@@ -1,4 +1,9 @@
-import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTransactionBodyDto } from './dtos/create-transaction-body.dto';
 import { CreateTransactionSerializer } from './serializers/create-transactions.serializer';
 import { TransactionsRepository } from './repositories/transactions.repository';
@@ -17,24 +22,30 @@ export class TransactionService {
   async createTransaction(
     body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
+    const account = new AccountEntity();
+    account.accountId = body.accountId;
+
+    const transaction = new TransactionEntity();
+    transaction.account = account;
+    transaction.amount = body.amount;
+    transaction.type = body.type;
+
+    let result = null;
+
     try {
-      const account = new AccountEntity();
-      account.accountId = body.accountId;
-
-      const transaction = new TransactionEntity();
-      transaction.account = account;
-      transaction.amount = body.amount;
-      transaction.type = body.type;
-
-      const result = await this.transactionsRepository.insert(transaction);
-
-      await this.cacheService.del(`balance-acc-${body.accountId}`);
-
-      return {
-        transactionId: result.transactionId,
-      } as CreateTransactionSerializer;
+      result = await this.transactionsRepository.insert(transaction);
     } catch (error) {
-      throw new BadGatewayException(error.message);
+      if (error.message.startsWith('insert or update on table')) {
+        throw new NotFoundException('account does not exists');
+      } else {
+        throw new BadGatewayException('some database error');
+      }
     }
+
+    await this.cacheService.del(`balance-acc-${body.accountId}`);
+
+    return {
+      transactionId: result.transactionId,
+    } as CreateTransactionSerializer;
   }
 }
