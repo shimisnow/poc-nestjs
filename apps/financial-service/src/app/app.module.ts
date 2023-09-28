@@ -25,7 +25,6 @@ import { BalanceModule } from './balance/balance.module';
       password: process.env.DATABASE_FINANCIAL_PASSWORD,
       database: process.env.DATABASE_FINANCIAL_DBNAME,
       entities: [AccountEntity, BalanceEntity, TransactionEntity],
-      synchronize: true,
       logging: true,
     }),
     TransactionModule,

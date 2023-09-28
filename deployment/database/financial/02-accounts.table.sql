@@ -9,4 +9,4 @@ CREATE TABLE public.accounts (
 	user_id int4 NOT NULL,
 	CONSTRAINT pk_accounts PRIMARY KEY (account_id)
 );
-CREATE UNIQUE INDEX "IDX_ae02119e33dbedf30152970c24" ON public.accounts USING btree (account_id, user_id);
+CREATE UNIQUE INDEX idx_accounts ON public.accounts USING btree (account_id, user_id);

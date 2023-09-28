@@ -3,7 +3,7 @@ import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 @Entity({
   name: 'accounts',
 })
-@Index(['accountId', 'userId'], { unique: true })
+@Index('idx_accounts', ['accountId', 'userId'], { unique: true })
 export class AccountEntity {
   @PrimaryGeneratedColumn({
     name: 'account_id',
