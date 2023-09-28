@@ -1,21 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GetBalanceError400Serializer {
+export class GetBalanceError404Serializer {
   @ApiProperty({
     description: 'HTTP code',
-    example: 400,
+    example: 404,
   })
   statusCode: number;
 
   @ApiProperty({
     description: 'Error message',
-    example: ['accountId should not be empty'],
+    example: 'The account does not exist',
   })
-  message: Array<string>;
+  message: string;
 
   @ApiProperty({
     description: 'HTTP error message',
-    example: 'Bad Request',
+    example: 'Not Found',
   })
   error: string;
 }

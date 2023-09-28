@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BalanceEntity } from '@shared/database/entities/balance.entity';
 import { TransactionEntity } from '@shared/database/entities/transaction.entity';
@@ -16,8 +16,13 @@ export class BalancesRepository {
   ) {}
 
   async getBalance(accountId: number): Promise<number> {
-    const { balance, lastTransactionId } =
-      await this.getActualBalance(accountId);
+    const result = await this.getActualBalance(accountId);
+
+    if (result === null) {
+      throw new NotFoundException('The account does not exist');
+    }
+
+    const { balance, lastTransactionId } = result;
 
     // eslint-disable-next-line prefer-const
     let { deltaBalance, maxTransactionId } =

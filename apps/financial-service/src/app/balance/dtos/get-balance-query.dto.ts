@@ -1,5 +1,6 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, Min } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber, Min } from 'class-validator';
 
 export class GetBalanceQueryDto {
   @ApiProperty({
@@ -7,6 +8,7 @@ export class GetBalanceQueryDto {
     minimum: 1,
     example: 4225,
   })
+  @Type(() => Number)
   @IsNotEmpty()
   @IsNumber()
   @Min(1)

@@ -2,10 +2,19 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { BalanceService } from './balance.service';
 import { GetBalanceQueryDto } from './dtos/get-balance-query.dto';
 import { GetBalanceSerializer } from './serializers/get-balance.serializer';
-import { ApiBadGatewayResponse, ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadGatewayResponse,
+  ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { GetBalanceError400Serializer } from './serializers/get-balance-error-400.serializer';
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
+import { GetBalanceError404Serializer } from './serializers/get-balance-error-404.serializer';
 
 @Controller('balance')
 @ApiTags('balance')
@@ -14,8 +23,7 @@ export class BalanceController {
 
   @Get()
   @ApiOperation({
-    summary:
-      'Retrieves information from a given account',
+    summary: 'Retrieves information from a given account',
   })
   @ApiOkResponse({
     description: 'Information about the account balance',
@@ -24,6 +32,10 @@ export class BalanceController {
   @ApiBadRequestResponse({
     description: 'Error validating request input data',
     type: GetBalanceError400Serializer,
+  })
+  @ApiNotFoundResponse({
+    description: 'Error when the account does not exist',
+    type: GetBalanceError404Serializer,
   })
   @ApiInternalServerErrorResponse({
     description:
@@ -35,7 +47,7 @@ export class BalanceController {
     type: DefaultError502Serializer,
   })
   async getBalance(
-    @Query() query: GetBalanceQueryDto
+    @Query() query: GetBalanceQueryDto,
   ): Promise<GetBalanceSerializer> {
     const balance = await this.balanceService.getBalance(query.accountId);
 
