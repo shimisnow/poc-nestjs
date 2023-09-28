@@ -40,8 +40,6 @@ describe('BalanceController', () => {
           provide: getRepositoryToken(BalanceEntity),
           useValue: {
             findOne: async (options) => {
-              console.log('inside the mock');
-              console.log(options);
               switch (options.where.accountId) {
                 case 1234:
                   // eslint-disable-next-line no-case-declarations
