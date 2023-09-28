@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionController } from './transaction.controller';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -20,7 +21,6 @@ describe('TransactionController', () => {
         {
           provide: CACHE_MANAGER,
           useValue: {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             del: (key) => {},
           },
         },

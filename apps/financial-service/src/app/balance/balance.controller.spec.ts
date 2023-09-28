@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-case-declarations */
 import { Test, TestingModule } from '@nestjs/testing';
 import { BalanceController } from './balance.controller';
 import { BalanceService } from './balance.service';
@@ -32,7 +34,6 @@ describe('BalanceController', () => {
                   return null;
               }
             },
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             set: (key, value) => {},
           },
         },
@@ -40,19 +41,19 @@ describe('BalanceController', () => {
           provide: getRepositoryToken(BalanceEntity),
           useValue: {
             findOne: async (options) => {
-              switch (options.where.accountId) {
+              switch (options.where.account.accountId) {
                 case 1234:
-                  // eslint-disable-next-line no-case-declarations
+                  const transaction = new TransactionEntity();
+                  transaction.transactionId = 100;
                   const entity = new BalanceEntity();
                   entity.balance = 1200;
-                  entity.lastTransactionId = 100;
+                  entity.lastTransaction = transaction;
                   return entity;
                 // account id does not exists
                 default:
                   return null;
               }
             },
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             update: (options, entity) => {},
           },
         },
