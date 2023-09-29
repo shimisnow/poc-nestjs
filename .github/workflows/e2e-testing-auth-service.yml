@@ -34,13 +34,13 @@ jobs:
         run: 'docker cp ${{ github.workspace }}/deployment/database/$DATABASE_NAME/ ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/database-data'
 
       - name: Copy shell script files to container
-        run: 'docker cp ${{ github.workspace }}/deployment/e2e-$SERVICE_NAME/import-database-files.sh ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/'
+        run: 'docker cp ${{ github.workspace }}/deployment/e2e/$SERVICE_NAME/import-database-files.sh ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/'
 
       - name: Set file permissions
         run: docker exec ${{ job.services.postgres.id }} chmod +x /tmp/e2e-$SERVICE_NAME/import-database-files.sh
 
       - name: Database setup
-        run: docker exec ${{ job.services.postgres.id }} /tmp/e2e/$SERVICE_NAME/import-database-files.sh
+        run: docker exec ${{ job.services.postgres.id }} /tmp/e2e-$SERVICE_NAME/import-database-files.sh
 
       - name: Use Node.js
         uses: actions/setup-node@v3
