@@ -1,4 +1,4 @@
-name: E2E Testing ($SERVICE_NAME)
+name: E2E Testing (auth-service)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [staging]
 
 env:
-  SERVICE_NAME: $SERVICE_NAME
+  SERVICE_NAME: auth-service
   DATABASE_NAME: authentication
 
 jobs:
@@ -31,7 +31,7 @@ jobs:
         run: docker exec ${{ job.services.postgres.id }} mkdir -p /tmp/e2e-$SERVICE_NAME/database-data
 
       - name: Copy database files to container
-        run: 'docker cp ${{ github.workspace }}/deployment/database/authentication/ ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/database-data'
+        run: 'docker cp ${{ github.workspace }}/deployment/database/$DATABASE_NAME/ ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/database-data'
 
       - name: Copy shell script files to container
         run: 'docker cp ${{ github.workspace }}/deployment/e2e-$SERVICE_NAME/import-database-files.sh ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/'
