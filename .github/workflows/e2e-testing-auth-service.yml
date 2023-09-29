@@ -1,4 +1,4 @@
-name: E2E Testing (Supertest)
+name: E2E Testing (auth-service)
 
 on:
   push:
@@ -6,8 +6,12 @@ on:
   pull_request:
     branches: [staging]
 
+env:
+  SERVICE_NAME: auth-service
+  DATABASE_NAME: authentication
+
 jobs:
-  auth-service:
+  e2e-testing:
     runs-on: ubuntu-latest
 
     services:
@@ -16,7 +20,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: 1234567890
-          POSTGRES_DB: authentication
+          POSTGRES_DB: $DATABASE_NAME
         ports:
           - 5433:5432
 
@@ -24,19 +28,19 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Create directories inside container
-        run: docker exec ${{ job.services.postgres.id }} mkdir -p /tmp/e2e-auth-service/database-data
+        run: docker exec ${{ job.services.postgres.id }} mkdir -p /tmp/e2e-$SERVICE_NAME/database-data
 
       - name: Copy database files to container
-        run: 'docker cp ${{ github.workspace }}/deployment/database/authentication/ ${{ job.services.postgres.id }}:/tmp/e2e-auth-service/database-data'
+        run: 'docker cp ${{ github.workspace }}/deployment/database/$DATABASE_NAME/ ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/database-data'
 
       - name: Copy shell script files to container
-        run: 'docker cp ${{ github.workspace }}/deployment/e2e-auth-service/import-database-files.sh ${{ job.services.postgres.id }}:/tmp/e2e-auth-service/'
+        run: 'docker cp ${{ github.workspace }}/deployment/e2e-$SERVICE_NAME/import-database-files.sh ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/'
 
       - name: Set file permissions
-        run: docker exec ${{ job.services.postgres.id }} chmod +x /tmp/e2e-auth-service/import-database-files.sh
+        run: docker exec ${{ job.services.postgres.id }} chmod +x /tmp/e2e-$SERVICE_NAME/import-database-files.sh
 
       - name: Database setup
-        run: docker exec ${{ job.services.postgres.id }} /tmp/e2e-auth-service/import-database-files.sh
+        run: docker exec ${{ job.services.postgres.id }} /tmp/e2e/$SERVICE_NAME/import-database-files.sh
 
       - name: Use Node.js
         uses: actions/setup-node@v3
@@ -48,16 +52,16 @@ jobs:
         run: npm ci
 
       - name: Build service
-        run: npx nx build auth-service
+        run: npx nx build $SERVICE_NAME
 
       - name: Load .env variables
         id: dotenv
         uses: falti/dotenv-action@v1.0.4
 
-      - name: E2E tests for auth-service
+      - name: E2E tests for $SERVICE_NAME
         run: |
-          node dist/apps/auth-service/main.js &
-          npx nx e2e auth-service-e2e
+          node dist/apps/$SERVICE_NAME/main.js &
+          npx nx e2e $SERVICE_NAME-e2e
         env:
           AUTH_SERVICE_PORT: ${{ steps.dotenv.outputs.AUTH_SERVICE_PORT }}
           DATABASE_AUTH_HOST: ${{ steps.dotenv.outputs.DATABASE_AUTH_HOST }}
