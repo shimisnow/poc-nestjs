@@ -1,4 +1,4 @@
-name: Unit Testing (Jest)
+name: Unit Testing (all)
 
 on:
   push:
@@ -27,3 +27,6 @@ jobs:
 
       - name: Unit test for AUTH SERVICE
         run: npx nx test auth-service
+
+      - name: Unit test for FINANCIAL SERVICE
+        run: npx nx test financial-service

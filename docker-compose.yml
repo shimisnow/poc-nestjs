@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7.2.1
+    restart: always
+    ports:
+      - ${REDIS_PORT}:6379
+
+  redis-ui:
+    image: patrikx3/p3x-redis-ui:2023.10.246
+    ports:
+      - 7843:7843
+    volumes:
+      - ./deployment/redis-ui:/settings
+
   database-authentication:
     image: postgres:15.2
     restart: always
@@ -12,3 +25,15 @@ services:
       - ${DATABASE_AUTH_PORT}:5432
     volumes:
       - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
+
+  database-financial:
+    image: postgres:15.2
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_FINANCIAL_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_FINANCIAL_PASSWORD}
+      POSTGRES_DB: ${DATABASE_FINANCIAL_DBNAME}
+    ports:
+      - ${DATABASE_FINANCIAL_PORT}:5432
+    volumes:
+      - ./deployment/database/financial:/docker-entrypoint-initdb.d:ro
