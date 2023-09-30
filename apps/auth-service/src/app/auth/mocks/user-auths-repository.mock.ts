@@ -1,5 +1,5 @@
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
-import { UserAuthStatusEnum } from '@shared/database/enums/user-auth-status.enum';
+import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-auth-status.enum';
 import { InsertResult, QueryFailedError } from 'typeorm';
 
 export class UserAuthsRepositoryMock {

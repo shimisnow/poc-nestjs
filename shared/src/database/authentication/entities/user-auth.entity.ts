@@ -8,7 +8,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserAuthStatusEnum } from '../../enums/user-auth-status.enum';
+import { UserAuthStatusEnum } from '../enums/user-auth-status.enum';
 import * as bcrypt from 'bcrypt';
 
 /**
