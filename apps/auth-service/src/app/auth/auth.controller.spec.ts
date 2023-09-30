@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -130,7 +131,7 @@ describe('AuthController', () => {
   describe('auth.controller -> signup()', () => {
     test('user CAN be created', async () => {
       const result = await controller.signup({
-        userId: 42,
+        userId: '',
         username: 'anderson',
         password: 'test@1234',
       });
@@ -142,7 +143,7 @@ describe('AuthController', () => {
     test('user CANNOT be created (duplicated)', async () => {
       try {
         await controller.signup({
-          userId: 25,
+          userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
           username: 'thomas',
           password: 'test@1234',
         });
@@ -154,7 +155,7 @@ describe('AuthController', () => {
     test('user CANNOT be created (database error)', async () => {
       try {
         await controller.signup({
-          userId: 33,
+          userId: 'af0cf233-0e08-459f-a97e-c3e479c67371',
           username: 'jonas',
           password: 'test@1234',
         });
@@ -166,7 +167,7 @@ describe('AuthController', () => {
     test('user CANNOT be created (entity database error)', async () => {
       try {
         await controller.signup({
-          userId: 11,
+          userId: 'efadd10d-fa86-4bca-a926-e52d7fe6fe28',
           username: 'marta',
           password: 'test@1234',
         });

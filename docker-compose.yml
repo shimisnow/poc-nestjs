@@ -23,8 +23,8 @@ services:
       POSTGRES_DB: ${DATABASE_AUTH_DBNAME}
     ports:
       - ${DATABASE_AUTH_PORT}:5432
-    volumes:
-      - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
+    #volumes:
+    #  - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
 
   database-financial:
     image: postgres:15.2

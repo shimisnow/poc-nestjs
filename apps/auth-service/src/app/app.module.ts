@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthModule } from './auth/auth.module';
-import { UserAuthEntity } from '@shared/database/entities/user-auth.entity';
+import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 
 @Module({
   imports: [
@@ -15,6 +15,7 @@ import { UserAuthEntity } from '@shared/database/entities/user-auth.entity';
       password: process.env.DATABASE_AUTH_PASSWORD,
       database: process.env.DATABASE_AUTH_DBNAME,
       entities: [UserAuthEntity],
+      synchronize: true,
     }),
   ],
 })

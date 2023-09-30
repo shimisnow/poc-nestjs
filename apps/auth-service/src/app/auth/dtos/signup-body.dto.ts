@@ -1,16 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
 export class SignUpBodyDto {
   @ApiProperty({
     description: 'User id from the main database',
-    example: 4233,
+    example: '76c9d285-ab38-48e2-b97b-7556150c11ce',
   })
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  userId: number;
+  @IsUUID()
+  userId: string;
 
   @ApiProperty({
     description: 'User name',

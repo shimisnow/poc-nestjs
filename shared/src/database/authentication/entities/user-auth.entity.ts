@@ -8,8 +8,7 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserAuthStatusEnum } from '../enums/user-auth-status.enum';
-// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
+import { UserAuthStatusEnum } from '../../enums/user-auth-status.enum';
 import * as bcrypt from 'bcrypt';
 
 /**
@@ -26,11 +25,11 @@ export class UserAuthEntity {
    */
   @PrimaryColumn({
     name: 'user_id',
-    type: 'integer',
+    type: 'uuid',
     nullable: false,
     primaryKeyConstraintName: 'pk_user_auths',
   })
-  userId: number;
+  userId: string;
 
   /**
    * Username to generate access tokens.
@@ -66,7 +65,7 @@ export class UserAuthEntity {
     type: 'enum',
     enum: UserAuthStatusEnum,
     enumName: 'user_auth_status_enum',
-    default: UserAuthStatusEnum.ACTIVE,
+    default: UserAuthStatusEnum.INACTIVE,
     nullable: true,
   })
   status?: UserAuthStatusEnum;
