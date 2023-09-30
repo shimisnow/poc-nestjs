@@ -4,9 +4,6 @@ describe('GET /auth/username/available', () => {
   const host = `http://localhost:${process.env.AUTH_SERVICE_PORT}`;
   const endpoint = '/auth/username/available';
 
-  console.log(host);
-  console.log(endpoint);
-
   describe('API call WITHOUT errors', () => {
     test('Username available', async () => {
       const response = await request(host)
@@ -54,7 +51,7 @@ describe('GET /auth/username/available', () => {
       expect(body).toHaveProperty('message');
       expect(body.message).toBeInstanceOf(Array);
       expect(
-        body.message.includes('property name should not exist')
+        body.message.includes('property name should not exist'),
       ).toBeTruthy();
     });
 
@@ -73,7 +70,7 @@ describe('GET /auth/username/available', () => {
       expect(body.message).toBeInstanceOf(Array);
       expect(body.message.length).toBe(1);
       expect(
-        body.message.includes('username should not be empty')
+        body.message.includes('username should not be empty'),
       ).toBeTruthy();
     });
   });
