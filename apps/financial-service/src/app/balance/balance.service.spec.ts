@@ -3,8 +3,8 @@ import { BalanceService } from './balance.service';
 import { BalancesRepository } from './repositories/balances.repository';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BalanceEntity } from '@shared/database/entities/balance.entity';
-import { TransactionEntity } from '@shared/database/entities/transaction.entity';
+import { BalanceEntity } from '@shared/database/financial/entities/balance.entity';
+import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
 
 describe('BalanceService', () => {
   let service: BalanceService;

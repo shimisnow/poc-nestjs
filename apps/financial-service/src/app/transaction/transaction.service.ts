@@ -7,10 +7,10 @@ import {
 import { CreateTransactionBodyDto } from './dtos/create-transaction-body.dto';
 import { CreateTransactionSerializer } from './serializers/create-transactions.serializer';
 import { TransactionsRepository } from './repositories/transactions.repository';
-import { TransactionEntity } from '@shared/database/entities/transaction.entity';
+import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { AccountEntity } from '@shared/database/entities/account.entity';
+import { AccountEntity } from '@shared/database/financial/entities/account.entity';
 
 @Injectable()
 export class TransactionService {
