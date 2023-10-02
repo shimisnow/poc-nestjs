@@ -47,6 +47,13 @@ describe('BalanceService', () => {
                   entity.balance = 1200;
                   entity.lastTransaction = transaction;
                   return entity;
+                case 2345:
+                  const transaction1 = new TransactionEntity();
+                  transaction1.transactionId = 50;
+                  const entity1 = new BalanceEntity();
+                  entity1.balance = 500;
+                  entity1.lastTransaction = transaction1;
+                  return entity1;
                 // account id does not exists
                 default:
                   return null;
@@ -100,6 +107,22 @@ describe('BalanceService', () => {
       const result = await service.getBalance(1234);
       // 1200 from the mocked balance and 50 from the mocked transactions
       expect(result).toBe(1250);
+    });
+  });
+
+  describe('balance.service -> getBalanceIgnoringCache()', () => {
+    test('account does not exists', async () => {
+      try {
+        await service.getBalanceIgnoringCache(9876);
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+      }
+    });
+
+    test('get balance ignoring cache', async () => {
+      const result = await service.getBalanceIgnoringCache(2345);
+      // 1200 from the mocked balance and 50 from the mocked transactions
+      expect(result).toBe(550);
     });
   });
 });
