@@ -8,6 +8,7 @@ import { AccountEntity } from '@shared/database/financial/entities/account.entit
 
 @Injectable()
 export class BalancesRepository {
+  /** @ignore */
   constructor(
     @InjectRepository(BalanceEntity)
     private balanceRepository: Repository<BalanceEntity>,
@@ -16,6 +17,14 @@ export class BalancesRepository {
     private transactionRepository: Repository<TransactionEntity>,
   ) {}
 
+  /**
+   * Calculate the account balance with the actual balance, plus the sum of unprocessed transactions.
+   *
+   * @param accountId Desired account balance
+   * @returns Account balance
+   *
+   * @throws NotFoundException Account does not exist
+   */
   async getBalance(accountId: number): Promise<number> {
     const result = await this.getActualBalance(accountId);
 
@@ -51,6 +60,12 @@ export class BalancesRepository {
     return newBalance;
   }
 
+  /**
+   * Retrieves the balance stored at the database
+   *
+   * @param accountId Desired account balanceId
+   * @returns Stored account balance
+   */
   private async getActualBalance(accountId: number): Promise<BalanceEntity> {
     const account = new AccountEntity();
     account.accountId = accountId;
@@ -63,6 +78,13 @@ export class BalancesRepository {
     });
   }
 
+  /**
+   * Calculates the balance from unprocessed transactions
+   *
+   * @param accountId Desired account balanceId
+   * @param lastTransactionId Last transaction from the account that was processed to compute the balance
+   * @returns Calculated balance and the id from the last processed transaction
+   */
   private async calculateBalanceDifference(
     accountId: number,
     lastTransactionId: number,
