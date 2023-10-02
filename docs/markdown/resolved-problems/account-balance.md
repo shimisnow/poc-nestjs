@@ -4,13 +4,17 @@
 
 In an application that stores the user transactions as debit and credit operation, how can we calculate and retrieve the account balance in a efficient way.
 
-### The Solution (database)
+### The Solution
+
+![](./account-balance.svg)
+
+#### Database
 
 - Use of two database tables. One to store the transactions and one to store the balance.
 - The balances table stores the account balance and the last transaction id that was processed to generate the balance.
 - When the balance is required, the transactions with id greater than the one stored at the table is processed and the value is merged with the stored balance. The new balance is than stored at the balances table along side with the max transaction id processed.
 
-### The Solution (efficiency)
+#### Efficiency
 
 To make the retrieve operation efficient, a cache manager is used as the following:
 
