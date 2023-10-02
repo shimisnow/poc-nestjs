@@ -7,7 +7,9 @@ import { TransactionEntity } from '@shared/database/financial/entities/transacti
 import { TransactionsRepository } from './repositories/transactions.repository';
 import { TransactionService } from './transaction.service';
 import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, PreconditionFailedException } from '@nestjs/common';
+import { BalanceService } from '../balance/balance.service';
+import { BalancesRepository } from '../balance/repositories/balances.repository';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
@@ -38,6 +40,21 @@ describe('TransactionController', () => {
             },
           },
         },
+        {
+          provide: BalanceService,
+          useValue: {
+            getBalanceIgnoringCache: (accountId: number) => {
+              switch (accountId) {
+                case 9001:
+                  return 100;
+              }
+            },
+          },
+        },
+        {
+          provide: BalancesRepository,
+          useValue: {},
+        },
       ],
     }).compile();
 
@@ -58,6 +75,18 @@ describe('TransactionController', () => {
         });
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
+      }
+    });
+
+    test('account with insufficient balance', async () => {
+      try {
+        await controller.createTransaction({
+          accountId: 9001,
+          type: TransactionTypeEnum.DEBIT,
+          amount: 200,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(PreconditionFailedException);
       }
     });
 

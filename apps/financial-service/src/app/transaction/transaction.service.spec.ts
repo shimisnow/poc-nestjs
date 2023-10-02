@@ -4,6 +4,8 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
 import { TransactionsRepository } from './repositories/transactions.repository';
+import { BalanceService } from '../balance/balance.service';
+import { BalancesRepository } from '../balance/repositories/balances.repository';
 
 describe('TransactionService', () => {
   let service: TransactionService;
@@ -13,6 +15,11 @@ describe('TransactionService', () => {
       providers: [
         TransactionService,
         TransactionsRepository,
+        BalanceService,
+        {
+          provide: BalancesRepository,
+          useValue: {},
+        },
         {
           provide: CACHE_MANAGER,
           useValue: {},
