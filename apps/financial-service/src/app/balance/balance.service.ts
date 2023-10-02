@@ -40,22 +40,14 @@ export class BalanceService {
   }
 
   /**
-   * Get the account balance FROM DATABASE ignoring the value stored in cache.
-   * The cache will be update with the result
+   * Get the account balance FROM DATABASE ignoring the value stored in cache
    *
    * @param accountId Desired account balance
    * @returns Account balance
    */
   async getBalanceIgnoringCache(accountId: number): Promise<number> {
-    const cacheKey = `balance-acc-${accountId}`;
-
     const calculatedBalance =
       await this.balancesRepository.getBalance(accountId);
-
-    await this.cacheService.set(cacheKey, {
-      balance: calculatedBalance,
-      updateAt: new Date(),
-    });
 
     return calculatedBalance;
   }
