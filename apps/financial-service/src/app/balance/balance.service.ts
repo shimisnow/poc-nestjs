@@ -6,12 +6,19 @@ import { CachedBalanceSerializer } from './serializers/cached-balance.serializer
 
 @Injectable()
 export class BalanceService {
+  /** @ignore */
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private balancesRepository: BalancesRepository,
   ) {}
 
-  async getBalance(accountId: number) {
+  /**
+   * Get the account balance FROM CACHE if it exists. If not, calculate and retrieve it from database.
+   *
+   * @param accountId Desired account balance
+   * @returns Account balance
+   */
+  async getBalance(accountId: number): Promise<number> {
     const cacheKey = `balance-acc-${accountId}`;
 
     const cachedData =
@@ -28,6 +35,19 @@ export class BalanceService {
       balance: calculatedBalance,
       updateAt: new Date(),
     });
+
+    return calculatedBalance;
+  }
+
+  /**
+   * Get the account balance FROM DATABASE ignoring the value stored in cache
+   *
+   * @param accountId Desired account balance
+   * @returns Account balance
+   */
+  async getBalanceIgnoringCache(accountId: number): Promise<number> {
+    const calculatedBalance =
+      await this.balancesRepository.getBalance(accountId);
 
     return calculatedBalance;
   }

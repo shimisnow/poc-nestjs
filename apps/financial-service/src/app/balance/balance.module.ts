@@ -7,5 +7,6 @@ import { BalancesRepositoryModule } from './repositories/balances-repository.mod
   imports: [BalancesRepositoryModule],
   providers: [BalanceService],
   controllers: [BalanceController],
+  exports: [BalanceService],
 })
 export class BalanceModule {}

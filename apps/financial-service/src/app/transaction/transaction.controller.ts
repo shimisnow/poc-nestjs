@@ -7,15 +7,17 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiPreconditionFailedResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateTransactionBodyDto } from './dtos/create-transaction-body.dto';
 import { CreateTransactionSerializer } from './serializers/create-transactions.serializer';
-import { TransactionTypeEnum } from '@shared/database/enums/transaction-type.enum';
+import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
 import { CreateTransactionError400Serializer } from './serializers/create-transaction-error-400.serializer';
 import { CreateTransactionError404Serializer } from './serializers/create-transaction-error-404.serializer';
+import { CreateTransactionError412Serializer } from './serializers/create-transaction-error-412.serializer';
 
 @Controller('transaction')
 @ApiTags('transaction')
@@ -39,6 +41,10 @@ export class TransactionController {
   @ApiNotFoundResponse({
     description: 'Error when the account does not exist',
     type: CreateTransactionError404Serializer,
+  })
+  @ApiPreconditionFailedResponse({
+    description: 'Error when account has insufficient balance',
+    type: CreateTransactionError412Serializer,
   })
   @ApiInternalServerErrorResponse({
     description:

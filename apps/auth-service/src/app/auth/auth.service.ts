@@ -7,20 +7,19 @@ import {
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
-// eslint-disable-next-line @nrwl/nx/enforce-module-boundaries
 import * as bcrypt from 'bcrypt';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { SignUpSerializer } from './serializers/signup.serializer';
-import { UserAuthEntity } from '@shared/database/entities/user-auth.entity';
+import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { LoginSerializer } from './serializers/login.serializer';
-import { UserAuthStatusEnum } from '@shared/database/enums/user-auth-status.enum';
+import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-auth-status.enum';
 
 @Injectable()
 export class AuthService {
   /** @ignore */
   constructor(
     private userAuthsRepository: UserAuthsRepository,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   /**
@@ -73,9 +72,9 @@ export class AuthService {
   }
 
   async signup(
-    userId: number,
+    userId: string,
     username: string,
-    password: string
+    password: string,
   ): Promise<SignUpSerializer> {
     const response = {
       status: false,

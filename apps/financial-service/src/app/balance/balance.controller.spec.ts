@@ -4,10 +4,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BalanceController } from './balance.controller';
 import { BalanceService } from './balance.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BalanceEntity } from '@shared/database/entities/balance.entity';
+import { BalanceEntity } from '@shared/database/financial/entities/balance.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BalancesRepository } from './repositories/balances.repository';
-import { TransactionEntity } from '@shared/database/entities/transaction.entity';
+import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
 import { NotFoundException } from '@nestjs/common';
 
 describe('BalanceController', () => {

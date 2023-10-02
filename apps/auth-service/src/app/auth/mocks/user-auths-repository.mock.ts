@@ -1,5 +1,5 @@
-import { UserAuthEntity } from '@shared/database/entities/user-auth.entity';
-import { UserAuthStatusEnum } from '@shared/database/enums/user-auth-status.enum';
+import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
+import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-auth-status.enum';
 import { InsertResult, QueryFailedError } from 'typeorm';
 
 export class UserAuthsRepositoryMock {
@@ -7,7 +7,7 @@ export class UserAuthsRepositoryMock {
     switch (username) {
       case 'anderson':
         return {
-          userId: 42,
+          userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
           username,
           password:
             // test@1234
@@ -18,7 +18,7 @@ export class UserAuthsRepositoryMock {
         return null;
       case 'thomas':
         return {
-          userId: 33,
+          userId: 'fcf5cccf-c217-4502-8cc3-cc24270ae0b7',
           username,
           password:
             // test@1234
