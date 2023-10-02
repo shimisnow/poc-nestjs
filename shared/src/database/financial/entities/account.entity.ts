@@ -14,8 +14,8 @@ export class AccountEntity {
 
   @Column({
     name: 'user_id',
-    type: 'integer',
+    type: 'uuid',
     nullable: false,
   })
-  userId: number;
+  userId: string;
 }
