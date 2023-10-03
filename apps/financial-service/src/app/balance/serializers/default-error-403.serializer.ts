@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class GetBalanceError403Serializer {
+export class DefaultError403Serializer {
   @ApiProperty({
     description: 'HTTP code',
     example: 403,

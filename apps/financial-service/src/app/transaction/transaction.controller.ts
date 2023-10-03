@@ -1,14 +1,22 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  ForbiddenException,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiPreconditionFailedResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { CreateTransactionBodyDto } from './dtos/create-transaction-body.dto';
 import { CreateTransactionSerializer } from './serializers/create-transactions.serializer';
@@ -18,13 +26,23 @@ import { DefaultError502Serializer } from './serializers/default-error-502.seria
 import { CreateTransactionError400Serializer } from './serializers/create-transaction-error-400.serializer';
 import { CreateTransactionError404Serializer } from './serializers/create-transaction-error-404.serializer';
 import { CreateTransactionError412Serializer } from './serializers/create-transaction-error-412.serializer';
+import { AuthGuard } from '@shared/authentication/guards/auth.guard';
+import { User } from '@shared/authentication/decorators/user.decorator';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { AuthorizationService } from '../authorization/authorization.service';
+import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
+import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
 
 @Controller('transaction')
 @ApiTags('transaction')
 export class TransactionController {
-  constructor(private transactionService: TransactionService) {}
+  constructor(
+    private transactionService: TransactionService,
+    private authorizationService: AuthorizationService,
+  ) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   @ApiOperation({
     summary: 'Register a transaction',
     description:
@@ -37,6 +55,14 @@ export class TransactionController {
   @ApiBadRequestResponse({
     description: 'Error validating request input data',
     type: CreateTransactionError400Serializer,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Error when unauthorized',
+    type: DefaultError401Serializer,
+  })
+  @ApiForbiddenResponse({
+    description: 'Error when the user has no access to the account',
+    type: DefaultError403Serializer,
   })
   @ApiNotFoundResponse({
     description: 'Error when the account does not exist',
@@ -56,8 +82,18 @@ export class TransactionController {
     type: DefaultError502Serializer,
   })
   async createTransaction(
+    @User() user: UserPayload,
     @Body() body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
+    const hasAccess = await this.authorizationService.userHasAccessToAccount(
+      user.userId,
+      body.accountId,
+    );
+
+    if (hasAccess == false) {
+      throw new ForbiddenException();
+    }
+
     if (body.type == TransactionTypeEnum.DEBIT) {
       body.amount *= -1;
     }
