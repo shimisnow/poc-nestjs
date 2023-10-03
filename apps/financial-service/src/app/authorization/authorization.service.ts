@@ -11,6 +11,13 @@ export class AuthorizationService {
     private accountRepository: Repository<AccountEntity>,
   ) {}
 
+  /**
+   * Verifies if an user can access an account
+   *
+   * @param userId User id
+   * @param accountId Account id
+   * @returns If the user can access the given account
+   */
   async userHasAccessToAccount(
     userId: string,
     accountId: number,
