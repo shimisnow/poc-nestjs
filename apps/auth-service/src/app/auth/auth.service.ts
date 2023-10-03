@@ -8,6 +8,7 @@ import {
 import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { SignUpSerializer } from './serializers/signup.serializer';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
@@ -61,9 +62,8 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload = {
-      username: user.username,
-      sub: user.userId,
+    const payload: UserPayload = {
+      userId: user.userId,
     };
 
     return {
