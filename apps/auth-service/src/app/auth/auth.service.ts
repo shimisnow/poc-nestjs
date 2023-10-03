@@ -64,6 +64,8 @@ export class AuthService {
 
     const payload: UserPayload = {
       userId: user.userId,
+      iat: 1696354363,
+      exp: 1917279163,
     };
 
     return {

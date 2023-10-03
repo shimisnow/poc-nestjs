@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   Injectable,
@@ -6,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { plainToClass } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
 import { UserPayload } from '../payloads/user.payload';
 
 @Injectable()
@@ -15,15 +18,38 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+
     if (!token) {
       throw new UnauthorizedException();
     }
+
+    let payload: UserPayload;
+
+    // JWT verification
     try {
-      const payload = await this.jwtService.verifyAsync(token);
-      request['user'] = payload as UserPayload;
-    } catch {
+      payload = await this.jwtService.verifyAsync(token);
+    } catch (error) {
       throw new UnauthorizedException();
     }
+
+    // verifies if the payload has the correct structure
+    try {
+      payload = plainToClass(UserPayload, payload);
+      await validateOrReject(payload);
+    } catch (errors) {
+      const messages = ['jwt payload errors'];
+
+      errors.forEach((error) => {
+        Object.keys(error.constraints).forEach((key) => {
+          messages.push(error.constraints[key]);
+        });
+      });
+
+      throw new BadRequestException(messages);
+    }
+
+    request['user'] = payload;
+
     return true;
   }
 
