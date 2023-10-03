@@ -1,27 +1,45 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import {
+  Controller,
+  ForbiddenException,
+  Get,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { BalanceService } from './balance.service';
 import { GetBalanceQueryDto } from './dtos/get-balance-query.dto';
 import { GetBalanceSerializer } from './serializers/get-balance.serializer';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
+  ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { AuthorizationService } from '../authorization/authorization.service';
+import { AuthGuard } from '@shared/authentication//guards/auth.guard';
+import { User } from '@shared/authentication/decorators/user.decorator';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { GetBalanceError400Serializer } from './serializers/get-balance-error-400.serializer';
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
 import { GetBalanceError404Serializer } from './serializers/get-balance-error-404.serializer';
+import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
+import { GetBalanceError403Serializer } from './serializers/get-balance-error-403.serializer';
 
 @Controller('balance')
 @ApiTags('balance')
 export class BalanceController {
-  constructor(private balanceService: BalanceService) {}
+  constructor(
+    private balanceService: BalanceService,
+    private authorizationService: AuthorizationService,
+  ) {}
 
   @Get()
+  @UseGuards(AuthGuard)
   @ApiOperation({
     summary: 'Retrieves information from a given account',
   })
@@ -32,6 +50,14 @@ export class BalanceController {
   @ApiBadRequestResponse({
     description: 'Error validating request input data',
     type: GetBalanceError400Serializer,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Error when unauthorized',
+    type: DefaultError401Serializer,
+  })
+  @ApiForbiddenResponse({
+    description: 'Error when the user has no access to the account',
+    type: GetBalanceError403Serializer,
   })
   @ApiNotFoundResponse({
     description: 'Error when the account does not exist',
@@ -47,8 +73,18 @@ export class BalanceController {
     type: DefaultError502Serializer,
   })
   async getBalance(
+    @User() user: UserPayload,
     @Query() query: GetBalanceQueryDto,
   ): Promise<GetBalanceSerializer> {
+    const hasAccess = await this.authorizationService.userHasAccessToAccount(
+      user.userId,
+      query.accountId,
+    );
+
+    if (hasAccess == false) {
+      throw new ForbiddenException();
+    }
+
     const balance = await this.balanceService.getBalance(query.accountId);
 
     return {
