@@ -7,9 +7,16 @@ import { TransactionEntity } from '@shared/database/financial/entities/transacti
 import { TransactionsRepository } from './repositories/transactions.repository';
 import { TransactionService } from './transaction.service';
 import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
-import { NotFoundException, PreconditionFailedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  NotFoundException,
+  PreconditionFailedException,
+} from '@nestjs/common';
 import { BalanceService } from '../balance/balance.service';
 import { BalancesRepository } from '../balance/repositories/balances.repository';
+import { AuthGuard } from '@shared/authentication/guards/auth.guard';
+import { AuthorizationService } from '../authorization/authorization.service';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
@@ -20,6 +27,22 @@ describe('TransactionController', () => {
       providers: [
         TransactionService,
         TransactionsRepository,
+        {
+          provide: AuthorizationService,
+          useValue: {
+            userHasAccessToAccount: (userId: string, accountId: number) => {
+              switch (userId) {
+                case '10f88251-d181-4255-92ed-d0d874e3a166':
+                  if (accountId == 4242) {
+                    return false;
+                  }
+                  return true;
+                default:
+                  return true;
+              }
+            },
+          },
+        },
         {
           provide: CACHE_MANAGER,
           useValue: {
@@ -56,7 +79,10 @@ describe('TransactionController', () => {
           useValue: {},
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
     controller = module.get<TransactionController>(TransactionController);
   });
@@ -66,9 +92,27 @@ describe('TransactionController', () => {
   });
 
   describe('transaction.controller -> createTransaction()', () => {
+    const user: UserPayload = {
+      userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+      iat: 1696354363,
+      exp: 1917279163,
+    };
+
+    test('user has no access to the account', async () => {
+      try {
+        await controller.createTransaction(user, {
+          accountId: 4242,
+          type: TransactionTypeEnum.DEBIT,
+          amount: 1200,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(ForbiddenException);
+      }
+    });
+
     test('account does not exists', async () => {
       try {
-        await controller.createTransaction({
+        await controller.createTransaction(user, {
           accountId: 9876,
           type: TransactionTypeEnum.DEBIT,
           amount: 1200,
@@ -80,7 +124,7 @@ describe('TransactionController', () => {
 
     test('account with insufficient balance', async () => {
       try {
-        await controller.createTransaction({
+        await controller.createTransaction(user, {
           accountId: 9001,
           type: TransactionTypeEnum.DEBIT,
           amount: 200,
@@ -91,7 +135,7 @@ describe('TransactionController', () => {
     });
 
     test('transaction created without errors', async () => {
-      const result = await controller.createTransaction({
+      const result = await controller.createTransaction(user, {
         accountId: 1234,
         type: TransactionTypeEnum.DEBIT,
         amount: 1200,

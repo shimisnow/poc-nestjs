@@ -8,7 +8,10 @@ import { BalanceEntity } from '@shared/database/financial/entities/balance.entit
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BalancesRepository } from './repositories/balances.repository';
 import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { AuthorizationService } from '../authorization/authorization.service';
+import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 
 describe('BalanceController', () => {
   let controller: BalanceController;
@@ -19,6 +22,22 @@ describe('BalanceController', () => {
       providers: [
         BalanceService,
         BalancesRepository,
+        {
+          provide: AuthorizationService,
+          useValue: {
+            userHasAccessToAccount: (userId: string, accountId: number) => {
+              switch (userId) {
+                case '10f88251-d181-4255-92ed-d0d874e3a166':
+                  if (accountId == 4242) {
+                    return false;
+                  }
+                  return true;
+                default:
+                  return true;
+              }
+            },
+          },
+        },
         {
           provide: CACHE_MANAGER,
           useValue: {
@@ -75,7 +94,10 @@ describe('BalanceController', () => {
           },
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(AuthGuard)
+      .useValue({ canActivate: jest.fn(() => true) })
+      .compile();
 
     controller = module.get<BalanceController>(BalanceController);
   });
@@ -85,21 +107,35 @@ describe('BalanceController', () => {
   });
 
   describe('balance.controller -> getBalance()', () => {
+    const user: UserPayload = {
+      userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+      iat: 1696354363,
+      exp: 1917279163,
+    };
+
+    test('user has no access to the account', async () => {
+      try {
+        await controller.getBalance(user, { accountId: 4242 });
+      } catch (error) {
+        expect(error).toBeInstanceOf(ForbiddenException);
+      }
+    });
+
     test('account does not exists', async () => {
       try {
-        await controller.getBalance({ accountId: 9876 });
+        await controller.getBalance(user, { accountId: 9876 });
       } catch (error) {
         expect(error).toBeInstanceOf(NotFoundException);
       }
     });
 
     test('get balance from cache', async () => {
-      const result = await controller.getBalance({ accountId: 2345 });
+      const result = await controller.getBalance(user, { accountId: 2345 });
       expect(result.balance).toBe(950);
     });
 
     test('get balance from database (no cache)', async () => {
-      const result = await controller.getBalance({ accountId: 1234 });
+      const result = await controller.getBalance(user, { accountId: 1234 });
       // 1200 from the mocked balance and 50 from the mocked transactions
       expect(result.balance).toBe(1250);
     });

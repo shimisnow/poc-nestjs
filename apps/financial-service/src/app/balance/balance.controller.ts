@@ -28,7 +28,7 @@ import { DefaultError500Serializer } from './serializers/default-error-500.seria
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
 import { GetBalanceError404Serializer } from './serializers/get-balance-error-404.serializer';
 import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
-import { GetBalanceError403Serializer } from './serializers/get-balance-error-403.serializer';
+import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
 
 @Controller('balance')
 @ApiTags('balance')
@@ -57,7 +57,7 @@ export class BalanceController {
   })
   @ApiForbiddenResponse({
     description: 'Error when the user has no access to the account',
-    type: GetBalanceError403Serializer,
+    type: DefaultError403Serializer,
   })
   @ApiNotFoundResponse({
     description: 'Error when the account does not exist',
