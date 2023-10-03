@@ -2,9 +2,13 @@ name: Unit Testing (all)
 
 on:
   push:
-    branches: [development]
+    branches:
+      - 'milestone-**'
+      - 'issue-**'
   pull_request:
-    branches: [development]
+    branches:
+      - development
+      - 'milestone-**'
 
 jobs:
   unit-testing:

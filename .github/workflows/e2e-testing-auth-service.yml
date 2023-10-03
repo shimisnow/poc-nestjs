@@ -2,7 +2,8 @@ name: E2E Testing (auth-service)
 
 on:
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 env:
   SERVICE_NAME: auth-service
