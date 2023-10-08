@@ -10,8 +10,8 @@ import { BalancesRepository } from './repositories/balances.repository';
 import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
-import { AuthorizationService } from '../authorization/authorization.service';
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
+import { UserService } from '../user/user.service';
 
 describe('BalanceController', () => {
   let controller: BalanceController;
@@ -23,9 +23,9 @@ describe('BalanceController', () => {
         BalanceService,
         BalancesRepository,
         {
-          provide: AuthorizationService,
+          provide: UserService,
           useValue: {
-            userHasAccessToAccount: (userId: string, accountId: number) => {
+            hasAccessToAccount: (userId: string, accountId: number) => {
               switch (userId) {
                 case '10f88251-d181-4255-92ed-d0d874e3a166':
                   if (accountId == 4242) {

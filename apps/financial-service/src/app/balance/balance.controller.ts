@@ -19,7 +19,6 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AuthorizationService } from '../authorization/authorization.service';
 import { AuthGuard } from '@shared/authentication//guards/auth.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
@@ -29,13 +28,14 @@ import { DefaultError502Serializer } from './serializers/default-error-502.seria
 import { GetBalanceError404Serializer } from './serializers/get-balance-error-404.serializer';
 import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
 import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
+import { UserService } from '../user/user.service';
 
 @Controller('balance')
 @ApiTags('balance')
 export class BalanceController {
   constructor(
     private balanceService: BalanceService,
-    private authorizationService: AuthorizationService,
+    private userService: UserService,
   ) {}
 
   @Get()
@@ -76,7 +76,7 @@ export class BalanceController {
     @User() user: UserPayload,
     @Query() query: GetBalanceQueryDto,
   ): Promise<GetBalanceSerializer> {
-    const hasAccess = await this.authorizationService.userHasAccessToAccount(
+    const hasAccess = await this.userService.hasAccessToAccount(
       user.userId,
       query.accountId,
     );
