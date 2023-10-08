@@ -15,8 +15,8 @@ import {
 import { BalanceService } from '../balance/balance.service';
 import { BalancesRepository } from '../balance/repositories/balances.repository';
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
-import { AuthorizationService } from '../authorization/authorization.service';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { UserService } from '../user/user.service';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
@@ -28,9 +28,9 @@ describe('TransactionController', () => {
         TransactionService,
         TransactionsRepository,
         {
-          provide: AuthorizationService,
+          provide: UserService,
           useValue: {
-            userHasAccessToAccount: (userId: string, accountId: number) => {
+            hasAccessToAccount: (userId: string, accountId: number) => {
               switch (userId) {
                 case '10f88251-d181-4255-92ed-d0d874e3a166':
                   if (accountId == 4242) {
