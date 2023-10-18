@@ -29,16 +29,16 @@ import { CreateTransactionError412Serializer } from './serializers/create-transa
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
-import { AuthorizationService } from '../authorization/authorization.service';
 import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
 import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
+import { UserService } from '../user/user.service';
 
 @Controller('transaction')
 @ApiTags('transaction')
 export class TransactionController {
   constructor(
     private transactionService: TransactionService,
-    private authorizationService: AuthorizationService,
+    private userService: UserService,
   ) {}
 
   @Post()
@@ -85,7 +85,7 @@ export class TransactionController {
     @User() user: UserPayload,
     @Body() body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
-    const hasAccess = await this.authorizationService.userHasAccessToAccount(
+    const hasAccess = await this.userService.hasAccessToAccount(
       user.userId,
       body.accountId,
     );

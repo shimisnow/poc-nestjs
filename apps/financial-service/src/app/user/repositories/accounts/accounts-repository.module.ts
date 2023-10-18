@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AuthorizationService } from './authorization.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountEntity } from '@shared/database/financial/entities/account.entity';
+import { AccountsRepository } from './accounts.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([AccountEntity])],
-  providers: [AuthorizationService],
-  exports: [AuthorizationService],
+  providers: [AccountsRepository],
+  exports: [AccountsRepository],
 })
-export class AuthorizationModule {}
+export class AccountsRepositoryModule {}

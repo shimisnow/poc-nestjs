@@ -1,15 +1,17 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizationService } from './authorization.service';
+import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { AccountEntity } from '@shared/database/financial/entities/account.entity';
+import { AccountsRepository } from './repositories/accounts/accounts.repository';
 
-describe('AuthorizationService', () => {
-  let service: AuthorizationService;
+describe('UserService', () => {
+  let service: UserService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AuthorizationService,
+        UserService,
+        AccountsRepository,
         {
           provide: getRepositoryToken(AccountEntity),
           useValue: {
@@ -33,16 +35,16 @@ describe('AuthorizationService', () => {
       ],
     }).compile();
 
-    service = module.get<AuthorizationService>(AuthorizationService);
+    service = module.get<UserService>(UserService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
 
-  describe('authorization.service -> userHasAccessToAccount()', () => {
+  describe('user.service -> hasAccessToAccount()', () => {
     test('user has no access to the account', async () => {
-      const result = await service.userHasAccessToAccount(
+      const result = await service.hasAccessToAccount(
         '44a6eaeb-fcaa-4889-9ddc-9e6b86db7351',
         9091,
       );
@@ -51,7 +53,7 @@ describe('AuthorizationService', () => {
     });
 
     test('user has access to the account', async () => {
-      const result = await service.userHasAccessToAccount(
+      const result = await service.hasAccessToAccount(
         '44a6eaeb-fcaa-4889-9ddc-9e6b86db7351',
         9090,
       );
@@ -60,7 +62,7 @@ describe('AuthorizationService', () => {
     });
 
     test('database error', async () => {
-      const result = await service.userHasAccessToAccount(
+      const result = await service.hasAccessToAccount(
         '44a6eaeb-fcaa-4889-9ddc-9e6b86db4444',
         1445,
       );
