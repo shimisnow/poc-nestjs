@@ -1,0 +1,27 @@
+# How to deploy
+
+## Building the docker images
+
+First, it is necessary to build the Docker images for each service with the commands:
+
+```sh
+docker compose build base-image
+docker compose build auth-service
+docker compose build financial-service
+```
+
+`base-image` is a image with the node_modules folder. It is generate only one time to be used in all services build.
+
+The services can be started with:
+
+```sh
+docker compose --env-file docker.env up -d auth-service financial-service
+```
+
+The `docker.env` has environment configs for deploy with docker compose. DO NOT use this method in production.
+
+The auxiliary services can be launched with:
+
+```sh
+docker compose up -d database-authentication database-financial redis
+```
