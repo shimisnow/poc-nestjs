@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 
@@ -15,6 +15,11 @@ import { UserAuthEntity } from '@shared/database/authentication/entities/user-au
       password: process.env.DATABASE_AUTH_PASSWORD,
       database: process.env.DATABASE_AUTH_DBNAME,
       entities: [UserAuthEntity],
+    }),
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET_KEY,
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
   ],
 })

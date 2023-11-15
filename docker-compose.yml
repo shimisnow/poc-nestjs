@@ -1,14 +1,66 @@
 version: '3.8'
 
+networks:
+  poc-nestjs:
+    driver: bridge
+
 services:
+  base-image:
+    image: poc-nestjs-base:latest
+    build: .
+
+  auth-service:
+    image: poc-nestjs-auth-service:latest
+    build:
+      context: .
+      dockerfile: apps/auth-service/Dockerfile
+    container_name: poc-nestjs-auth-service
+    environment:
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+      DATABASE_AUTH_HOST: ${DATABASE_AUTH_HOST}
+      DATABASE_AUTH_PORT: ${DATABASE_AUTH_PORT}
+      DATABASE_AUTH_USERNAME: ${DATABASE_AUTH_USERNAME}
+      DATABASE_AUTH_PASSWORD: ${DATABASE_AUTH_PASSWORD}
+      DATABASE_AUTH_DBNAME: ${DATABASE_AUTH_DBNAME}
+      AUTH_SERVICE_BUILD_OPENAPI: ${AUTH_SERVICE_BUILD_OPENAPI}
+    networks:
+      - poc-nestjs
+    ports:
+      - ${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}
+
+  financial-service:
+    image: poc-nestjs-financial-service:latest
+    build:
+      context: .
+      dockerfile: apps/financial-service/Dockerfile
+    container_name: poc-nestjs-financial-service
+    environment:
+      FINANCIAL_SERVICE_PORT: ${FINANCIAL_SERVICE_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      DATABASE_FINANCIAL_HOST: ${DATABASE_FINANCIAL_HOST}
+      DATABASE_FINANCIAL_PORT: ${DATABASE_FINANCIAL_PORT}
+      DATABASE_FINANCIAL_USERNAME: ${DATABASE_FINANCIAL_USERNAME}
+      DATABASE_FINANCIAL_PASSWORD: ${DATABASE_FINANCIAL_PASSWORD}
+      DATABASE_FINANCIAL_DBNAME: ${DATABASE_FINANCIAL_DBNAME}
+      FINANCIAL_SERVICE_BUILD_OPENAPI: ${FINANCIAL_SERVICE_BUILD_OPENAPI}
+    networks:
+      - poc-nestjs
+    ports:
+      - ${FINANCIAL_SERVICE_PORT}:${FINANCIAL_SERVICE_PORT}
+
   redis:
     image: redis:7.2.1
+    networks:
+      poc-nestjs:
     restart: always
     ports:
       - ${REDIS_PORT}:6379
 
   redis-ui:
     image: patrikx3/p3x-redis-ui:2023.10.246
+    networks:
+      - poc-nestjs
     ports:
       - 7843:7843
     volumes:
@@ -21,6 +73,8 @@ services:
       POSTGRES_USER: ${DATABASE_AUTH_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_AUTH_PASSWORD}
       POSTGRES_DB: ${DATABASE_AUTH_DBNAME}
+    networks:
+      - poc-nestjs
     ports:
       - ${DATABASE_AUTH_PORT}:5432
     volumes:
@@ -33,6 +87,8 @@ services:
       POSTGRES_USER: ${DATABASE_FINANCIAL_USERNAME}
       POSTGRES_PASSWORD: ${DATABASE_FINANCIAL_PASSWORD}
       POSTGRES_DB: ${DATABASE_FINANCIAL_DBNAME}
+    networks:
+      - poc-nestjs
     ports:
       - ${DATABASE_FINANCIAL_PORT}:5432
     volumes:
