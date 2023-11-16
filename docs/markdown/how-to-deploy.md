@@ -1,6 +1,6 @@
 # How to deploy
 
-## Building the docker images
+## Container images (Docker)
 
 First, it is necessary to build the Docker images for each service with the commands:
 
@@ -11,6 +11,8 @@ docker compose build financial-service
 ```
 
 `base-image` is a image with the node_modules folder. It is generate only one time to be used in all services build.
+
+## Deploy with Docker
 
 The services can be started with:
 
