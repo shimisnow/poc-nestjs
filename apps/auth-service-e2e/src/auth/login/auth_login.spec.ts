@@ -5,6 +5,9 @@ import { GenericContainer, Network, StartedNetwork, StartedTestContainer, Wait }
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 
 describe('POST /auth/login', () => {
+  const DOCKER_IMAGE_BUILD_NAME = 'poc-nestjs-node';
+  const DOCKER_POSTGRES_TAG = 'postgres:15.2';
+
   let dockerNetwork: StartedNetwork;
   let containerDatabase: StartedPostgreSqlContainer;
   let containerCode: StartedTestContainer;
@@ -17,12 +20,13 @@ describe('POST /auth/login', () => {
   beforeAll(async () => {
     dockerNetwork = await new Network().start();
 
-    containerDatabase = await new PostgreSqlContainer('postgres:15.2')
+    containerDatabase = await new PostgreSqlContainer(DOCKER_POSTGRES_TAG)
       .withNetwork(dockerNetwork)
       .withNetworkAliases('database-authentication')
       .withDatabase(process.env.DATABASE_AUTH_DBNAME)
       .withUsername(process.env.DATABASE_AUTH_USERNAME)
       .withPassword(process.env.DATABASE_AUTH_PASSWORD)
+      // copy SQL files to populate the database
       .withCopyDirectoriesToContainer([{
         source: './deployment/database/authentication',
         target: '/docker-entrypoint-initdb.d',
@@ -32,7 +36,7 @@ describe('POST /auth/login', () => {
 
     const buildContainerCode = await GenericContainer
       .fromDockerfile('./')
-      .build('poc-nestjs-node', { deleteOnExit: false });
+      .build(DOCKER_IMAGE_BUILD_NAME, { deleteOnExit: false });
 
     containerCode = await buildContainerCode
       .withNetwork(dockerNetwork)
