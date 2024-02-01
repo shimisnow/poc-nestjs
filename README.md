@@ -1,6 +1,6 @@
 # POC NestJS
 
-This project explores the power of NestJS and serves as a demonstration of how to architect and develop a scalable backend application. The PoC showcases best practices for creating modules, controllers, services, and integrating with database and cache manager.
+This project explores the power of NestJS and serves as a demonstration of how to architect and develop a scalable backend API application. The PoC showcases best practices for creating modules, controllers, services, and integrating with database and cache manager.
 
 Key Features:
 
@@ -9,8 +9,9 @@ Key Features:
 - Integrates with postgres for data storage.
 - Integrates with redis for cache.
 - Shows how to use OpenAPI documentation.
+- Shows how to test with Jest, Supertest and Testcontainers.
 
-## Resolved problems
+## Solved problems
 
 1. [How to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 
@@ -21,7 +22,7 @@ Key Features:
 - Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
 - Database: Postgres (SQL), [TypeORM](https://typeorm.io/)
 - Cache: Redis
-- Tests: Unit testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest))
+- Tests: Unit testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/))
 - Documentation: [OpenAPI/Swagger](https://www.openapis.org/)
 - Others: Docker, Docker Compose, Shell, Linux
 
