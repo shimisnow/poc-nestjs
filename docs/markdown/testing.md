@@ -16,14 +16,10 @@ The `*.spec.ts` files can be found at `/apps/SERVICE_NAME/app/MODULE_NAME` with 
 
 ## e2e testing
 
-The project unit testing is done with Jest and Supertest and can be performed with the command:
+The project e2e testing is done with Jest, Supertest and (Testcontainers)[https://testcontainers.com/] and can be performed with the command:
 
 ```sh
 npx nx e2e SERVICE_NAME
 ```
 
-Before the test it is necessary to initialize the database with:
-
-```sh
-docker compose up -d database-authentication
-```
+The tests require Docker, but it is not necessary to start the dependecies (database, cache). All external dependencies will be started up by Testcontainers.
