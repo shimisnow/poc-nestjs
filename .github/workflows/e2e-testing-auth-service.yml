@@ -3,6 +3,7 @@ name: E2E Testing (auth-service)
 on:
   pull_request:
     branches:
+      - staging
       - main
 
 env:
@@ -12,33 +13,8 @@ jobs:
   e2e-testing:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15.2
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 1234567890
-          POSTGRES_DB: authentication
-        ports:
-          - 5433:5432
-
     steps:
       - uses: actions/checkout@v3
-
-      - name: Create directories inside container
-        run: docker exec ${{ job.services.postgres.id }} mkdir -p /tmp/e2e-$SERVICE_NAME/database-data
-
-      - name: Copy database files to container
-        run: 'docker cp ${{ github.workspace }}/deployment/database/authentication/ ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/database-data'
-
-      - name: Copy shell script files to container
-        run: 'docker cp ${{ github.workspace }}/deployment/e2e/$SERVICE_NAME/import-database-files.sh ${{ job.services.postgres.id }}:/tmp/e2e-$SERVICE_NAME/'
-
-      - name: Set file permissions
-        run: docker exec ${{ job.services.postgres.id }} chmod +x /tmp/e2e-$SERVICE_NAME/import-database-files.sh
-
-      - name: Database setup
-        run: docker exec ${{ job.services.postgres.id }} /tmp/e2e-$SERVICE_NAME/import-database-files.sh
 
       - name: Use Node.js
         uses: actions/setup-node@v3
@@ -57,9 +33,7 @@ jobs:
         uses: falti/dotenv-action@v1.0.4
 
       - name: E2E tests for $SERVICE_NAME
-        run: |
-          node dist/apps/$SERVICE_NAME/main.js &
-          npx nx e2e $SERVICE_NAME-e2e
+        run: npx nx e2e $SERVICE_NAME-e2e
         env:
           AUTH_SERVICE_PORT: ${{ steps.dotenv.outputs.AUTH_SERVICE_PORT }}
           DATABASE_AUTH_HOST: ${{ steps.dotenv.outputs.DATABASE_AUTH_HOST }}

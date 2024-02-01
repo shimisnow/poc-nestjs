@@ -3,6 +3,7 @@ import { Cache } from 'cache-manager';
 import { BalancesRepository } from './repositories/balances.repository';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CachedBalanceSerializer } from './serializers/cached-balance.serializer';
+import { GetBalanceSerializer } from './serializers/get-balance.serializer';
 
 @Injectable()
 export class BalanceService {
@@ -16,16 +17,19 @@ export class BalanceService {
    * Get the account balance FROM CACHE if it exists. If not, calculate and retrieve it from database.
    *
    * @param accountId Desired account balance
-   * @returns Account balance
+   * @returns Account balance and a flag for value from cache
    */
-  async getBalance(accountId: number): Promise<number> {
+  async getBalance(accountId: number): Promise<GetBalanceSerializer> {
     const cacheKey = `balance-acc-${accountId}`;
 
     const cachedData =
       await this.cacheService.get<CachedBalanceSerializer>(cacheKey);
 
     if (cachedData !== null) {
-      return cachedData.balance;
+      return {
+        balance: cachedData.balance,
+        cached: true,
+      };
     }
 
     const calculatedBalance =
@@ -36,7 +40,10 @@ export class BalanceService {
       updateAt: new Date(),
     });
 
-    return calculatedBalance;
+    return {
+      balance: calculatedBalance,
+      cached: false,
+    };
   }
 
   /**

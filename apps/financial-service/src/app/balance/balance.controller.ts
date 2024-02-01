@@ -41,7 +41,7 @@ export class BalanceController {
   @Get()
   @UseGuards(AuthGuard)
   @ApiOperation({
-    summary: 'Retrieves information from a given account',
+    summary: 'Retrieves balance information from a given account',
   })
   @ApiOkResponse({
     description: 'Information about the account balance',
@@ -85,10 +85,6 @@ export class BalanceController {
       throw new ForbiddenException();
     }
 
-    const balance = await this.balanceService.getBalance(query.accountId);
-
-    return {
-      balance,
-    } as GetBalanceSerializer;
+    return await this.balanceService.getBalance(query.accountId);
   }
 }
