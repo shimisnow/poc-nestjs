@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Get,
   Query,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { BalanceService } from './balance.service';
@@ -12,6 +13,7 @@ import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiHeader,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -19,6 +21,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Response } from 'express';
 import { AuthGuard } from '@shared/authentication//guards/auth.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
@@ -40,6 +43,10 @@ export class BalanceController {
 
   @Get()
   @UseGuards(AuthGuard)
+  @ApiHeader({
+    name: 'X-Balance-Cache',
+    description: 'Flag indicating if the value was retrieved from cache',
+  })
   @ApiOperation({
     summary: 'Retrieves information from a given account',
   })
@@ -75,6 +82,7 @@ export class BalanceController {
   async getBalance(
     @User() user: UserPayload,
     @Query() query: GetBalanceQueryDto,
+    @Res() res: Response,
   ): Promise<GetBalanceSerializer> {
     const hasAccess = await this.userService.hasAccessToAccount(
       user.userId,
@@ -85,10 +93,16 @@ export class BalanceController {
       throw new ForbiddenException();
     }
 
-    const balance = await this.balanceService.getBalance(query.accountId);
+    const balanceResult = await this.balanceService.getBalance(query.accountId);
 
-    return {
-      balance,
-    } as GetBalanceSerializer;
+    res.header({
+      'X-Balance-Cache': balanceResult.cached,
+    });
+
+    res.json({
+      balance: balanceResult.balance,
+    });
+
+    return;
   }
 }

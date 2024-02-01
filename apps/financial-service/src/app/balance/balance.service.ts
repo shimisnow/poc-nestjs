@@ -16,16 +16,19 @@ export class BalanceService {
    * Get the account balance FROM CACHE if it exists. If not, calculate and retrieve it from database.
    *
    * @param accountId Desired account balance
-   * @returns Account balance
+   * @returns Account balance and a flag for value from cache
    */
-  async getBalance(accountId: number): Promise<number> {
+  async getBalance(accountId: number): Promise<{ balance: number, cached: boolean }> {
     const cacheKey = `balance-acc-${accountId}`;
 
     const cachedData =
       await this.cacheService.get<CachedBalanceSerializer>(cacheKey);
 
     if (cachedData !== null) {
-      return cachedData.balance;
+      return {
+        balance: cachedData.balance,
+        cached: true,
+      };
     }
 
     const calculatedBalance =
@@ -36,7 +39,10 @@ export class BalanceService {
       updateAt: new Date(),
     });
 
-    return calculatedBalance;
+    return {
+      balance: calculatedBalance,
+      cached: false,
+    };
   }
 
   /**
