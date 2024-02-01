@@ -8,7 +8,7 @@ import { BalanceEntity } from '@shared/database/financial/entities/balance.entit
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BalancesRepository } from './repositories/balances.repository';
 import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException, Response } from '@nestjs/common';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { UserService } from '../user/user.service';
@@ -132,12 +132,14 @@ describe('BalanceController', () => {
     test('get balance from cache', async () => {
       const result = await controller.getBalance(user, { accountId: 2345 });
       expect(result.balance).toBe(950);
+      expect(result.cached).toBeTruthy();
     });
 
     test('get balance from database (no cache)', async () => {
       const result = await controller.getBalance(user, { accountId: 1234 });
       // 1200 from the mocked balance and 50 from the mocked transactions
       expect(result.balance).toBe(1250);
+      expect(result.cached).toBeFalsy();
     });
   });
 });

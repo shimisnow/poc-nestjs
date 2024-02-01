@@ -100,13 +100,13 @@ describe('BalanceService', () => {
 
     test('get balance from cache', async () => {
       const result = await service.getBalance(2345);
-      expect(result).toBe(950);
+      expect(result.balance).toBe(950);
     });
 
     test('get balance from database (no cache)', async () => {
       const result = await service.getBalance(1234);
       // 1200 from the mocked balance and 50 from the mocked transactions
-      expect(result).toBe(1250);
+      expect(result.balance).toBe(1250);
     });
   });
 
