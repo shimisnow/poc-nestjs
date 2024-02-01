@@ -3,6 +3,7 @@ import { Cache } from 'cache-manager';
 import { BalancesRepository } from './repositories/balances.repository';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { CachedBalanceSerializer } from './serializers/cached-balance.serializer';
+import { GetBalanceSerializer } from './serializers/get-balance.serializer';
 
 @Injectable()
 export class BalanceService {
@@ -18,7 +19,7 @@ export class BalanceService {
    * @param accountId Desired account balance
    * @returns Account balance and a flag for value from cache
    */
-  async getBalance(accountId: number): Promise<{ balance: number, cached: boolean }> {
+  async getBalance(accountId: number): Promise<GetBalanceSerializer> {
     const cacheKey = `balance-acc-${accountId}`;
 
     const cachedData =
