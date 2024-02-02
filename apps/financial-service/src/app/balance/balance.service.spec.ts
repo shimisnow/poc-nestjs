@@ -24,10 +24,13 @@ describe('BalanceService', () => {
             hasAccessToAccount: (userId: string, accountId: number) => {
               switch (userId) {
                 case '10f88251-d181-4255-92ed-d0d874e3a166':
-                  if (accountId == 4242) {
-                    return false;
+                  switch (accountId) {
+                    case 1234:
+                    case 2345:
+                      return true;
+                    default:
+                      return false;
                   }
-                  return true;
                 default:
                   return true;
               }
@@ -106,7 +109,7 @@ describe('BalanceService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('balance.service -> getBalance()', () => {
+  /* describe('balance.service -> getBalance()', () => {
     test('account does not exists', async () => {
       try {
         await service.getBalance(9876, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
@@ -156,6 +159,71 @@ describe('BalanceService', () => {
       const result = await service.getBalanceIgnoringCache(2345, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
       // 1200 from the mocked balance and 50 from the mocked transactions
       expect(result).toBe(550);
+    });
+  }); */
+
+  describe('balance.service -> getBalance()', () => {
+    describe('account ownership and existence', () => {
+      test('user does not have access rights to the account', async () => {
+        try {
+          await service.getBalance(4242, '10f88251-d181-4255-92ed-d0d874e3a166');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
+
+      // there is no way to know if the account does no exists or if the user has no access
+      // the error will be the same
+      test('account does not exists', async () => {
+        try {
+          await service.getBalance(9876, '10f88251-d181-4255-92ed-d0d874e3a166');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
+    });
+
+    describe('balance retrieval', () => {
+      test('get balance from cache', async () => {
+        const result = await service.getBalance(2345, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
+        expect(result.balance).toBe(950);
+      });
+  
+      test('get balance from database (no cache)', async () => {
+        const result = await service.getBalance(1234, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
+        // 1200 from the mocked balance and 50 from the mocked transactions
+        expect(result.balance).toBe(1250);
+      });
+    });
+  });
+
+  describe('balance.service -> getBalanceIgnoringCache()', () => {
+    describe('account ownership and existence', () => {
+      test('user does not have access rights to the account', async () => {
+        try {
+          await service.getBalanceIgnoringCache(4242, '10f88251-d181-4255-92ed-d0d874e3a166');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
+
+      // there is no way to know if the account does no exists or if the user has no access
+      // the error will be the same
+      test('account does not exists', async () => {
+        try {
+          await service.getBalanceIgnoringCache(9876, '10f88251-d181-4255-92ed-d0d874e3a166');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
+    });
+
+    describe('balance retrieval', () => {
+      test('get balance ignoring cache', async () => {
+        const result = await service.getBalanceIgnoringCache(2345, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
+        // 1200 from the mocked balance and 50 from the mocked transactions
+        expect(result).toBe(550);
+      });
     });
   });
 });

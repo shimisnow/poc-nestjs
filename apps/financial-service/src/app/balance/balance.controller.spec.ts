@@ -90,7 +90,6 @@ describe('BalanceController', () => {
                     default:
                       return false;
                   }
-                  return false;
                 default:
                   return true;
               }
