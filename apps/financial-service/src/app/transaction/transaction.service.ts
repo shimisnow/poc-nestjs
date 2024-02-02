@@ -26,8 +26,10 @@ export class TransactionService {
 
   /**
    * Register a transaction into database.
-   * This function deletes the account balance cache
+   * This function deletes the account balance cache.
+   * This function verify if the user is the account owner.
    *
+   * @param userId Account owner
    * @param body Transaction information
    * @returns Information about the created transaction
    * @throws BadGatewayException database error
@@ -35,11 +37,13 @@ export class TransactionService {
    * @throws PreconditionFailedException insufficient account balance
    */
   async createTransaction(
+    userId: string,
     body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
     if (body.type == TransactionTypeEnum.DEBIT) {
       const balance = await this.balanceService.getBalanceIgnoringCache(
         body.accountId,
+        userId,
       );
       // using + because amount will be a negative number
       if (balance + body.amount < 0) {

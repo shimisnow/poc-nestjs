@@ -31,14 +31,12 @@ import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
 import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
-import { UserService } from '../user/user.service';
 
 @Controller('transaction')
 @ApiTags('transaction')
 export class TransactionController {
   constructor(
     private transactionService: TransactionService,
-    private userService: UserService,
   ) {}
 
   @Post()
@@ -85,19 +83,10 @@ export class TransactionController {
     @User() user: UserPayload,
     @Body() body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
-    const hasAccess = await this.userService.hasAccessToAccount(
-      user.userId,
-      body.accountId,
-    );
-
-    if (hasAccess == false) {
-      throw new ForbiddenException();
-    }
-
     if (body.type == TransactionTypeEnum.DEBIT) {
       body.amount *= -1;
     }
 
-    return await this.transactionService.createTransaction(body);
+    return await this.transactionService.createTransaction(user.userId, body);
   }
 }

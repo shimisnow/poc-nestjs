@@ -23,22 +23,6 @@ describe('BalanceController', () => {
         BalanceService,
         BalancesRepository,
         {
-          provide: UserService,
-          useValue: {
-            hasAccessToAccount: (userId: string, accountId: number) => {
-              switch (userId) {
-                case '10f88251-d181-4255-92ed-d0d874e3a166':
-                  if (accountId == 4242) {
-                    return false;
-                  }
-                  return true;
-                default:
-                  return true;
-              }
-            },
-          },
-        },
-        {
           provide: CACHE_MANAGER,
           useValue: {
             get: (key) => {
@@ -91,6 +75,22 @@ describe('BalanceController', () => {
                 };
               },
             })),
+          },
+        },
+        {
+          provide: UserService,
+          useValue: {
+            hasAccessToAccount: (userId: string, accountId: number) => {
+              switch (userId) {
+                case '10f88251-d181-4255-92ed-d0d874e3a166':
+                  if (accountId == 4242) {
+                    return false;
+                  }
+                  return true;
+                default:
+                  return true;
+              }
+            },
           },
         },
       ],
