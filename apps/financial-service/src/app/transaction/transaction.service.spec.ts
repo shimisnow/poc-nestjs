@@ -6,6 +6,7 @@ import { TransactionEntity } from '@shared/database/financial/entities/transacti
 import { TransactionsRepository } from './repositories/transactions.repository';
 import { BalanceService } from '../balance/balance.service';
 import { BalancesRepository } from '../balance/repositories/balances.repository';
+import { UserService } from '../user/user.service';
 
 describe('TransactionService', () => {
   let service: TransactionService;
@@ -28,6 +29,10 @@ describe('TransactionService', () => {
           provide: getRepositoryToken(TransactionEntity),
           useValue: {},
         },
+        {
+          provide: UserService,
+          useValue: {},
+        }
       ],
     }).compile();
 

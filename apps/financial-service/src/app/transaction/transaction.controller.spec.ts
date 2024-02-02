@@ -17,6 +17,7 @@ import { BalancesRepository } from '../balance/repositories/balances.repository'
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { UserService } from '../user/user.service';
+import { BalanceEntity } from '@shared/database/financial/entities/balance.entity';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
@@ -33,10 +34,13 @@ describe('TransactionController', () => {
             hasAccessToAccount: (userId: string, accountId: number) => {
               switch (userId) {
                 case '10f88251-d181-4255-92ed-d0d874e3a166':
-                  if (accountId == 4242) {
-                    return false;
+                  switch (accountId) {
+                    case 1234:
+                    case 2345:
+                      return true;
+                    default:
+                      return false;
                   }
-                  return true;
                 default:
                   return true;
               }
@@ -66,11 +70,17 @@ describe('TransactionController', () => {
         {
           provide: BalanceService,
           useValue: {
-            getBalanceIgnoringCache: (accountId: number) => {
-              switch (accountId) {
-                case 9001:
-                  return 100;
-              }
+            getBalanceIgnoringCache: (accountId: number, userId: string) => {
+              switch (userId) {
+                case '10f88251-d181-4255-92ed-d0d874e3a166':
+                  switch (accountId) {
+                    case 1234:
+                      return 2000;
+                    case 2345:
+                      return 100;
+                  }
+                }
+              throw new ForbiddenException();
             },
           },
         },
@@ -98,51 +108,98 @@ describe('TransactionController', () => {
       exp: 1917279163,
     };
 
-    test('user has no access to the account', async () => {
-      try {
-        await controller.createTransaction(user, {
-          accountId: 4242,
-          type: TransactionTypeEnum.DEBIT,
-          amount: 1200,
+    describe('account ownership and existence', () => {
+      describe('debit', () => {
+        test('user does not have access rights to the account', async () => {
+          try {
+            await controller.createTransaction(user, {
+              accountId: 4242,
+              type: TransactionTypeEnum.DEBIT,
+              amount: 1200,
+            });
+          } catch (error) {
+            expect(error).toBeInstanceOf(ForbiddenException);
+          }
         });
-      } catch (error) {
-        expect(error).toBeInstanceOf(ForbiddenException);
-      }
-    });
-
-    test('account does not exists', async () => {
-      try {
-        await controller.createTransaction(user, {
-          accountId: 9876,
-          type: TransactionTypeEnum.DEBIT,
-          amount: 1200,
+    
+        test('account does not exists', async () => {
+          try {
+            await controller.createTransaction(user, {
+              accountId: 9876,
+              type: TransactionTypeEnum.DEBIT,
+              amount: 1200,
+            });
+          } catch (error) {
+            expect(error).toBeInstanceOf(ForbiddenException);
+          }
         });
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException);
-      }
-    });
-
-    test('account with insufficient balance', async () => {
-      try {
-        await controller.createTransaction(user, {
-          accountId: 9001,
-          type: TransactionTypeEnum.DEBIT,
-          amount: 200,
-        });
-      } catch (error) {
-        expect(error).toBeInstanceOf(PreconditionFailedException);
-      }
-    });
-
-    test('transaction created without errors', async () => {
-      const result = await controller.createTransaction(user, {
-        accountId: 1234,
-        type: TransactionTypeEnum.DEBIT,
-        amount: 1200,
       });
 
-      expect(result).toHaveProperty('transactionId');
-      expect(result.transactionId).toBe(42);
+      describe('credit', () => {
+        test('user does not have access rights to the account', async () => {
+          try {
+            await controller.createTransaction(user, {
+              accountId: 4242,
+              type: TransactionTypeEnum.CREDIT,
+              amount: 1200,
+            });
+          } catch (error) {
+            expect(error).toBeInstanceOf(ForbiddenException);
+          }
+        });
+    
+        test('account does not exists', async () => {
+          try {
+            await controller.createTransaction(user, {
+              accountId: 9876,
+              type: TransactionTypeEnum.CREDIT,
+              amount: 1200,
+            });
+          } catch (error) {
+            expect(error).toBeInstanceOf(ForbiddenException);
+          }
+        });
+      });
+    });
+
+    describe('transaction creation', () => {
+      describe('debit', () => {
+        test('account with insufficient balance', async () => {
+          try {
+            await controller.createTransaction(user, {
+              accountId: 2345,
+              type: TransactionTypeEnum.DEBIT,
+              amount: 200,
+            });
+          } catch (error) {
+            expect(error).toBeInstanceOf(PreconditionFailedException);
+          }
+        });
+    
+        test('transaction created without errors', async () => {
+          const result = await controller.createTransaction(user, {
+            accountId: 1234,
+            type: TransactionTypeEnum.DEBIT,
+            amount: 1200,
+          });
+    
+          expect(result).toHaveProperty('transactionId');
+          expect(result.transactionId).toBe(42);
+        });
+      });
+
+      describe('credit', () => {
+        test('transaction created without errors', async () => {
+          const result = await controller.createTransaction(user, {
+            accountId: 1234,
+            type: TransactionTypeEnum.CREDIT,
+            amount: 1200,
+          });
+    
+          expect(result).toHaveProperty('transactionId');
+          expect(result.transactionId).toBe(42);
+        });
+      });
     });
   });
 });

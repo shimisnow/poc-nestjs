@@ -1,5 +1,6 @@
 import {
   BadGatewayException,
+  ForbiddenException,
   Inject,
   Injectable,
   NotFoundException,
@@ -14,6 +15,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { AccountEntity } from '@shared/database/financial/entities/account.entity';
 import { BalanceService } from '../balance/balance.service';
 import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class TransactionService {
@@ -22,12 +24,15 @@ export class TransactionService {
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private transactionsRepository: TransactionsRepository,
     private balanceService: BalanceService,
+    private userService: UserService,
   ) {}
 
   /**
    * Register a transaction into database.
-   * This function deletes the account balance cache
+   * This function deletes the account balance cache.
+   * This function verify if the user is the account owner.
    *
+   * @param userId Account owner
    * @param body Transaction information
    * @returns Information about the created transaction
    * @throws BadGatewayException database error
@@ -35,15 +40,28 @@ export class TransactionService {
    * @throws PreconditionFailedException insufficient account balance
    */
   async createTransaction(
+    userId: string,
     body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
     if (body.type == TransactionTypeEnum.DEBIT) {
       const balance = await this.balanceService.getBalanceIgnoringCache(
         body.accountId,
+        userId,
       );
       // using + because amount will be a negative number
       if (balance + body.amount < 0) {
         throw new PreconditionFailedException('insufficient account balance');
+      }
+    // transaction type is CREDIT, the account ownership needs to be checked
+    // it is not necessary to check for DEBIT because getBalanceIgnoringCache() does it
+    } else {
+      const hasAccess = await this.userService.hasAccessToAccount(
+        userId,
+        body.accountId,
+      );
+  
+      if (hasAccess == false) {
+        throw new ForbiddenException();
       }
     }
 

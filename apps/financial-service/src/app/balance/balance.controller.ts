@@ -1,6 +1,5 @@
 import {
   Controller,
-  ForbiddenException,
   Get,
   Query,
   UseGuards,
@@ -28,14 +27,12 @@ import { DefaultError502Serializer } from './serializers/default-error-502.seria
 import { GetBalanceError404Serializer } from './serializers/get-balance-error-404.serializer';
 import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
 import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
-import { UserService } from '../user/user.service';
 
 @Controller('balance')
 @ApiTags('balance')
 export class BalanceController {
   constructor(
     private balanceService: BalanceService,
-    private userService: UserService,
   ) {}
 
   @Get()
@@ -76,15 +73,6 @@ export class BalanceController {
     @User() user: UserPayload,
     @Query() query: GetBalanceQueryDto,
   ): Promise<GetBalanceSerializer> {
-    const hasAccess = await this.userService.hasAccessToAccount(
-      user.userId,
-      query.accountId,
-    );
-
-    if (hasAccess == false) {
-      throw new ForbiddenException();
-    }
-
-    return await this.balanceService.getBalance(query.accountId);
+    return await this.balanceService.getBalance(query.accountId, user.userId);
   }
 }
