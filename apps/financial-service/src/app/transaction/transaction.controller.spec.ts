@@ -101,61 +101,6 @@ describe('TransactionController', () => {
     expect(controller).toBeDefined();
   });
 
-  /* describe('transaction.controller -> createTransaction()', () => {
-    const user: UserPayload = {
-      userId: '10f88251-d181-4255-92ed-d0d874e3a166',
-      iat: 1696354363,
-      exp: 1917279163,
-    };
-
-    test('user has no access to the account', async () => {
-      try {
-        await controller.createTransaction(user, {
-          accountId: 4242,
-          type: TransactionTypeEnum.DEBIT,
-          amount: 1200,
-        });
-      } catch (error) {
-        expect(error).toBeInstanceOf(ForbiddenException);
-      }
-    });
-
-    test('account does not exists', async () => {
-      try {
-        await controller.createTransaction(user, {
-          accountId: 9876,
-          type: TransactionTypeEnum.DEBIT,
-          amount: 1200,
-        });
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException);
-      }
-    });
-
-    test('account with insufficient balance', async () => {
-      try {
-        await controller.createTransaction(user, {
-          accountId: 9001,
-          type: TransactionTypeEnum.DEBIT,
-          amount: 200,
-        });
-      } catch (error) {
-        expect(error).toBeInstanceOf(PreconditionFailedException);
-      }
-    });
-
-    test('transaction created without errors', async () => {
-      const result = await controller.createTransaction(user, {
-        accountId: 1234,
-        type: TransactionTypeEnum.DEBIT,
-        amount: 1200,
-      });
-
-      expect(result).toHaveProperty('transactionId');
-      expect(result.transactionId).toBe(42);
-    });
-  }); */
-
   describe('transaction.controller -> createTransaction()', () => {
     const user: UserPayload = {
       userId: '10f88251-d181-4255-92ed-d0d874e3a166',

@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  ForbiddenException,
   Post,
   UseGuards,
 } from '@nestjs/common';
