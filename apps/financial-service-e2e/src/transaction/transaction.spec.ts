@@ -190,6 +190,71 @@ describe('POST /transaction', () => {
 
   describe('transaction creation', () => {
     describe('debit', () => {
+      test('create transaction and clear cache', async () => {
+        const randomBalance = Math.floor(Math.random() * 10000);
+        const cacheValue = {
+          balance: randomBalance,
+          updatedAt: new Date(),
+        };
+        
+        await containerCache.exec(
+          `redis-cli SET balance-acc-3 ${JSON.stringify(cacheValue)}`
+        );
+        
+        const now = Math.floor(Date.now() / 1000);
+        const accessToken = jsonwebtoken.sign({
+          userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e3d1',
+          iat: now,
+          exp: now + 60,
+        }, JWT_SECRET_KEY);
+
+        // request with a random balance to guarantee that is retrieved from cache and not from database
+        await request(host)
+          .get('/balance')
+          .query({
+            accountId: 3,
+          })
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then(response => {
+            const body = response.body;
+            expect(body.balance).toBe(randomBalance);
+            expect(body.cached).toBeTruthy();
+          });
+
+        // make a transaction request
+        await request(host)
+          .post(endpoint)
+          .send({
+            accountId: 3,
+            type: 'debit',
+            amount: 25,
+          })
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect('Content-Type', /json/)
+          .expect(201)
+          .then(response => {
+            const body = response.body;
+            expect(body).toHaveProperty('transactionId');
+            expect(body.transactionId).toBeGreaterThan(0);
+          });
+
+        // get the new balance from database (without cache)
+        await request(host)
+          .get('/balance')
+          .query({
+            accountId: 3,
+          })
+          .set('Authorization', `Bearer ${accessToken}`)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then(response => {
+            const body = response.body;
+            expect(body.balance).toBe(175);
+            expect(body.cached).toBeFalsy();
+          });
+      });
     
     });
 
