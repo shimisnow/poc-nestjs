@@ -1,13 +1,10 @@
-name: E2E Testing (auth-service)
+name: e2e auth-service
 
 on:
   pull_request:
     branches:
       - staging
       - main
-
-env:
-  SERVICE_NAME: auth-service
 
 jobs:
   e2e-testing:
@@ -26,14 +23,14 @@ jobs:
         run: npm ci
 
       - name: Build service
-        run: npx nx build $SERVICE_NAME
+        run: npx nx build auth-service
 
       - name: Load .env variables
         id: dotenv
         uses: falti/dotenv-action@v1.0.4
 
-      - name: E2E tests for $SERVICE_NAME
-        run: npx nx e2e $SERVICE_NAME-e2e
+      - name: e2e testing
+        run: npx nx e2e auth-service-e2e
         env:
           AUTH_SERVICE_PORT: ${{ steps.dotenv.outputs.AUTH_SERVICE_PORT }}
           DATABASE_AUTH_HOST: ${{ steps.dotenv.outputs.DATABASE_AUTH_HOST }}

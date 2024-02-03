@@ -142,6 +142,7 @@ describe('BalanceController', () => {
         expect(result.balance).toBe(950);
         expect(result.cached).toBeTruthy();
       });
+
       test('get balance from database (no cache)', async () => {
         const result = await controller.getBalance(user, { accountId: 1234 });
         // 1200 from the mocked balance and 50 from the mocked transactions
