@@ -144,7 +144,49 @@ describe('POST /transaction', () => {
     });
   });
 
-  describe('account ownership and existence', () => {});
+  describe('account ownership and existence', () => {
+    test('user does not have access rights to the account', async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const accessToken = jsonwebtoken.sign({
+        userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        iat: now,
+        exp: now + 60,
+      }, JWT_SECRET_KEY);
+
+      await request(host)
+        .post(endpoint)
+        .send({
+          accountId: 42,
+          type: 'debit',
+          amount: 200,
+        })
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect('Content-Type', /json/)
+        .expect(403);
+    });
+
+    // there is no way to know if the account does no exists or if the user has no access
+    // the error will be the same
+    test('account does not exists', async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const accessToken = jsonwebtoken.sign({
+        userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        iat: now,
+        exp: now + 60,
+      }, JWT_SECRET_KEY);
+
+      await request(host)
+        .post(endpoint)
+        .send({
+          accountId: 42,
+          type: 'debit',
+          amount: 200,
+        })
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect('Content-Type', /json/)
+        .expect(403);
+    });
+  });
 
   describe('transaction creation', () => {
     describe('debit', () => {
