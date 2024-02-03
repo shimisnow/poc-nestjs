@@ -150,7 +150,7 @@ describe('GET /balance', () => {
       await request(host)
         .get(endpoint)
         .query({
-          accountId: 42,
+          accountId: 2,
         })
         .set('Authorization', `Bearer ${accessToken}`)
         .expect('Content-Type', /json/)
@@ -162,7 +162,7 @@ describe('GET /balance', () => {
     test('account does not exists', async () => {
       const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
-        userId: '10f88251-d181-4255-92ed-d0d874e3a789',
+        userId: '10f88251-d181-4255-92ed-d0d874e3a166',
         iat: now,
         exp: now + 60,
       }, JWT_SECRET_KEY);
@@ -170,7 +170,7 @@ describe('GET /balance', () => {
       await request(host)
         .get(endpoint)
         .query({
-          accountId: 1,
+          accountId: 42,
         })
         .set('Authorization', `Bearer ${accessToken}`)
         .expect('Content-Type', /json/)
@@ -178,9 +178,41 @@ describe('GET /balance', () => {
     });
   });
 
-  /* describe('balance retrieval', () => {
-    test('get balance from cache', async () => {});
+  describe('balance retrieval', () => {
+    test('get balance from cache', async () => {
+      const randomBalance = Math.floor(Math.random() * 10000);
+      const cacheValue = {
+        balance: randomBalance,
+        updatedAt: new Date(),
+      };
+      
+      await containerCache.exec(
+        `redis-cli SET balance-acc-2 ${JSON.stringify(cacheValue)}`
+      );
+
+      const now = Math.floor(Date.now() / 1000);
+      const accessToken = jsonwebtoken.sign({
+        userId: '6d162827-98a1-4d20-8aa0-0a9c3e8fc76f',
+        iat: now,
+        exp: now + 60,
+      }, JWT_SECRET_KEY);
+
+      // request with a random balance to guarantee that is retrieved from cache and not from database
+      await request(host)
+        .get(endpoint)
+        .query({
+          accountId: 2,
+        })
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(response => {
+          const body = response.body;
+          expect(body.balance).toBe(randomBalance);
+          expect(body.cached).toBeTruthy();
+        });
+    });
 
     test('get balance from database (no cache)', async () => {});
-  }); */
+  });
 });
