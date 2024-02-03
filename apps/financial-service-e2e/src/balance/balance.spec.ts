@@ -71,7 +71,7 @@ describe('GET /balance', () => {
         REDIS_HOST: 'redis',
         REDIS_PORT: process.env.REDIS_PORT,
         JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-        JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+        JWT_MAX_AGE: process.env.JWT_MAX_AGE,
         FINANCIAL_SERVICE_PORT: process.env.FINANCIAL_SERVICE_PORT,
       })
       .start();
@@ -90,7 +90,7 @@ describe('GET /balance', () => {
     containerCode.stop();
   });
 
-  describe('unauthorized access to endpoint', () => {
+  describe('unauthorized jwt access to endpoint', () => {
     test('request without token', async () => {
       await request(host)
         .get(endpoint)
@@ -101,15 +101,50 @@ describe('GET /balance', () => {
         .expect(401);
     });
 
-    test('request without token', async () => {});
+    test('request with expired token', async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const accessToken = jsonwebtoken.sign({
+        userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        iat: now - 120,
+        exp: now - 60,
+      }, JWT_SECRET_KEY);
+
+      await request(host)
+        .get(endpoint)
+        .query({
+          accountId: 1,
+        })
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect('Content-Type', /json/)
+        .expect(401);
+    });
+
+    test('request with expire token set with higher value than server max age', async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const accessToken = jsonwebtoken.sign({
+        userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        iat: now - 3660, // 1h and 1m before now
+        exp: now,
+      }, JWT_SECRET_KEY);
+
+      await request(host)
+        .get(endpoint)
+        .query({
+          accountId: 1,
+        })
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect('Content-Type', /json/)
+        .expect(401);
+    });
   });
 
   describe('account ownership and existence', () => {
     test('user does not have access rights to the account', async () => {
+      const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a166',
-        iat: new Date().getTime(),
-        exp: new Date().getTime() + 60000,
+        iat: now,
+        exp: now + 60,
       }, JWT_SECRET_KEY);
 
       await request(host)
@@ -125,10 +160,11 @@ describe('GET /balance', () => {
     // there is no way to know if the account does no exists or if the user has no access
     // the error will be the same
     test('account does not exists', async () => {
+      const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a789',
-        iat: new Date().getTime(),
-        exp: new Date().getTime() + 60000,
+        iat: now,
+        exp: now + 60,
       }, JWT_SECRET_KEY);
 
       await request(host)
