@@ -213,6 +213,27 @@ describe('GET /balance', () => {
         });
     });
 
-    test('get balance from database (no cache)', async () => {});
+    test('get balance from database (no cache)', async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const accessToken = jsonwebtoken.sign({
+        userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e3d1',
+        iat: now,
+        exp: now + 60,
+      }, JWT_SECRET_KEY);
+
+      await request(host)
+        .get(endpoint)
+        .query({
+          accountId: 3,
+        })
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .then(response => {
+          const body = response.body;
+          expect(body.balance).toBe(200);
+          expect(body.cached).toBeFalsy();
+        });
+    });
   });
 });
