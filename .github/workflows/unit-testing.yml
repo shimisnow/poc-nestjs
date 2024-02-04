@@ -27,7 +27,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - run: npm ci --forece
+      - run: npm ci --force
 
       - name: Unit test for auth-service
         run: npx nx test auth-service
