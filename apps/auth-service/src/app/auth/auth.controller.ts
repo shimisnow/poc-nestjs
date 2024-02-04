@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query, Version } from '@nestjs/common';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiHeader,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
@@ -29,10 +30,16 @@ import { SignUpError409Serializer } from './serializers/signup-error-409.seriali
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Version('1')
   @Get('username/available')
   @ApiOperation({
     summary:
       'Retrieves information if the provided username is already registered',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
   })
   @ApiOkResponse({
     description: 'Information about the username availability',
@@ -63,11 +70,17 @@ export class AuthController {
     } as VerifyUsernameSerializer;
   }
 
+  @Version('1')
   @Post('login')
   @HttpCode(200)
   @ApiOperation({
     summary:
       'Uses username and password to get a JWT token to use in future API calls',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
   })
   @ApiOkResponse({
     description: 'JWT Access Token to use in future API calls',
@@ -95,9 +108,15 @@ export class AuthController {
     return await this.authService.login(body.username, body.password);
   }
 
+  @Version('1')
   @Post('signup')
   @ApiOperation({
     summary: 'Creates a new user',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
   })
   @ApiOkResponse({
     description: 'ID for the created user',

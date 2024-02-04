@@ -78,6 +78,7 @@ describe('GET /auth/signup', () => {
           username: 'marta',
           password: 'test@1234',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(201);
 
@@ -95,6 +96,7 @@ describe('GET /auth/signup', () => {
         .send({
           name: 'user',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(400);
 
@@ -113,6 +115,7 @@ describe('GET /auth/signup', () => {
         .send({
           username: '',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(400);
 
@@ -133,6 +136,7 @@ describe('GET /auth/signup', () => {
           username: 'anderson',
           password: 'test@1234',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(409);
     });
@@ -145,6 +149,7 @@ describe('GET /auth/signup', () => {
           username: 'emerson',
           password: 'test@1234',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(409);
     });

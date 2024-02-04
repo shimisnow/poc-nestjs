@@ -99,6 +99,7 @@ describe('POST /transaction', () => {
           type: 'debit',
           amount: 200,
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401);
     });
@@ -119,6 +120,7 @@ describe('POST /transaction', () => {
           amount: 200,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401);
     });
@@ -139,6 +141,7 @@ describe('POST /transaction', () => {
           amount: 200,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401);
     });
@@ -161,6 +164,7 @@ describe('POST /transaction', () => {
           amount: 200,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(403);
     });
@@ -183,6 +187,7 @@ describe('POST /transaction', () => {
           amount: 200,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(403);
     });
@@ -215,6 +220,7 @@ describe('POST /transaction', () => {
             accountId: 3,
           })
           .set('Authorization', `Bearer ${accessToken}`)
+          .set('X-Api-Version', '1')
           .expect('Content-Type', /json/)
           .expect(200)
           .then(response => {
@@ -232,6 +238,7 @@ describe('POST /transaction', () => {
             amount: 25,
           })
           .set('Authorization', `Bearer ${accessToken}`)
+          .set('X-Api-Version', '1')
           .expect('Content-Type', /json/)
           .expect(201)
           .then(response => {
@@ -247,6 +254,7 @@ describe('POST /transaction', () => {
             accountId: 3,
           })
           .set('Authorization', `Bearer ${accessToken}`)
+          .set('X-Api-Version', '1')
           .expect('Content-Type', /json/)
           .expect(200)
           .then(response => {
@@ -284,6 +292,7 @@ describe('POST /transaction', () => {
             accountId: 2,
           })
           .set('Authorization', `Bearer ${accessToken}`)
+          .set('X-Api-Version', '1')
           .expect('Content-Type', /json/)
           .expect(200)
           .then(response => {
@@ -301,6 +310,7 @@ describe('POST /transaction', () => {
             amount: 49,
           })
           .set('Authorization', `Bearer ${accessToken}`)
+          .set('X-Api-Version', '1')
           .expect('Content-Type', /json/)
           .expect(201)
           .then(response => {
@@ -316,6 +326,7 @@ describe('POST /transaction', () => {
             accountId: 2,
           })
           .set('Authorization', `Bearer ${accessToken}`)
+          .set('X-Api-Version', '1')
           .expect('Content-Type', /json/)
           .expect(200)
           .then(response => {

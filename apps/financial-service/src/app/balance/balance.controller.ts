@@ -3,6 +3,7 @@ import {
   Get,
   Query,
   UseGuards,
+  Version,
 } from '@nestjs/common';
 import { BalanceService } from './balance.service';
 import { GetBalanceQueryDto } from './dtos/get-balance-query.dto';
@@ -11,6 +12,7 @@ import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiHeader,
   ApiInternalServerErrorResponse,
   ApiOkResponse,
   ApiOperation,
@@ -33,10 +35,16 @@ export class BalanceController {
     private balanceService: BalanceService,
   ) {}
 
+  @Version('1')
   @Get()
   @UseGuards(AuthGuard)
   @ApiOperation({
     summary: 'Retrieves balance information from a given account',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
   })
   @ApiOkResponse({
     description: 'Information about the account balance',

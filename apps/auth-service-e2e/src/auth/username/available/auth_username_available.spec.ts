@@ -75,6 +75,7 @@ describe('GET /auth/username/available', () => {
         .query({
           username: 'thomas',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(200);
 
@@ -90,6 +91,7 @@ describe('GET /auth/username/available', () => {
         .query({
           username: 'anderson',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(200);
 
@@ -107,6 +109,7 @@ describe('GET /auth/username/available', () => {
         .query({
           name: 'user',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(400);
 
@@ -125,6 +128,7 @@ describe('GET /auth/username/available', () => {
         .query({
           username: '',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(400);
 

@@ -3,14 +3,15 @@ import {
   Controller,
   Post,
   UseGuards,
+  Version,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiHeader,
   ApiInternalServerErrorResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiPreconditionFailedResponse,
@@ -23,7 +24,6 @@ import { TransactionTypeEnum } from '@shared/database/financial/enums/transactio
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
 import { CreateTransactionError400Serializer } from './serializers/create-transaction-error-400.serializer';
-import { CreateTransactionError404Serializer } from './serializers/create-transaction-error-404.serializer';
 import { CreateTransactionError412Serializer } from './serializers/create-transaction-error-412.serializer';
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
@@ -38,12 +38,18 @@ export class TransactionController {
     private transactionService: TransactionService,
   ) {}
 
+  @Version('1')
   @Post()
   @UseGuards(AuthGuard)
   @ApiOperation({
     summary: 'Register a transaction',
     description:
       'This endpoint receives only positive values. For debt operations, the value will be automatically inverted',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
   })
   @ApiOkResponse({
     description: 'Information about the created transaction',
@@ -58,12 +64,8 @@ export class TransactionController {
     type: DefaultError401Serializer,
   })
   @ApiForbiddenResponse({
-    description: 'Error when the user has no access to the account',
+    description: 'Error when the user has no access to the account or the account does not exist',
     type: DefaultError403Serializer,
-  })
-  @ApiNotFoundResponse({
-    description: 'Error when the account does not exist',
-    type: CreateTransactionError404Serializer,
   })
   @ApiPreconditionFailedResponse({
     description: 'Error when account has insufficient balance',

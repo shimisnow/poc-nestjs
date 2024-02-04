@@ -78,6 +78,7 @@ describe('POST /auth/login', () => {
           username: 'thomas',
           password: 'test@1234',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401);
     });
@@ -89,6 +90,7 @@ describe('POST /auth/login', () => {
           username: 'ericka',
           password: 'test@1234',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401);
     });
@@ -100,6 +102,7 @@ describe('POST /auth/login', () => {
           username: 'anderson',
           password: 'password',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401);
     });
@@ -111,6 +114,7 @@ describe('POST /auth/login', () => {
           username: 'anderson',
           password: 'test@1234',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(200);
 
@@ -129,6 +133,7 @@ describe('POST /auth/login', () => {
         .send({
           name: 'user',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(400);
 
@@ -148,6 +153,7 @@ describe('POST /auth/login', () => {
           username: '',
           password: '',
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(400);
 
