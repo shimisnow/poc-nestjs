@@ -31,6 +31,7 @@ export class TransactionService {
    * Register a transaction into database.
    * This function deletes the account balance cache.
    * This function verify if the user is the account owner.
+   * This function will make the amount negative it is positive and type is debit.
    *
    * @param userId Account owner
    * @param body Transaction information
@@ -44,6 +45,10 @@ export class TransactionService {
     body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
     if (body.type == TransactionTypeEnum.DEBIT) {
+      if (body.amount > 0) {
+        body.amount *= -1;
+      }
+
       const balance = await this.balanceService.getBalanceIgnoringCache(
         body.accountId,
         userId,
