@@ -97,6 +97,7 @@ describe('GET /balance', () => {
         .query({
           accountId: 42,
         })
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401);
     });
@@ -115,6 +116,7 @@ describe('GET /balance', () => {
           accountId: 1,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401);
     });
@@ -133,6 +135,7 @@ describe('GET /balance', () => {
           accountId: 1,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401);
     });
@@ -153,6 +156,7 @@ describe('GET /balance', () => {
           accountId: 2,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(403);
     });
@@ -173,6 +177,7 @@ describe('GET /balance', () => {
           accountId: 42,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(403);
     });
@@ -204,6 +209,7 @@ describe('GET /balance', () => {
           accountId: 2,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(200)
         .then(response => {
@@ -227,6 +233,7 @@ describe('GET /balance', () => {
           accountId: 3,
         })
         .set('Authorization', `Bearer ${accessToken}`)
+        .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(200)
         .then(response => {
