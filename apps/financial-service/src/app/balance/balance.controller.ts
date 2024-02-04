@@ -12,7 +12,6 @@ import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -24,7 +23,6 @@ import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { GetBalanceError400Serializer } from './serializers/get-balance-error-400.serializer';
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
-import { GetBalanceError404Serializer } from './serializers/get-balance-error-404.serializer';
 import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
 import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
 
@@ -53,12 +51,8 @@ export class BalanceController {
     type: DefaultError401Serializer,
   })
   @ApiForbiddenResponse({
-    description: 'Error when the user has no access to the account',
+    description: 'Error when the user has no access to the account or account/user does not exist',
     type: DefaultError403Serializer,
-  })
-  @ApiNotFoundResponse({
-    description: 'Error when the account does not exist',
-    type: GetBalanceError404Serializer,
   })
   @ApiInternalServerErrorResponse({
     description:
