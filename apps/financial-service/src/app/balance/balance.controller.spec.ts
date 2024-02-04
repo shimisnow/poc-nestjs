@@ -23,22 +23,6 @@ describe('BalanceController', () => {
         BalanceService,
         BalancesRepository,
         {
-          provide: UserService,
-          useValue: {
-            hasAccessToAccount: (userId: string, accountId: number) => {
-              switch (userId) {
-                case '10f88251-d181-4255-92ed-d0d874e3a166':
-                  if (accountId == 4242) {
-                    return false;
-                  }
-                  return true;
-                default:
-                  return true;
-              }
-            },
-          },
-        },
-        {
           provide: CACHE_MANAGER,
           useValue: {
             get: (key) => {
@@ -93,6 +77,25 @@ describe('BalanceController', () => {
             })),
           },
         },
+        {
+          provide: UserService,
+          useValue: {
+            hasAccessToAccount: (userId: string, accountId: number) => {
+              switch (userId) {
+                case '10f88251-d181-4255-92ed-d0d874e3a166':
+                  switch (accountId) {
+                    case 1234:
+                    case 2345:
+                      return true;
+                    default:
+                      return false;
+                  }
+                default:
+                  return true;
+              }
+            },
+          },
+        },
       ],
     })
       .overrideGuard(AuthGuard)
@@ -113,33 +116,39 @@ describe('BalanceController', () => {
       exp: 1917279163,
     };
 
-    test('user has no access to the account', async () => {
-      try {
-        await controller.getBalance(user, { accountId: 4242 });
-      } catch (error) {
-        expect(error).toBeInstanceOf(ForbiddenException);
-      }
+    describe('account ownership and existence', () => {
+      test('user does not have access rights to the account', async () => {
+        try {
+          await controller.getBalance(user, { accountId: 3456 });
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
+
+      // there is no way to know if the account does no exists or if the user has no access
+      // the error will be the same
+      test('account does not exists', async () => {
+        try {
+          await controller.getBalance(user, { accountId: 4567 });
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
     });
 
-    test('account does not exists', async () => {
-      try {
-        await controller.getBalance(user, { accountId: 9876 });
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException);
-      }
-    });
+    describe('balance retrieval', () => {
+      test('get balance from cache', async () => {
+        const result = await controller.getBalance(user, { accountId: 2345 });
+        expect(result.balance).toBe(950);
+        expect(result.cached).toBeTruthy();
+      });
 
-    test('get balance from cache', async () => {
-      const result = await controller.getBalance(user, { accountId: 2345 });
-      expect(result.balance).toBe(950);
-      expect(result.cached).toBeTruthy();
-    });
-
-    test('get balance from database (no cache)', async () => {
-      const result = await controller.getBalance(user, { accountId: 1234 });
-      // 1200 from the mocked balance and 50 from the mocked transactions
-      expect(result.balance).toBe(1250);
-      expect(result.cached).toBeFalsy();
+      test('get balance from database (no cache)', async () => {
+        const result = await controller.getBalance(user, { accountId: 1234 });
+        // 1200 from the mocked balance and 50 from the mocked transactions
+        expect(result.balance).toBe(1250);
+        expect(result.cached).toBeFalsy();
+      });
     });
   });
 });

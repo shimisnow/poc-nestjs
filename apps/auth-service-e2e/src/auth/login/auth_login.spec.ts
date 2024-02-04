@@ -59,8 +59,8 @@ describe('POST /auth/login', () => {
       })
       .start();
 
-      AUTH_SERVICE_TEST_PORT = containerCode.getMappedPort(parseInt(process.env.AUTH_SERVICE_PORT));
-      host = `http://localhost:${AUTH_SERVICE_TEST_PORT}`;
+    AUTH_SERVICE_TEST_PORT = containerCode.getMappedPort(parseInt(process.env.AUTH_SERVICE_PORT));
+    host = `http://localhost:${AUTH_SERVICE_TEST_PORT}`;
   
   // it needs a high timeout to enable the containers creation
   }, (10 * 60000));

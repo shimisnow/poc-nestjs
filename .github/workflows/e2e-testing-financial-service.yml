@@ -1,0 +1,42 @@
+name: e2e financial-service
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+
+jobs:
+  e2e-testing:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.1.0
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build service
+        run: npx nx build financial-service
+
+      - name: Load .env variables
+        id: dotenv
+        uses: falti/dotenv-action@v1.0.4
+
+      - name: e2e testing
+        run: npx nx e2e financial-service-e2e
+        env:
+          FINANCIAL_SERVICE_PORT: ${{ steps.dotenv.outputs.FINANCIAL_SERVICE_PORT }}
+          DATABASE_FINANCIAL_HOST: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_HOST }}
+          DATABASE_FINANCIAL_PORT: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_PORT }}
+          DATABASE_FINANCIAL_USERNAME: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_USERNAME }}
+          DATABASE_FINANCIAL_PASSWORD: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_PASSWORD }}
+          DATABASE_FINANCIAL_DBNAME: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_DBNAME }}
+          JWT_SECRET_KEY: ${{ steps.dotenv.outputs.JWT_SECRET_KEY }}
+          JWT_MAX_AGE: ${{ steps.dotenv.outputs.JWT_MAX_AGE }}

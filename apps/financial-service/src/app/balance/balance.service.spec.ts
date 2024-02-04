@@ -7,7 +7,8 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BalanceEntity } from '@shared/database/financial/entities/balance.entity';
 import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { UserService } from '../user/user.service';
 
 describe('BalanceService', () => {
   let service: BalanceService;
@@ -17,6 +18,25 @@ describe('BalanceService', () => {
       providers: [
         BalanceService,
         BalancesRepository,
+        {
+          provide: UserService,
+          useValue: {
+            hasAccessToAccount: (userId: string, accountId: number) => {
+              switch (userId) {
+                case '10f88251-d181-4255-92ed-d0d874e3a166':
+                  switch (accountId) {
+                    case 1234:
+                    case 2345:
+                      return true;
+                    default:
+                      return false;
+                  }
+                default:
+                  return true;
+              }
+            },
+          },
+        },
         {
           provide: CACHE_MANAGER,
           useValue: {
@@ -90,39 +110,67 @@ describe('BalanceService', () => {
   });
 
   describe('balance.service -> getBalance()', () => {
-    test('account does not exists', async () => {
-      try {
-        await service.getBalance(9876);
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException);
-      }
+    describe('account ownership and existence', () => {
+      test('user does not have access rights to the account', async () => {
+        try {
+          await service.getBalance(4242, '10f88251-d181-4255-92ed-d0d874e3a166');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
+
+      // there is no way to know if the account does no exists or if the user has no access
+      // the error will be the same
+      test('account does not exists', async () => {
+        try {
+          await service.getBalance(9876, '10f88251-d181-4255-92ed-d0d874e3a166');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
     });
 
-    test('get balance from cache', async () => {
-      const result = await service.getBalance(2345);
-      expect(result.balance).toBe(950);
-    });
-
-    test('get balance from database (no cache)', async () => {
-      const result = await service.getBalance(1234);
-      // 1200 from the mocked balance and 50 from the mocked transactions
-      expect(result.balance).toBe(1250);
+    describe('balance retrieval', () => {
+      test('get balance from cache', async () => {
+        const result = await service.getBalance(2345, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
+        expect(result.balance).toBe(950);
+      });
+  
+      test('get balance from database (no cache)', async () => {
+        const result = await service.getBalance(1234, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
+        // 1200 from the mocked balance and 50 from the mocked transactions
+        expect(result.balance).toBe(1250);
+      });
     });
   });
 
   describe('balance.service -> getBalanceIgnoringCache()', () => {
-    test('account does not exists', async () => {
-      try {
-        await service.getBalanceIgnoringCache(9876);
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotFoundException);
-      }
+    describe('account ownership and existence', () => {
+      test('user does not have access rights to the account', async () => {
+        try {
+          await service.getBalanceIgnoringCache(4242, '10f88251-d181-4255-92ed-d0d874e3a166');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
+
+      // there is no way to know if the account does no exists or if the user has no access
+      // the error will be the same
+      test('account does not exists', async () => {
+        try {
+          await service.getBalanceIgnoringCache(9876, '10f88251-d181-4255-92ed-d0d874e3a166');
+        } catch (error) {
+          expect(error).toBeInstanceOf(ForbiddenException);
+        }
+      });
     });
 
-    test('get balance ignoring cache', async () => {
-      const result = await service.getBalanceIgnoringCache(2345);
-      // 1200 from the mocked balance and 50 from the mocked transactions
-      expect(result).toBe(550);
+    describe('balance retrieval', () => {
+      test('get balance ignoring cache', async () => {
+        const result = await service.getBalanceIgnoringCache(2345, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
+        // 1200 from the mocked balance and 50 from the mocked transactions
+        expect(result).toBe(550);
+      });
     });
   });
 });

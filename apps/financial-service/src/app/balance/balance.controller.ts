@@ -1,6 +1,5 @@
 import {
   Controller,
-  ForbiddenException,
   Get,
   Query,
   UseGuards,
@@ -13,7 +12,6 @@ import {
   ApiBadRequestResponse,
   ApiForbiddenResponse,
   ApiInternalServerErrorResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -25,17 +23,14 @@ import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { GetBalanceError400Serializer } from './serializers/get-balance-error-400.serializer';
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
-import { GetBalanceError404Serializer } from './serializers/get-balance-error-404.serializer';
 import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
 import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
-import { UserService } from '../user/user.service';
 
 @Controller('balance')
 @ApiTags('balance')
 export class BalanceController {
   constructor(
     private balanceService: BalanceService,
-    private userService: UserService,
   ) {}
 
   @Get()
@@ -56,12 +51,8 @@ export class BalanceController {
     type: DefaultError401Serializer,
   })
   @ApiForbiddenResponse({
-    description: 'Error when the user has no access to the account',
+    description: 'Error when the user has no access to the account or account/user does not exist',
     type: DefaultError403Serializer,
-  })
-  @ApiNotFoundResponse({
-    description: 'Error when the account does not exist',
-    type: GetBalanceError404Serializer,
   })
   @ApiInternalServerErrorResponse({
     description:
@@ -76,15 +67,6 @@ export class BalanceController {
     @User() user: UserPayload,
     @Query() query: GetBalanceQueryDto,
   ): Promise<GetBalanceSerializer> {
-    const hasAccess = await this.userService.hasAccessToAccount(
-      user.userId,
-      query.accountId,
-    );
-
-    if (hasAccess == false) {
-      throw new ForbiddenException();
-    }
-
-    return await this.balanceService.getBalance(query.accountId);
+    return await this.balanceService.getBalance(query.accountId, user.userId);
   }
 }
