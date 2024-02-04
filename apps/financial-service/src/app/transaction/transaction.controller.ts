@@ -3,12 +3,14 @@ import {
   Controller,
   Post,
   UseGuards,
+  Version,
 } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
   ApiForbiddenResponse,
+  ApiHeader,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -38,12 +40,18 @@ export class TransactionController {
     private transactionService: TransactionService,
   ) {}
 
+  @Version('1')
   @Post()
   @UseGuards(AuthGuard)
   @ApiOperation({
     summary: 'Register a transaction',
     description:
       'This endpoint receives only positive values. For debt operations, the value will be automatically inverted',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
   })
   @ApiOkResponse({
     description: 'Information about the created transaction',

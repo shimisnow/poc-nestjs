@@ -1,4 +1,4 @@
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { mkdirSync, writeFileSync } from 'fs';
@@ -13,6 +13,11 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+  app.enableVersioning({
+    type: VersioningType.HEADER,
+    header: 'X-Api-Version',
+    defaultVersion: '1',
+  });
   const port = process.env.FINANCIAL_SERVICE_PORT || 3000;
 
   if (process.env.FINANCIAL_SERVICE_BUILD_OPENAPI === 'true') {
