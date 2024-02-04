@@ -84,10 +84,6 @@ export class TransactionController {
     @User() user: UserPayload,
     @Body() body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
-    if (body.type == TransactionTypeEnum.DEBIT) {
-      body.amount *= -1;
-    }
-
     return await this.transactionService.createTransaction(user.userId, body);
   }
 }

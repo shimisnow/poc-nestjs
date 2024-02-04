@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
+import { BadGatewayException, UnauthorizedException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -18,7 +19,10 @@ describe('AuthService', () => {
         },
         {
           provide: JwtService,
-          useValue: {},
+          useValue: {
+            signAsync: (payload) =>
+              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuZGVyc29uIiwic3ViIjoxLCJpYXQiOjE2ODM4MzAyNTEsImV4cCI6MTY4MzgzMDMxMX0.eN5Cv2tJ0HGlVNKMtPv5VPeCIA7dd4OEA-8Heh7OJ_c',
+          },
         },
       ],
     }).compile();
@@ -28,5 +32,71 @@ describe('AuthService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('auth.service -> verifyIfUsernameExists()', () => {
+    test('username already registered', async () => {
+      const result = await service.verifyIfUsernameExists('anderson');
+
+      expect(result).toBeTruthy();
+    });
+
+    test('username not registered', async () => {
+      const result = await service.verifyIfUsernameExists('beatrice');
+  
+      expect(result).toBeFalsy();
+    });
+  
+    test('some database error', async () => {
+      try {
+        await service.verifyIfUsernameExists('anything');
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadGatewayException);
+      }
+    });
+  });
+
+  describe('auth.service -> login()', () => {
+    test('correct login data with ACTIVE user', async () => {
+      const result = await service.login('anderson', 'test@1234');
+
+      expect(result).toHaveProperty('accessToken');
+      expect(result.accessToken).not.toBeNull();
+
+      const accessTokenParts = result.accessToken.split('.');
+      expect(accessTokenParts.length).toBe(3);
+    });
+
+    test('correct login data with INACTIVE user', async () => {
+      try {
+        await service.login('thomas', 'test@1234');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    });
+
+    test('incorrect login data (user exists)', async () => {
+      try {
+        await service.login('anderson', 'test@5678');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    });
+
+    test('incorrect login data (user do not exists)', async () => {
+      try {
+        await service.login('beatrice', 'test@1234');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    });
+
+    test('some database error', async () => {
+      try {
+        await service.login('anything', 'test@1234');
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadGatewayException);
+      }
+    });
   });
 });
