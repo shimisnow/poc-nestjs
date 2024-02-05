@@ -1,0 +1,105 @@
+name: E2E Testing
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+
+jobs:
+  node_modules:
+    runs-on: ubuntu-latest
+  
+    steps: 
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.6.1
+          cache: 'npm'
+
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+  e2e_auth_service:
+    needs: node_modules
+    runs-on: ubuntu-latest
+
+    steps: 
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.6.1
+
+      - name: Restore node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Build
+        run: npx nx build auth-service
+
+      - name: Load .env variables
+        id: dotenv
+        uses: falti/dotenv-action@v1.0.4
+
+      - name: Testing
+        run: npx nx e2e auth-service-e2e
+        env:
+          AUTH_SERVICE_PORT: ${{ steps.dotenv.outputs.AUTH_SERVICE_PORT }}
+          DATABASE_AUTH_HOST: ${{ steps.dotenv.outputs.DATABASE_AUTH_HOST }}
+          DATABASE_AUTH_PORT: ${{ steps.dotenv.outputs.DATABASE_AUTH_PORT }}
+          DATABASE_AUTH_USERNAME: ${{ steps.dotenv.outputs.DATABASE_AUTH_USERNAME }}
+          DATABASE_AUTH_PASSWORD: ${{ steps.dotenv.outputs.DATABASE_AUTH_PASSWORD }}
+          DATABASE_AUTH_DBNAME: ${{ steps.dotenv.outputs.DATABASE_AUTH_DBNAME }}
+          JWT_SECRET_KEY: ${{ steps.dotenv.outputs.JWT_SECRET_KEY }}
+          JWT_EXPIRES_IN: ${{ steps.dotenv.outputs.JWT_EXPIRES_IN }}
+
+  e2e_financial_service:
+    needs: node_modules
+    runs-on: ubuntu-latest
+
+    steps: 
+      - uses: actions/checkout@v4
+      #
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.6.1
+
+      - name: Restore node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Build
+        run: npx nx build financial-service
+
+      - name: Load .env variables
+        id: dotenv
+        uses: falti/dotenv-action@v1.0.4
+
+      - name: Testing
+        run: npx nx e2e auth-service-e2e
+        env:
+          FINANCIAL_SERVICE_PORT: ${{ steps.dotenv.outputs.FINANCIAL_SERVICE_PORT }}
+          DATABASE_FINANCIAL_HOST: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_HOST }}
+          DATABASE_FINANCIAL_PORT: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_PORT }}
+          DATABASE_FINANCIAL_USERNAME: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_USERNAME }}
+          DATABASE_FINANCIAL_PASSWORD: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_PASSWORD }}
+          DATABASE_FINANCIAL_DBNAME: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_DBNAME }}
+          JWT_SECRET_KEY: ${{ steps.dotenv.outputs.JWT_SECRET_KEY }}
+          JWT_MAX_AGE: ${{ steps.dotenv.outputs.JWT_MAX_AGE }}
+        
+    
