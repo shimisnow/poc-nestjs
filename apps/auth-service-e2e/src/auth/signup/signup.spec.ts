@@ -5,7 +5,7 @@ import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers
 
 describe('GET /auth/signup', () => {
   const DOCKER_IMAGE_BUILD_NAME = 'poc-nestjs-node';
-  const DOCKER_POSTGRES_TAG = 'postgres:15.2';
+  const DOCKER_POSTGRES_TAG = 'postgres:16.1';
 
   let dockerNetwork: StartedNetwork;
   let containerDatabase: StartedPostgreSqlContainer;

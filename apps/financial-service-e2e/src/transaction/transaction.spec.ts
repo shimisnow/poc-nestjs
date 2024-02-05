@@ -7,8 +7,8 @@ import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
 
 describe('POST /transaction', () => {
   const DOCKER_IMAGE_BUILD_NAME = 'poc-nestjs-node';
-  const DOCKER_POSTGRES_TAG = 'postgres:15.2';
-  const DOCKER_REDIS_TAG = 'redis:7.2.1';
+  const DOCKER_POSTGRES_TAG = 'postgres:16.1';
+  const DOCKER_REDIS_TAG = 'redis:7.2.4';
 
   let dockerNetwork: StartedNetwork;
   let containerDatabase: StartedPostgreSqlContainer;

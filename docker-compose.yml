@@ -54,7 +54,7 @@ services:
       - ${FINANCIAL_SERVICE_PORT}:${FINANCIAL_SERVICE_PORT}
 
   redis:
-    image: redis:7.2.1
+    image: redis:7.2.4
     networks:
       poc-nestjs:
     restart: always
@@ -62,7 +62,7 @@ services:
       - ${REDIS_PORT}:6379
 
   redis-ui:
-    image: patrikx3/p3x-redis-ui:2023.10.246
+    image: patrikx3/p3x-redis-ui:2024.4.104
     networks:
       - poc-nestjs
     ports:
@@ -71,7 +71,7 @@ services:
       - ./deployment/redis-ui:/settings
 
   database-authentication:
-    image: postgres:15.2
+    image: postgres:16.1
     restart: always
     environment:
       POSTGRES_USER: ${DATABASE_AUTH_USERNAME}
@@ -85,7 +85,7 @@ services:
       - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
 
   database-financial:
-    image: postgres:15.2
+    image: postgres:16.1
     restart: always
     environment:
       POSTGRES_USER: ${DATABASE_FINANCIAL_USERNAME}
