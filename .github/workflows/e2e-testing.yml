@@ -91,7 +91,7 @@ jobs:
         uses: falti/dotenv-action@v1.0.4
 
       - name: Testing
-        run: npx nx e2e auth-service-e2e
+        run: npx nx e2e financial-service-e2e
         env:
           FINANCIAL_SERVICE_PORT: ${{ steps.dotenv.outputs.FINANCIAL_SERVICE_PORT }}
           DATABASE_FINANCIAL_HOST: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_HOST }}
