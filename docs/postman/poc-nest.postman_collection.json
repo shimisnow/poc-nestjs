@@ -1,0 +1,772 @@
+{
+	"info": {
+		"_postman_id": "17a878a1-6dca-4440-af05-00f9741a4e51",
+		"name": "POC-NESTJS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30166483"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "/auth/login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"anderson\",\r\n    \"password\": \"test@1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_service_host}}/auth/login",
+							"host": [
+								"{{auth_service_host}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/signup",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"userId\": \"{{$guid}}\",\r\n    \"username\": \"hello\",\r\n    \"password\": \"test@1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_service_host}}/auth/signup",
+							"host": [
+								"{{auth_service_host}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "username/available",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_service_host}}/auth/username/available?username=anderson",
+							"host": [
+								"{{auth_service_host}}"
+							],
+							"path": [
+								"auth",
+								"username",
+								"available"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "anderson"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transaction",
+			"item": [
+				{
+					"name": "debit",
+					"item": [
+						{
+							"name": "transaction (use 1)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Version",
+										"value": "1",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"accountId\": 1,\r\n    \"type\": \"debit\",\r\n    \"amount\": 150\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{financial_service_host}}/transaction",
+									"host": [
+										"{{financial_service_host}}"
+									],
+									"path": [
+										"transaction"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "transaction  (use 2)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Version",
+										"value": "1",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"accountId\": 2,\r\n    \"type\": \"debit\",\r\n    \"amount\": 200\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{financial_service_host}}/transaction",
+									"host": [
+										"{{financial_service_host}}"
+									],
+									"path": [
+										"transaction"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "transaction  (use 3)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Version",
+										"value": "1",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"accountId\": 3,\r\n    \"type\": \"debit\",\r\n    \"amount\": 250\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{financial_service_host}}/transaction",
+									"host": [
+										"{{financial_service_host}}"
+									],
+									"path": [
+										"transaction"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "credit",
+					"item": [
+						{
+							"name": "transaction  (use 1)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Version",
+										"value": "1",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"accountId\": 1,\r\n    \"type\": \"credit\",\r\n    \"amount\": 1000\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{financial_service_host}}/transaction",
+									"host": [
+										"{{financial_service_host}}"
+									],
+									"path": [
+										"transaction"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "transaction  (use 2)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Version",
+										"value": "1",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"accountId\": 2,\r\n    \"type\": \"credit\",\r\n    \"amount\": 2000\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{financial_service_host}}/transaction",
+									"host": [
+										"{{financial_service_host}}"
+									],
+									"path": [
+										"transaction"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "transaction  (use 3)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Version",
+										"value": "1",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"accountId\": 3,\r\n    \"type\": \"credit\",\r\n    \"amount\": 3000\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{financial_service_host}}/transaction",
+									"host": [
+										"{{financial_service_host}}"
+									],
+									"path": [
+										"transaction"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{JWT_TOKEN}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"const accountIdFromBody = JSON.parse(pm.request.body.raw).accountId;",
+							"const ownerAccount = pm.collectionVariables.get('owner_account_' + accountIdFromBody);",
+							"const userId = pm.collectionVariables.get(ownerAccount);",
+							"",
+							"",
+							"/***** DO NOT EDIT AFTER THIS *****/",
+							"",
+							"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; ",
+							"const issuedAtTimeSeconds = currentTimeInSeconds; // iat",
+							"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp",
+							"const SECRET_KEY = pm.collectionVariables.get('JWT_SECRET');",
+							"",
+							"const header = {",
+							"    alg: 'HS256',",
+							"}",
+							"",
+							"const payload = {",
+							"    userId,",
+							"    iat: issuedAtTimeSeconds,",
+							"    exp: expirationTimeSeconds,",
+							"};",
+							"",
+							"const removeIllegalCharacters = (input) => {",
+							"    return input",
+							"        .replace(/=/g, '')",
+							"        .replace(/\\+/g, '-')",
+							"        .replace(/\\//g, '_');",
+							"};",
+							"",
+							"const base64object = (input) => {",
+							"    const inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+							"    const base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+							"    const output = removeIllegalCharacters(base64);",
+							"    return output;",
+							"};",
+							"",
+							"const unsignedToken = base64object(header) + \".\" + base64object(payload);",
+							"const signatureHash = CryptoJS.HmacSHA256(unsignedToken, SECRET_KEY);",
+							"const signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+							"const token = unsignedToken + '.' + signature;",
+							"const formattedToken = removeIllegalCharacters(token);",
+							"",
+							"pm.collectionVariables.set('JWT_TOKEN', formattedToken);"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "balance",
+			"item": [
+				{
+					"name": "balance (userId = 1)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountId\": 3342,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{financial_service_host}}/balance?accountId=1",
+							"host": [
+								"{{financial_service_host}}"
+							],
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "balance (userId = 2)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountId\": 3342,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{financial_service_host}}/balance?accountId=2",
+							"host": [
+								"{{financial_service_host}}"
+							],
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "balance (userId = 3)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountId\": 3342,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{financial_service_host}}/balance?accountId=1",
+							"host": [
+								"{{financial_service_host}}"
+							],
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{JWT_TOKEN}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"const accountIdFromURL = pm.request.url.query.get('accountId');",
+							"const userId = pm.collectionVariables.get('user_id_' + accountIdFromURL);",
+							"",
+							"/***** DO NOT EDIT AFTER THIS *****/",
+							"",
+							"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; ",
+							"const issuedAtTimeSeconds = currentTimeInSeconds; // iat",
+							"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp",
+							"const SECRET_KEY = pm.collectionVariables.get('JWT_SECRET');",
+							"",
+							"const header = {",
+							"    alg: 'HS256',",
+							"}",
+							"",
+							"const payload = {",
+							"    userId,",
+							"    iat: issuedAtTimeSeconds,",
+							"    exp: expirationTimeSeconds,",
+							"};",
+							"",
+							"const removeIllegalCharacters = (input) => {",
+							"    return input",
+							"        .replace(/=/g, '')",
+							"        .replace(/\\+/g, '-')",
+							"        .replace(/\\//g, '_');",
+							"};",
+							"",
+							"const base64object = (input) => {",
+							"    const inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));",
+							"    const base64 = CryptoJS.enc.Base64.stringify(inputWords);",
+							"    const output = removeIllegalCharacters(base64);",
+							"    return output;",
+							"};",
+							"",
+							"const unsignedToken = base64object(header) + \".\" + base64object(payload);",
+							"const signatureHash = CryptoJS.HmacSHA256(unsignedToken, SECRET_KEY);",
+							"const signature = CryptoJS.enc.Base64.stringify(signatureHash);",
+							"const token = unsignedToken + '.' + signature;",
+							"const formattedToken = removeIllegalCharacters(token);",
+							"",
+							"pm.collectionVariables.set('JWT_TOKEN', formattedToken);"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "auth_service_host",
+			"value": "http://localhost:3001",
+			"type": "default"
+		},
+		{
+			"key": "financial_service_host",
+			"value": "http://localhost:3002",
+			"type": "default"
+		},
+		{
+			"key": "JWT_SECRET",
+			"value": "09d9059c-23c1-4309-91c7-cda91abab092",
+			"type": "string"
+		},
+		{
+			"key": "JWT_TOKEN",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_id_1",
+			"value": "10f88251-d181-4255-92ed-d0d874e3a166",
+			"type": "string"
+		},
+		{
+			"key": "user_id_2",
+			"value": "6d162827-98a1-4d20-8aa0-0a9c3e8fc76f",
+			"type": "string"
+		},
+		{
+			"key": "user_id_3",
+			"value": "bc760244-ca8a-42b1-9cf6-70ceedc2e3d1",
+			"type": "string"
+		},
+		{
+			"key": "owner_account_1",
+			"value": "user_id_1",
+			"type": "string"
+		},
+		{
+			"key": "owner_account_2",
+			"value": "user_id_2",
+			"type": "string"
+		},
+		{
+			"key": "owner_account_3",
+			"value": "user_id_3",
+			"type": "string"
+		}
+	]
+}
