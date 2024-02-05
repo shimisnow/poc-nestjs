@@ -6,7 +6,7 @@
 
 This project implements a REST API for a financial backend with NestJS and serves as a demonstration of how to architect and develop a scalable backend API application.
 
-Key Features:
+## Key features
 
 - Showcases [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Demonstrates [NestJS](https://docs.nestjs.com/) architecture and patterns and provides a strong foundation for building scalable APIs.
