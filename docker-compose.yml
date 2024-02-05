@@ -6,11 +6,11 @@ networks:
 
 services:
   base-image:
-    image: poc-nestjs-base:latest
+    image: pocnestjs-base:latest
     build: .
 
   auth-service:
-    image: poc-nestjs-auth-service:latest
+    image: shimisnow/pocnestjs-auth-service:latest
     build:
       context: .
       dockerfile: apps/auth-service/Dockerfile
@@ -31,7 +31,7 @@ services:
       - ${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}
 
   financial-service:
-    image: poc-nestjs-financial-service:latest
+    image: shimisnow/pocnestjs-financial-service:latest
     build:
       context: .
       dockerfile: apps/financial-service/Dockerfile
