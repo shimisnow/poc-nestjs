@@ -8,7 +8,7 @@ First, start the databases and the cache manager:
 docker compose up -d redis database-authentication database-financial
 ```
 
-See the [.env](../../.env) file to get the database ports.
+See the [.env](../../.env) file to get database and cache ports.
 
 If you **want** to see the data stored at the redis, use:
 

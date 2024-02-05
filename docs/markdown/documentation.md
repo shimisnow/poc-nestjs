@@ -1,4 +1,4 @@
-## OpenAPI
+## REST API
 
 | service name      | port |
 | :---------------- | :--: |
@@ -20,3 +20,8 @@ The documentation can be viewed at `http://localhost:$PORT/`. The port will be d
 To generate the json file with OpenAPI specifications, it is necessary to set the variable `${SERVICE_NAME}_BUILD_OPENAPI=true` at the file `.env` at the project root
 
 Then start the desired service to generate the json file.
+
+### Postman
+
+A Postman collection can be found at [poc-nest.postman_collection.json](../postman/poc-nest.postman_collection.json)
+
