@@ -80,6 +80,8 @@ export class TransactionController {
     description: 'Internal data processing error. Probably a database error',
     type: DefaultError502Serializer,
   })
+  // ignore on tests because this endpoint do not manipulate data
+  /* istanbul ignore next */
   async createTransaction(
     @User() user: UserPayload,
     @Body() body: CreateTransactionBodyDto,
