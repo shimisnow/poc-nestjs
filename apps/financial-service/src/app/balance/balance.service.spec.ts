@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-case-declarations */
 import { Test, TestingModule } from '@nestjs/testing';
@@ -7,7 +8,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { BalanceEntity } from '@shared/database/financial/entities/balance.entity';
 import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ForbiddenException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
 describe('BalanceService', () => {

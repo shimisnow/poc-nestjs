@@ -6,18 +6,10 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
 import { TransactionsRepository } from './repositories/transactions.repository';
 import { TransactionService } from './transaction.service';
-import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
-import {
-  ForbiddenException,
-  NotFoundException,
-  PreconditionFailedException,
-} from '@nestjs/common';
 import { BalanceService } from '../balance/balance.service';
 import { BalancesRepository } from '../balance/repositories/balances.repository';
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
-import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { UserService } from '../user/user.service';
-import { BalanceEntity } from '@shared/database/financial/entities/balance.entity';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
