@@ -7,8 +7,9 @@ on:
       - 'issue-**'
   pull_request:
     branches:
-      - development
       - 'milestone-**'
+      - development
+      - main
 
 jobs:
   unit-testing:
@@ -29,8 +30,77 @@ jobs:
 
       - run: npm ci --force
 
-      - name: Unit test for auth-service
-        run: npx nx test auth-service
+      - name: Test auth-service
+        run: npx nx test auth-service -- --coverage --coverageReporters=cobertura
+        continue-on-error: true
 
-      - name: Unit test for financial-service
-        run: npx nx test financial-service
+      - name: Test financial-service
+        run: npx nx test financial-service -- --coverage --coverageReporters=cobertura
+        continue-on-error: true
+
+      - name: Coverage report for auth-service
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: github.event_name == 'pull_request'
+        with:
+          filename: coverage/apps/auth-service/cobertura-coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '60 80'
+
+      - name: Rename report file for auth-service
+        run: mv code-coverage-results.md code-coverage-results-auth-service.md
+
+      - name: Coverage report for financial-service
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: github.event_name == 'pull_request'
+        with:
+          filename: coverage/apps/financial-service/cobertura-coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '60 80'
+
+      - name: Set title for auth-service
+        run: |
+          cat <<EOF >> code-coverage-output.md
+          ## 📦 Auth Service
+
+          EOF
+
+      - name: Merge report files
+        run: cat code-coverage-results-auth-service.md >> code-coverage-output.md
+
+      - name: Set title for financial-service
+        run: |
+          cat <<EOF >> code-coverage-output.md
+
+          ## 📦 Financial Service
+          
+          EOF
+
+      - name: Merge report files
+        run: cat code-coverage-results.md >> code-coverage-output.md
+
+      - name: Set final PR message
+        run: |
+          cat <<EOF >> code-coverage-output.md
+
+          ### ⛔️ This comment can be replaced by Github Actions. Do not quote or react to it.
+          EOF
+
+      - name: Add Coverage PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          header: code-coverage
+          recreate: true
+          path: code-coverage-output.md
