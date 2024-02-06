@@ -5,6 +5,8 @@ import { AuthService } from './auth.service';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -14,8 +16,9 @@ describe('AuthController', () => {
       controllers: [AuthController],
       providers: [
         AuthService,
+        UserAuthsRepository,
         {
-          provide: UserAuthsRepository,
+          provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,
         },
         {

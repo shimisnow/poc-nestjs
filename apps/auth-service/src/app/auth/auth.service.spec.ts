@@ -5,6 +5,8 @@ import { UserAuthsRepository } from './repositories/user-auths/user-auths.reposi
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
 import { BadGatewayException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { getRepositoryToken } from '@nestjs/typeorm';
+import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -13,8 +15,9 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
+        UserAuthsRepository,
         {
-          provide: UserAuthsRepository,
+          provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,
         },
         {

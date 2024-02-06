@@ -3,7 +3,8 @@ import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-a
 import { InsertResult, QueryFailedError } from 'typeorm';
 
 export class UserAuthsRepositoryMock {
-  async findByUsername(username: string): Promise<UserAuthEntity> {
+  async findOne(options): Promise<UserAuthEntity> {
+    const username = options.where.username;
     switch (username) {
       case 'anderson':
         return {
