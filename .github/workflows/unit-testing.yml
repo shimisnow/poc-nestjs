@@ -94,7 +94,7 @@ jobs:
         run: |
           cat <<EOF >> code-coverage-output.md
 
-          ### ⛔️ This comment can be replaced by Github Actions. Do not quote or react to it.
+          ⛔️ This comment can be replaced by Github Actions. Do not quote or react to it.
           EOF
 
       - name: Add Coverage PR comment
