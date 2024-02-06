@@ -20,7 +20,6 @@ import {
 } from '@nestjs/swagger';
 import { CreateTransactionBodyDto } from './dtos/create-transaction-body.dto';
 import { CreateTransactionSerializer } from './serializers/create-transactions.serializer';
-import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
 import { CreateTransactionError400Serializer } from './serializers/create-transaction-error-400.serializer';
@@ -80,6 +79,8 @@ export class TransactionController {
     description: 'Internal data processing error. Probably a database error',
     type: DefaultError502Serializer,
   })
+  // ignore on tests because this endpoint do not manipulate data
+  /* istanbul ignore next */
   async createTransaction(
     @User() user: UserPayload,
     @Body() body: CreateTransactionBodyDto,
