@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
-import { BadGatewayException, UnauthorizedException } from '@nestjs/common';
+import { BadGatewayException, ConflictException, UnauthorizedException } from '@nestjs/common';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -97,6 +97,28 @@ describe('AuthService', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(BadGatewayException);
       }
+    });
+  });
+
+  describe('auth.service -> signup()', () => {
+    test('username/userId already registered', async () => {
+      try {
+        await service.signup(
+          'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
+          'thomas',
+          ''
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+      }
+    });
+
+    test('insert without errors', async () => {
+      const result = await service.signup(
+        '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        'anderson',
+        ''
+      );
     });
   });
 });
