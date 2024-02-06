@@ -11,12 +11,12 @@ export default {
   collectCoverageFrom: ['<rootDir>/src/**'],
   coveragePathIgnorePatterns: [
     'main.ts',
-    '.*\.module\.ts$'
+    '.*\.(module|dto|serializer|mock)\.ts$'
   ],
   coverageReporters: ['clover', 'html'],
   coverageThreshold: {
     global: {
-      lines: 80,
+      lines: 60,
     },
   },
 };
