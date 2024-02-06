@@ -8,4 +8,15 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/financial-service',
+  collectCoverageFrom: ['<rootDir>/src/**'],
+  coveragePathIgnorePatterns: [
+    'main.ts',
+    '.*\.(module|dto|serializer|mock)\.ts$'
+  ],
+  coverageReporters: ['clover', 'html'],
+  coverageThreshold: {
+    global: {
+      lines: 60,
+    },
+  },
 };

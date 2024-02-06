@@ -3,6 +3,8 @@
 [![Unit/Integration Tests](https://github.com/shimisnow/poc-nestjs/actions/workflows/unit-testing.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/unit-testing.yml)
 [![E2E Tests](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-testing.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-testing.yml)
 [![Build and publish Docker Images](https://github.com/shimisnow/poc-nestjs/actions/workflows/deploy.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/deploy.yml)
+[![Auth Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-auth-service/latest?logo=docker&label=Auth%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-auth-service)
+[![Financial Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-financial-service/latest?logo=docker&label=Financial%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-financial-service)
 
 This project implements a REST API for a financial backend with NestJS and serves as a demonstration of how to architect and develop a scalable backend API application.
 
@@ -11,20 +13,20 @@ This project implements a REST API for a financial backend with NestJS and serve
 - Showcases [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Demonstrates [NestJS](https://docs.nestjs.com/) architecture and patterns and provides a strong foundation for building scalable APIs.
 - Integrates with PostgreSQL and Redis.
-- Shows how to test with [Jest](https://jestjs.io/), [SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/).
-- Shows how to deploy with Docker using [Multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
-- Shows how to Github Actions to E2E teste the application and publish the compiled code to Docker Hub.
+- Shows how to test with [Jest](https://jestjs.io/), [Supertest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/).
+- Shows how to deploy with Docker using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
+- Shows how to Github Actions to E2E test the application and publish the compiled code to Docker Hub.
 - Shows how to use [OpenAPI/Swagger](https://www.openapis.org/) documentation for REST APIs.
 
 ## Technologies
 
 - Code organization: monorepo with [Nx](https://nx.dev/)
 - Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
-- Database and cache: Postgres (SQL), Redis, [TypeORM](https://typeorm.io/)
+- Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/))
 - DevOps: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
 - Documentation: [OpenAPI/Swagger](https://www.openapis.org/)
-- Others: Docker (with multi-stage builds), Docker Compose
+- Others: Docker (with multi-stage build), Docker Compose, ESLint, Webpack, JWT
 
 ## Details about
 
