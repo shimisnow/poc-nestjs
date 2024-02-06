@@ -8,4 +8,15 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/auth-service',
+  collectCoverageFrom: ['<rootDir>/src/**'],
+  coveragePathIgnorePatterns: [
+    'main.ts',
+    '.*\.module\.ts$'
+  ],
+  coverageReporters: ['clover', 'html'],
+  coverageThreshold: {
+    global: {
+      lines: 80,
+    },
+  },
 };
