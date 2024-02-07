@@ -11,3 +11,11 @@ services:
       - 8082:80
     volumes:
       - ./docs/openapi/openapi-docs.json:/usr/share/nginx/html/openapi-docs.json:ro
+
+  compodoc:
+    image: nginx:1.25.3-alpine3.18
+    restart: always
+    ports:
+      - 8092:80
+    volumes:
+      - ./docs/compodoc:/usr/share/nginx/html:ro
