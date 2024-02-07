@@ -28,6 +28,7 @@ export class AuthService {
    *
    * @param username Username to be verified.
    * @returns Information if username is already registered into database.
+   * @throws BadGatewayException Database error.
    */
   async verifyIfUsernameExists(username: string): Promise<boolean> {
     let result: UserAuthEntity = null;
@@ -45,6 +46,15 @@ export class AuthService {
     return true;
   }
 
+  /**
+   * Gets token to be used at API requests.
+   * 
+   * @param username Username.
+   * @param password Password in plain text.
+   * @returns Data with token to be used at the private endpoints.
+   * @throws BadGatewayException Database error.
+   * @throws UnauthorizedException User do not exists, is inactive or password is incorrect.
+   */
   async login(username: string, password: string): Promise<LoginSerializer> {
     let user: UserAuthEntity = null;
 
@@ -71,6 +81,17 @@ export class AuthService {
     } as LoginSerializer;
   }
 
+  /**
+   * Register an user authentication information.
+   * 
+   * @param userId UUID user information.
+   * @param username Username.
+   * @param password Password in plain text.
+   * @returns Information if the user was registered.
+   * @throws ConflictException Username or userId duplicated.
+   * @throws UnprocessableEntityException Database error from query parser.
+   * @throws BadGatewayException Database error.
+   */
   async signup(
     userId: string,
     username: string,
