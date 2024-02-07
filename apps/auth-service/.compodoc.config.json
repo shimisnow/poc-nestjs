@@ -1,4 +1,4 @@
 {
-    "tsconfig": "tsconfig.doc.json",
-    "output": "docs/compodoc"
+    "tsconfig": "apps/auth-service/tsconfig.doc.json",
+    "output": "apps/auth-service/docs/compodoc"
 }

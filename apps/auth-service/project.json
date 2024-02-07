@@ -58,6 +58,9 @@
           "codeCoverage": true
         }
       }
+    },
+    "compodoc": {
+      "command": "npx @compodoc/compodoc --config apps/auth-service/.compodoc.config.json"
     }
   },
   "tags": []

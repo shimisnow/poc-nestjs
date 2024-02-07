@@ -58,6 +58,9 @@
           "codeCoverage": true
         }
       }
+    },
+    "compodoc": {
+      "command": "npx @compodoc/compodoc --config apps/financial-service/.compodoc.config.json"
     }
   },
   "tags": []

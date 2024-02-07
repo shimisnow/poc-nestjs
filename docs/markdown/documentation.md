@@ -25,3 +25,18 @@ Then start the desired service to generate the json file.
 
 A Postman collection can be found at [poc-nest.postman_collection.json](../postman/poc-nest.postman_collection.json)
 
+## Compodoc (code documentation)
+
+| service name      |
+| :---------------- |
+| auth-service      |
+| financial-service |
+
+To generate the code documentation, use:
+
+```sh
+npx nx compodoc SERVICE_NAME
+```
+
+The documentation will be available at `apps/SERVICE_NAME/docs/compodoc`.
+
