@@ -17,15 +17,16 @@ This project implements a REST API for a financial backend with NestJS and serve
 - Shows how to deploy with Docker using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
 - Shows how to Github Actions to E2E test the application and publish the compiled code to Docker Hub.
 - Shows how to use [OpenAPI/Swagger](https://www.openapis.org/) documentation for REST APIs.
+- Shows how to use pre-request script in [Postman](https://www.postman.com/) to build powerfull collections.
 
 ## Technologies
 
 - Code organization: monorepo with [Nx](https://nx.dev/)
 - Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
 - Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
-- Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/))
-- DevOps: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
-- Documentation: [OpenAPI/Swagger](https://www.openapis.org/)
+- Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
+- CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
+- Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/)
 - Others: Docker (with multi-stage build), Docker Compose, ESLint, Webpack, JWT
 
 ## Details about
