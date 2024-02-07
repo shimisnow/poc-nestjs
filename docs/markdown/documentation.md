@@ -25,3 +25,26 @@ Then start the desired service to generate the json file.
 
 A Postman collection can be found at [poc-nest.postman_collection.json](../postman/poc-nest.postman_collection.json)
 
+## Compodoc (code documentation)
+
+| service name      | port |
+| :---------------- | :--: |
+| auth-service      | 8091 |
+| financial-service | 8092 |
+
+To generate the code documentation, use:
+
+```sh
+npx nx compodoc SERVICE_NAME
+```
+
+The documentation will be available at `apps/SERVICE_NAME/docs/compodoc`.
+
+If you want to see the documentation in a browser, at the service folder, use:
+
+```sh
+docker compose up -d compodoc
+```
+
+And then got to `http://localhost:PORT`.
+
