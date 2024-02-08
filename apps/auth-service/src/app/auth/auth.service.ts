@@ -94,6 +94,18 @@ export class AuthService {
   }
 
   async refresh(user: UserPayload): Promise<RefreshSerializer> {
+    let userEntity: UserAuthEntity = null;
+
+    try {
+      userEntity = await this.userAuthsRepository.findById(user.userId);
+    } catch (error) {
+      throw new BadGatewayException(error.message);
+    }
+
+    if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
+      throw new UnauthorizedException();
+    }
+
     const payload = {
       userId: user.userId,
     } as UserPayload;

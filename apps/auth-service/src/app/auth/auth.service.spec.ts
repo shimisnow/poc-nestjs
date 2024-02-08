@@ -117,6 +117,18 @@ describe('AuthService', () => {
       expect(result.accessToken).not.toBeNull();
       expect(result).not.toHaveProperty('refreshToken');
     });
+
+    test('correct login data with INACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
+      } as UserPayload;
+
+      try {
+        await service.refresh(user);
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    });
   });
 
   describe('auth.service -> signup()', () => {
