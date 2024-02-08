@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Query, Version } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query, UseGuards, Version } from '@nestjs/common';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
@@ -10,6 +10,9 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { AuthRefreshGuard } from '@shared/authentication/guards/auth-refresh.guard';
+import { User } from '@shared/authentication/decorators/user.decorator';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthService } from './auth.service';
 import { SignUpBodyDto } from './dtos/signup-body.dto';
 import { SignUpSerializer } from './serializers/signup.serializer';
@@ -24,6 +27,7 @@ import { LoginError400Serializer } from './serializers/login-error-400.serialize
 import { LoginError401Serializer } from './serializers/login-error-401.serializer';
 import { SignUpError400Serializer } from './serializers/signup-error-400.serializer';
 import { SignUpError409Serializer } from './serializers/signup-error-409.serializer';
+import { RefreshSerializer } from './serializers/refresh.serializer';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -106,6 +110,13 @@ export class AuthController {
   })
   async login(@Body() body: LoginBodyDto): Promise<LoginSerializer> {
     return await this.authService.login(body.username, body.password);
+  }
+
+  @Version('1')
+  @Get('refresh')
+  @UseGuards(AuthRefreshGuard)
+  async refresh(@User() user: UserPayload): Promise<RefreshSerializer> {
+    return await this.authService.refresh(user);
   }
 
   @Version('1')

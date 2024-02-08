@@ -14,6 +14,7 @@ import { SignUpSerializer } from './serializers/signup.serializer';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { LoginSerializer } from './serializers/login.serializer';
 import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-auth-status.enum';
+import { RefreshSerializer } from './serializers/refresh.serializer';
 
 @Injectable()
 export class AuthService {
@@ -76,9 +77,35 @@ export class AuthService {
       userId: user.userId,
     } as UserPayload;
 
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_SECRET_KEY,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    });
+
     return {
-      accessToken: await this.jwtService.signAsync(payload),
-    } as LoginSerializer;
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async refresh(user: UserPayload): Promise<RefreshSerializer> {
+    const payload = {
+      userId: user.userId,
+    } as UserPayload;
+
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    return {
+      accessToken,
+    }
   }
 
   /**
