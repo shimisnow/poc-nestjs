@@ -37,6 +37,15 @@ export class UserAuthsRepositoryMock {
       switch (userId) {
         case '4b3c74ae-57aa-4752-9452-ed083b6d4b04':
           return null;
+        case '4b3c74ae-57aa-4752-9452-ed083b6d4bfa':
+          return {
+            userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+            username: 'anderson',
+            password:
+              // test@1234
+              '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
+            status: UserAuthStatusEnum.ACTIVE,
+          } as UserAuthEntity;
       }
     }
   }
