@@ -1,6 +1,7 @@
 import {
   BadGatewayException,
   ConflictException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
   UnprocessableEntityException,
@@ -8,6 +9,7 @@ import {
 import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { AUTHENTICATION_ERROR } from '@shared/authentication/enums/authentication-error.enum';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { SignUpSerializer } from './serializers/signup.serializer';
@@ -66,11 +68,29 @@ export class AuthService {
     }
 
     if (user?.status !== UserAuthStatusEnum.ACTIVE) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'wrong user or password information',
+          ],
+        },
+      });
     }
 
     if ((await bcrypt.compare(password, user?.password)) === false) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'wrong user or password information',
+          ],
+        },
+      });
     }
 
     const payload = {
@@ -103,7 +123,16 @@ export class AuthService {
     }
 
     if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'user is inactive or does not exists',
+          ],
+        },
+      });
     }
 
     const payload = {

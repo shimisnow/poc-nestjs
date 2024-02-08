@@ -10,7 +10,7 @@ import { Request } from 'express';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { UserPayload } from '../payloads/user.payload';
-import { JSON_WEB_TOKEN_ERROR } from '../enums/jwt-error.enum';
+import { AUTHENTICATION_ERROR } from '../enums/authentication-error.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: JSON_WEB_TOKEN_ERROR.EmptyJsonWebTokenError,
+          name: AUTHENTICATION_ERROR.EmptyJsonWebTokenError,
         },
       });
     }
@@ -74,7 +74,7 @@ export class AuthGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: JSON_WEB_TOKEN_ERROR.JsonWebTokenPayloadStrutureError,
+          name: AUTHENTICATION_ERROR.JsonWebTokenPayloadStrutureError,
           errors: messages,
         },
       });

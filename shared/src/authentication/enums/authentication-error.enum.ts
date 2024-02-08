@@ -1,6 +1,7 @@
-export enum JSON_WEB_TOKEN_ERROR {
+export enum AUTHENTICATION_ERROR {
     EmptyJsonWebTokenError = 'EmptyJsonWebTokenError',
     JsonWebTokenError = 'JsonWebTokenError',
     JsonWebTokenPayloadStrutureError = 'JsonWebTokenPayloadStrutureError',
-    TokenExpiredError = 'TokenExpiredError'
+    TokenExpiredError = 'TokenExpiredError',
+    UserPasswordError = 'UserPasswordError'
 }

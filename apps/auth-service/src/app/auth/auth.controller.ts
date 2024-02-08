@@ -24,7 +24,7 @@ import { DefaultError502Serializer } from './serializers/default-error-502.seria
 import { LoginBodyDto } from './dtos/login-body.dto';
 import { LoginSerializer } from './serializers/login.serializer';
 import { LoginError400Serializer } from './serializers/login-error-400.serializer';
-import { LoginError401Serializer } from './serializers/login-error-401.serializer';
+import { DefaultError401Serializer } from '@shared/authentication/serializers/default-error-401.serializer';
 import { SignUpError400Serializer } from './serializers/signup-error-400.serializer';
 import { SignUpError409Serializer } from './serializers/signup-error-409.serializer';
 import { RefreshSerializer } from './serializers/refresh.serializer';
@@ -96,8 +96,8 @@ export class AuthController {
   })
   @ApiUnauthorizedResponse({
     description:
-      'User do not exists, exists and is inactive or the password is wrong',
-    type: LoginError401Serializer,
+      'User does not exists, exists and is inactive or the password is wrong',
+    type: DefaultError401Serializer,
   })
   @ApiInternalServerErrorResponse({
     description:
@@ -115,6 +115,33 @@ export class AuthController {
   @Version('1')
   @Get('refresh')
   @UseGuards(AuthRefreshGuard)
+  @ApiOperation({
+    summary:
+      'Uses refresh token to get new access token',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
+  })
+  @ApiOkResponse({
+    description: 'JWT Access Token to use in future API calls',
+    type: RefreshSerializer,
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      'User does not exists or is inactive',
+    type: DefaultError401Serializer,
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'The server has encountered a situation it does not know how to handle. See server logs for details',
+    type: DefaultError500Serializer,
+  })
+  @ApiBadGatewayResponse({
+    description: 'Internal data processing error. Probably a database error',
+    type: DefaultError502Serializer,
+  })
   async refresh(@User() user: UserPayload): Promise<RefreshSerializer> {
     return await this.authService.refresh(user);
   }
