@@ -1,6 +1,7 @@
 import {
   BadGatewayException,
   ConflictException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
   UnprocessableEntityException,
@@ -8,12 +9,14 @@ import {
 import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { AUTHENTICATION_ERROR } from '@shared/authentication/enums/authentication-error.enum';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { SignUpSerializer } from './serializers/signup.serializer';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { LoginSerializer } from './serializers/login.serializer';
 import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-auth-status.enum';
+import { RefreshSerializer } from './serializers/refresh.serializer';
 
 @Injectable()
 export class AuthService {
@@ -65,20 +68,85 @@ export class AuthService {
     }
 
     if (user?.status !== UserAuthStatusEnum.ACTIVE) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'wrong user or password information',
+          ],
+        },
+      });
     }
 
     if ((await bcrypt.compare(password, user?.password)) === false) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'wrong user or password information',
+          ],
+        },
+      });
     }
 
     const payload = {
       userId: user.userId,
     } as UserPayload;
 
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_SECRET_KEY,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    });
+
     return {
-      accessToken: await this.jwtService.signAsync(payload),
-    } as LoginSerializer;
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async refresh(user: UserPayload): Promise<RefreshSerializer> {
+    let userEntity: UserAuthEntity = null;
+
+    try {
+      userEntity = await this.userAuthsRepository.findById(user.userId);
+    } catch (error) {
+      throw new BadGatewayException(error.message);
+    }
+
+    if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'user is inactive or does not exists',
+          ],
+        },
+      });
+    }
+
+    const payload = {
+      userId: user.userId,
+    } as UserPayload;
+
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+
+    return {
+      accessToken,
+    }
   }
 
   /**

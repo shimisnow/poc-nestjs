@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { BadGatewayException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -65,9 +66,10 @@ describe('AuthService', () => {
 
       expect(result).toHaveProperty('accessToken');
       expect(result.accessToken).not.toBeNull();
-
-      const accessTokenParts = result.accessToken.split('.');
-      expect(accessTokenParts.length).toBe(3);
+      expect(result).toHaveProperty('refreshToken');
+      expect(result.refreshToken).not.toBeNull();
+      expect(result.accessToken.split('.').length).toBe(3);
+      expect(result.refreshToken.split('.').length).toBe(3);
     });
 
     test('correct login data with INACTIVE user', async () => {
@@ -103,6 +105,32 @@ describe('AuthService', () => {
     });
   });
 
+  describe('auth.service -> refresh()', () => {
+    test('correct token data with ACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+      } as UserPayload;
+
+      const result = await service.refresh(user);
+
+      expect(result).toHaveProperty('accessToken');
+      expect(result.accessToken).not.toBeNull();
+      expect(result).not.toHaveProperty('refreshToken');
+    });
+
+    test('correct login data with INACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
+      } as UserPayload;
+
+      try {
+        await service.refresh(user);
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    });
+  });
+
   describe('auth.service -> signup()', () => {
     test('username/userId already registered', async () => {
       try {
@@ -122,6 +150,8 @@ describe('AuthService', () => {
         'anderson',
         ''
       );
+
+      expect(result.status).toBeTruthy();
     });
   });
 });

@@ -18,8 +18,6 @@ import { UserAuthEntity } from '@shared/database/authentication/entities/user-au
     }),
     JwtModule.register({
       global: true,
-      secret: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN },
     }),
   ],
 })
