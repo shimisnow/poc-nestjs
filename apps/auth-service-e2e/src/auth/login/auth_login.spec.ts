@@ -55,6 +55,9 @@ describe('POST /auth/login', () => {
         DATABASE_AUTH_DBNAME: process.env.DATABASE_AUTH_DBNAME,
         JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
         JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+        JWT_REFRESH_SECRET_KEY: process.env.JWT_REFRESH_SECRET_KEY,
+        JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
+        JWT_REFRESH_MAX_AGE: process.env.JWT_REFRESH_MAX_AGE,
         AUTH_SERVICE_PORT: process.env.AUTH_SERVICE_PORT,
       })
       .start();
@@ -70,7 +73,7 @@ describe('POST /auth/login', () => {
     containerCode.stop();
   });
 
-  describe('API call WITHOUT errors', () => {
+  describe('authentication errors', () => {
     test('User does not exists', async () => {
       await request(host)
         .post(endpoint)
@@ -80,7 +83,12 @@ describe('POST /auth/login', () => {
         })
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        .expect(401);
+        .expect(401)
+        .then(response => {
+          const body = response.body;
+          expect(body.data.name).toBe('UserPasswordError');
+          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+        });
     });
 
     test('User exists but it is inactive', async () => {
@@ -92,7 +100,12 @@ describe('POST /auth/login', () => {
         })
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        .expect(401);
+        .expect(401)
+        .then(response => {
+          const body = response.body;
+          expect(body.data.name).toBe('UserPasswordError');
+          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+        });
     });
 
     test('User is active (wrong password)', async () => {
@@ -104,29 +117,16 @@ describe('POST /auth/login', () => {
         })
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        .expect(401);
-    });
-
-    test('User is active (correct password)', async () => {
-      const response = await request(host)
-        .post(endpoint)
-        .send({
-          username: 'anderson',
-          password: 'test@1234',
-        })
-        .set('X-Api-Version', '1')
-        .expect('Content-Type', /json/)
-        .expect(200);
-
-      const body = response.body;
-
-      expect(body).toHaveProperty('accessToken');
-      // throws "JsonWebTokenError: invalid signature" if token is invalid
-      jsonwebtoken.verify(body.accessToken, JWT_SECRET_KEY);
+        .expect(401)
+        .then(response => {
+          const body = response.body;
+          expect(body.data.name).toBe('UserPasswordError');
+          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+        });
     });
   });
 
-  describe('API call WITH errors', () => {
+  describe('request with errors', () => {
     test('BadRequestResponse: property should not exist', async () => {
       const response = await request(host)
         .post(endpoint)
@@ -165,6 +165,26 @@ describe('POST /auth/login', () => {
       expect(
         body.message.includes('username should not be empty')
       ).toBeTruthy();
+    });
+  });
+
+  describe('request without errors', () => {
+    test('User is active (correct password)', async () => {
+      const response = await request(host)
+        .post(endpoint)
+        .send({
+          username: 'anderson',
+          password: 'test@1234',
+        })
+        .set('X-Api-Version', '1')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      const body = response.body;
+
+      expect(body).toHaveProperty('accessToken');
+      // throws "JsonWebTokenError: invalid signature" if token is invalid
+      jsonwebtoken.verify(body.accessToken, JWT_SECRET_KEY);
     });
   });
 });
