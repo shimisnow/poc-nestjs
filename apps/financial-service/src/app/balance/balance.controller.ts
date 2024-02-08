@@ -25,7 +25,7 @@ import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { GetBalanceError400Serializer } from './serializers/get-balance-error-400.serializer';
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
-import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
+import { DefaultError401Serializer } from '@shared/authentication/serializers/default-error-401.serializer';
 import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
 
 @Controller('balance')

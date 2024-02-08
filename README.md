@@ -11,7 +11,8 @@ This project implements a REST API for a financial backend with NestJS and serve
 ## Key features
 
 - Showcases [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
-- Demonstrates [NestJS](https://docs.nestjs.com/) architecture and patterns and provides a strong foundation for building scalable APIs.
+- Demonstrates [NestJS](https://docs.nestjs.com/) architecture and patterns.
+- Shows how to work with monorepo using [Nx](https://nx.dev/).
 - Integrates with PostgreSQL and Redis.
 - Shows how to test with [Jest](https://jestjs.io/), [Supertest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/).
 - Shows how to deploy with Docker using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
