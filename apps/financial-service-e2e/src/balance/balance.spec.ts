@@ -99,7 +99,11 @@ describe('GET /balance', () => {
         })
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        .expect(401);
+        .expect(401)
+        .then(response => {
+          const body = response.body;
+          expect(body.data.name).toBe('EmptyJsonWebTokenError');
+        });
     });
 
     test('request with expired token', async () => {
@@ -118,15 +122,21 @@ describe('GET /balance', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        .expect(401);
+        .expect(401)
+        .then(response => {
+          const body = response.body;
+          expect(body.data.name).toBe('TokenExpiredError');
+          expect(body.data).toHaveProperty('expiredAt');
+          expect(body.data.errors).toEqual(expect.arrayContaining(['jwt expired']));
+        });
     });
 
     test('request with expire token set with higher value than server max age', async () => {
       const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a166',
-        iat: now - 3660, // 1h and 1m before now
-        exp: now,
+        iat: now - 4000,
+        exp: now + 60,
       }, JWT_SECRET_KEY);
 
       await request(host)
@@ -137,7 +147,13 @@ describe('GET /balance', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        .expect(401);
+        .expect(401)
+        .then(response => {
+          const body = response.body;
+          expect(body.data.name).toBe('TokenExpiredError');
+          expect(body.data).toHaveProperty('expiredAt');
+          expect(body.data.errors).toEqual(expect.arrayContaining(['maxAge exceeded']));
+        });
     });
   });
 

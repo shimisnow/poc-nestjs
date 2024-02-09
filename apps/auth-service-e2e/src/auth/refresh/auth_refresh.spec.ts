@@ -4,7 +4,7 @@ import jsonwebtoken from 'jsonwebtoken';
 import { GenericContainer, Network, StartedNetwork, StartedTestContainer, Wait } from 'testcontainers';
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 
-describe('POST /auth/login', () => {
+describe('POST /auth/refresh', () => {
   const DOCKER_IMAGE_BUILD_NAME = 'poc-nestjs-node';
   const DOCKER_POSTGRES_TAG = 'postgres:16.1';
 
@@ -14,8 +14,9 @@ describe('POST /auth/login', () => {
   let AUTH_SERVICE_TEST_PORT: number;
 
   let host: string;
-  const endpoint = '/auth/login';
+  const endpoint = '/auth/refresh';
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+  const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
   beforeAll(async () => {
     dockerNetwork = await new Network().start();
@@ -75,107 +76,60 @@ describe('POST /auth/login', () => {
 
   describe('authentication errors', () => {
     test('User does not exists', async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const refreshToken = jsonwebtoken.sign({
+        userId: '10f88251-d181-4255-92ed-d0d874e3a177',
+        iat: now,
+        exp: now + 60,
+      }, JWT_REFRESH_SECRET_KEY);
+
       await request(host)
-        .post(endpoint)
-        .send({
-          username: 'thomas',
-          password: 'test@1234',
-        })
+        .get(endpoint)
+        .set('Authorization', `Bearer ${refreshToken}`)
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401)
         .then(response => {
           const body = response.body;
           expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+          expect(body.data.errors).toEqual(expect.arrayContaining(['user is inactive or does not exists']));
         });
     });
 
     test('User exists but it is inactive', async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const refreshToken = jsonwebtoken.sign({
+        userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        iat: now,
+        exp: now + 60,
+      }, JWT_REFRESH_SECRET_KEY);
+      
       await request(host)
-        .post(endpoint)
-        .send({
-          username: 'ericka',
-          password: 'test@1234',
-        })
+        .get(endpoint)
+        .set('Authorization', `Bearer ${refreshToken}`)
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(401)
         .then(response => {
           const body = response.body;
           expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+          expect(body.data.errors).toEqual(expect.arrayContaining(['user is inactive or does not exists']));
         });
-    });
-
-    test('User is active (wrong password)', async () => {
-      await request(host)
-        .post(endpoint)
-        .send({
-          username: 'anderson',
-          password: 'password',
-        })
-        .set('X-Api-Version', '1')
-        .expect('Content-Type', /json/)
-        .expect(401)
-        .then(response => {
-          const body = response.body;
-          expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
-        });
-    });
-  });
-
-  describe('request with errors', () => {
-    test('BadRequestResponse: property should not exist', async () => {
-      const response = await request(host)
-        .post(endpoint)
-        .send({
-          name: 'user',
-        })
-        .set('X-Api-Version', '1')
-        .expect('Content-Type', /json/)
-        .expect(400);
-
-      const body = response.body;
-
-      expect(body).toHaveProperty('message');
-      expect(body.message).toBeInstanceOf(Array);
-      expect(
-        body.message.includes('property name should not exist')
-      ).toBeTruthy();
-    });
-
-    test('BadRequestResponse: error validating request input data', async () => {
-      const response = await request(host)
-        .post(endpoint)
-        .send({
-          username: '',
-          password: '',
-        })
-        .set('X-Api-Version', '1')
-        .expect('Content-Type', /json/)
-        .expect(400);
-
-      const body = response.body;
-
-      expect(body).toHaveProperty('message');
-      expect(body.message).toBeInstanceOf(Array);
-      expect(body.message.length).toBe(2);
-      expect(
-        body.message.includes('username should not be empty')
-      ).toBeTruthy();
     });
   });
 
   describe('request without errors', () => {
     test('User is active (correct password)', async () => {
+      const now = Math.floor(Date.now() / 1000);
+      const refreshToken = jsonwebtoken.sign({
+        userId: '4799cc31-7692-40b3-afff-cc562baf5374',
+        iat: now,
+        exp: now + 60,
+      }, JWT_REFRESH_SECRET_KEY);
+
       const response = await request(host)
-        .post(endpoint)
-        .send({
-          username: 'anderson',
-          password: 'test@1234',
-        })
+        .get(endpoint)
+        .set('Authorization', `Bearer ${refreshToken}`)
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
         .expect(200);

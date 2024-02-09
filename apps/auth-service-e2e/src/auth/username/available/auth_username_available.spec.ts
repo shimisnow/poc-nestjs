@@ -53,6 +53,9 @@ describe('GET /auth/username/available', () => {
         DATABASE_AUTH_DBNAME: process.env.DATABASE_AUTH_DBNAME,
         JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
         JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+        JWT_REFRESH_SECRET_KEY: process.env.JWT_REFRESH_SECRET_KEY,
+        JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
+        JWT_REFRESH_MAX_AGE: process.env.JWT_REFRESH_MAX_AGE,
         AUTH_SERVICE_PORT: process.env.AUTH_SERVICE_PORT,
       })
       .start();

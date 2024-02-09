@@ -13,7 +13,7 @@ import { UserPayload } from '../payloads/user.payload';
 import { AUTHENTICATION_ERROR } from '../enums/authentication-error.enum';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthRefreshGuard implements CanActivate {
   constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -35,7 +35,8 @@ export class AuthGuard implements CanActivate {
     // JWT verification
     try {
       payload = await this.jwtService.verifyAsync(token, {
-        maxAge: process.env.JWT_MAX_AGE,
+        secret: process.env.JWT_REFRESH_SECRET_KEY,
+        maxAge: process.env.JWT_REFRESH_MAX_AGE,
       });
     } catch (error) {
       const exceptionBody = {

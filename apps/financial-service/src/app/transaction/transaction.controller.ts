@@ -27,7 +27,7 @@ import { CreateTransactionError412Serializer } from './serializers/create-transa
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
-import { DefaultError401Serializer } from './serializers/default-error-401.serializer';
+import { DefaultError401Serializer } from '@shared/authentication/serializers/default-error-401.serializer';
 import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
 
 @Controller('transaction')
