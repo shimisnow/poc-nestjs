@@ -1,4 +1,4 @@
-![](docs/markdown//images/poc-nestjs-bar.png)
+![POC NestJS](docs/markdown//images/poc-nestjs-bar.png)
 
 # Financial REST API with NestJS
 [![Unit/Integration Tests](https://github.com/shimisnow/poc-nestjs/actions/workflows/unit-testing.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/unit-testing.yml)
@@ -7,7 +7,9 @@
 [![Auth Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-auth-service/latest?logo=docker&label=Auth%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-auth-service)
 [![Financial Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-financial-service/latest?logo=docker&label=Financial%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-financial-service)
 
-This project implements a REST API for a financial backend with NestJS and serves as a demonstration of how to architect and develop a scalable backend API application.
+This project implements a REST API for a financial backend with NestJS and serves as a demonstration of how to architect and develop a scalable backend API application. The project has two individual services, one to process authentication and one to process and store financial data.
+
+![General Diagram](/docs/markdown/diagrams/general-flow.svg)
 
 ## Key features
 
