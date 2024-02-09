@@ -1,5 +1,6 @@
-# Financial REST API with NestJS
+![](docs/markdown//images/poc-nestjs-bar.png)
 
+# Financial REST API with NestJS
 [![Unit/Integration Tests](https://github.com/shimisnow/poc-nestjs/actions/workflows/unit-testing.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/unit-testing.yml)
 [![E2E Tests](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-testing.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-testing.yml)
 [![Build and publish Docker Images](https://github.com/shimisnow/poc-nestjs/actions/workflows/deploy.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/deploy.yml)
@@ -12,11 +13,12 @@ This project implements a REST API for a financial backend with NestJS and serve
 
 - Showcases [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Demonstrates [NestJS](https://docs.nestjs.com/) architecture and patterns.
+- Shows how to make a secure authentication with [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt).
 - Shows how to work with monorepo using [Nx](https://nx.dev/).
-- Integrates with PostgreSQL and Redis.
+- Integrates with PostgreSQL (using [TypeORM](https://typeorm.io/)) and Redis.
 - Shows how to test with [Jest](https://jestjs.io/), [Supertest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/).
 - Shows how to deploy with Docker using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
-- Shows how to Github Actions to E2E test the application and publish the compiled code to Docker Hub.
+- Shows how to [Github Actions](https://github.com/features/actions) to E2E test the application and publish the compiled code to [Docker Hub](https://hub.docker.com/).
 - Shows how to use [OpenAPI/Swagger](https://www.openapis.org/) documentation for REST APIs.
 - Shows how to use pre-request script in [Postman](https://www.postman.com/) to build powerfull collections.
 
@@ -25,10 +27,11 @@ This project implements a REST API for a financial backend with NestJS and serve
 - Code organization: monorepo with [Nx](https://nx.dev/)
 - Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
 - Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
+- Security: [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt)
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
 - CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
 - Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/)
-- Others: Docker (with multi-stage build), Docker Compose, ESLint, Webpack, JWT
+- Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, JWT
 
 ## Details about
 
