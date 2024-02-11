@@ -20,7 +20,7 @@ module.exports = async function () {
     .withPassword(process.env.DATABASE_AUTH_PASSWORD)
     // copy SQL files to populate the database
     .withCopyDirectoriesToContainer([{
-      source: './deployment/database/authentication',
+      source: './apps/auth-service-e2e/dependencies/database',
       target: '/docker-entrypoint-initdb.d',
     }])
     .withWaitStrategy(Wait.forLogMessage('PostgreSQL init process complete; ready for start up.'))
