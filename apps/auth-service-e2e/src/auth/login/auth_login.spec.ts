@@ -1,6 +1,6 @@
 import request from 'supertest';
 import jsonwebtoken from 'jsonwebtoken';
-import { getContainerRuntimeClient } from "testcontainers";
+import { getContainerRuntimeClient } from 'testcontainers';
 
 describe('POST /auth/login', () => {
   let host: string;
