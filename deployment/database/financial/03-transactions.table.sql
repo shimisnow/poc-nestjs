@@ -13,6 +13,10 @@ CREATE TABLE public.transactions (
 	CONSTRAINT pk_transactions PRIMARY KEY (transaction_id)
 );
 
+-- public.transactions seqs
+
+ALTER SEQUENCE transactions_transaction_id_seq RESTART WITH 1000;
+
 
 -- public.transactions foreign keys
 
