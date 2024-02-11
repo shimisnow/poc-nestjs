@@ -1,93 +1,18 @@
 import request from 'supertest';
 import jsonwebtoken from 'jsonwebtoken';
-
-import { GenericContainer, Network, StartedNetwork, StartedTestContainer, Wait } from 'testcontainers';
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
+import { getContainerRuntimeClient } from 'testcontainers';
 
 describe('GET /balance', () => {
-  const DOCKER_IMAGE_BUILD_NAME = 'poc-nestjs-node';
-  const DOCKER_POSTGRES_TAG = 'postgres:16.1';
-  const DOCKER_REDIS_TAG = 'redis:7.2.4';
-
-  let dockerNetwork: StartedNetwork;
-  let containerDatabase: StartedPostgreSqlContainer;
-  let containerCache: StartedRedisContainer;
-  let containerCode: StartedTestContainer;
-  let FINANCIAL_SERVICE_TEST_PORT: number;
-
   let host: string;
   const endpoint = '/balance';
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
   beforeAll(async () => {
-    dockerNetwork = await new Network().start();
-
-    /***** DATABASE *****/
-
-    containerDatabase = await new PostgreSqlContainer(DOCKER_POSTGRES_TAG)
-      .withNetwork(dockerNetwork)
-      .withNetworkAliases('database-financial')
-      .withDatabase(process.env.DATABASE_FINANCIAL_DBNAME)
-      .withUsername(process.env.DATABASE_FINANCIAL_USERNAME)
-      .withPassword(process.env.DATABASE_FINANCIAL_PASSWORD)
-      // copy SQL files to populate the database
-      .withCopyDirectoriesToContainer([{
-        source: './deployment/database/financial',
-        target: '/docker-entrypoint-initdb.d',
-      }])
-      .withWaitStrategy(Wait.forLogMessage('PostgreSQL init process complete; ready for start up.'))
-      .start();
-
-    /***** CACHE *****/
-
-    containerCache = await new RedisContainer(DOCKER_REDIS_TAG)
-      .withNetwork(dockerNetwork)
-      .withNetworkAliases('redis')
-      .withExposedPorts(parseInt(process.env.REDIS_PORT))
-      .start();
-
-    /***** NODE (CODE) *****/
-
-    const buildContainerCode = await GenericContainer
-      .fromDockerfile('./')
-      .build(DOCKER_IMAGE_BUILD_NAME, { deleteOnExit: false });
-
-    containerCode = await buildContainerCode
-      .withNetwork(dockerNetwork)
-      .withNetworkAliases('financial-service')
-      .withExposedPorts(parseInt(process.env.FINANCIAL_SERVICE_PORT))
-      .withCopyFilesToContainer([{
-        source: './dist/apps/financial-service/main.js',
-        target: '/home/node/app/main.js'
-      }])
-      .withCommand(['node', 'main.js'])
-      .withEnvironment({
-        DATABASE_FINANCIAL_HOST: 'database-financial',
-        DATABASE_FINANCIAL_PORT:  '5432',
-        DATABASE_FINANCIAL_USERNAME: process.env.DATABASE_FINANCIAL_USERNAME,
-        DATABASE_FINANCIAL_PASSWORD: process.env.DATABASE_FINANCIAL_PASSWORD,
-        DATABASE_FINANCIAL_DBNAME: process.env.DATABASE_FINANCIAL_DBNAME,
-        REDIS_HOST: 'redis',
-        REDIS_PORT: process.env.REDIS_PORT,
-        JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-        JWT_MAX_AGE: process.env.JWT_MAX_AGE,
-        FINANCIAL_SERVICE_PORT: process.env.FINANCIAL_SERVICE_PORT,
-      })
-      .start();
-
-    /***** SETUP *****/
-
-    FINANCIAL_SERVICE_TEST_PORT = containerCode.getMappedPort(parseInt(process.env.FINANCIAL_SERVICE_PORT));
+    const containerRuntimeClient = await getContainerRuntimeClient();
+    const containerCode = await containerRuntimeClient.container.fetchByLabel('poc-nestjs-name', 'financial-service-code');
+    const containerInfo = await containerCode.inspect();
+    const FINANCIAL_SERVICE_TEST_PORT = containerInfo.NetworkSettings.Ports[`${process.env.FINANCIAL_SERVICE_PORT}/tcp`][0].HostPort;
     host = `http://localhost:${FINANCIAL_SERVICE_TEST_PORT}`;
-
-  // it needs a high timeout to enable the containers creation
-  }, (10 * 60000));
-
-  afterAll(async () => {
-    containerDatabase.stop();
-    containerCache.stop();
-    containerCode.stop();
   });
 
   describe('unauthorized jwt access to endpoint', () => {
@@ -206,9 +131,13 @@ describe('GET /balance', () => {
         balance: randomBalance,
         updatedAt: new Date(),
       };
-      
-      await containerCache.exec(
-        `redis-cli SET balance-acc-2 ${JSON.stringify(cacheValue)}`
+
+      const containerRuntimeClient = await getContainerRuntimeClient();
+      const containerCache = await containerRuntimeClient.container.fetchByLabel('poc-nestjs-name', 'financial-service-cache');
+
+      await containerRuntimeClient.container.exec(
+        containerCache,
+        ['redis-cli', 'SET', 'balance-acc-2', JSON.stringify(cacheValue)]
       );
 
       const now = Math.floor(Date.now() / 1000);
@@ -238,7 +167,7 @@ describe('GET /balance', () => {
     test('get balance from database (no cache)', async () => {
       const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
-        userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e3d1',
+        userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e221',
         iat: now,
         exp: now + 60,
       }, JWT_SECRET_KEY);
@@ -246,7 +175,7 @@ describe('GET /balance', () => {
       await request(host)
         .get(endpoint)
         .query({
-          accountId: 3,
+          accountId: 4,
         })
         .set('Authorization', `Bearer ${accessToken}`)
         .set('X-Api-Version', '1')
