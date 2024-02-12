@@ -30,6 +30,7 @@ import { SignUpError400Serializer } from './serializers/signup-error-400.seriali
 import { SignUpError409Serializer } from './serializers/signup-error-409.serializer';
 import { RefreshSerializer } from './serializers/refresh.serializer';
 import { LogoutSerializer } from './serializers/logout.serializer';
+import { PasswordChangeBodyDto } from './dtos/password-change-body.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -215,5 +216,22 @@ export class AuthController {
       body.username,
       body.password
     );
+  }
+
+  @Version('1')
+  @Post('password')
+  @ApiOperation({
+    summary: 'Changes an user password',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
+  })
+  async passwordChange(
+    @User() user: UserPayload,
+    @Body() body: PasswordChangeBodyDto,
+  ) {
+    return await this.authService.passwordChange(user.userId, body.currentPassword, body.newPassword);
   }
 }

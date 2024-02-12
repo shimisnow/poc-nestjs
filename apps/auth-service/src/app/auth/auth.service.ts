@@ -22,6 +22,7 @@ import { LoginSerializer } from './serializers/login.serializer';
 import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-auth-status.enum';
 import { RefreshSerializer } from './serializers/refresh.serializer';
 import { LogoutSerializer } from './serializers/logout.serializer';
+import { PasswordChangeSerializer } from './serializers/password-change.serializer';
 
 @Injectable()
 export class AuthService {
@@ -268,5 +269,13 @@ export class AuthService {
     }
 
     return response;
+  }
+
+  async passwordChange(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<PasswordChangeSerializer> {
+    return;
   }
 }

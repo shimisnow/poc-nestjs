@@ -202,4 +202,68 @@ describe('AuthService', () => {
       expect(result).toHaveProperty('performedAt');
     });
   });
+
+  describe('auth.service -> passwordChange()', () => {
+    test('inactive user', async () => {
+      const user = {
+        userId: '',
+        iss: new Date().getTime(),
+      } as UserPayload;
+
+      try {
+        await service.passwordChange(user.userId, 'test@1234', '1234@test');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(AUTHENTICATION_ERROR.UserPasswordError);
+        expect(response.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+      }
+    });
+
+    test('user does not exist', async () => {
+      const user = {
+        userId: '',
+        iss: new Date().getTime(),
+      } as UserPayload;
+
+      try {
+        await service.passwordChange(user.userId, 'test@1234', '1234@test');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(AUTHENTICATION_ERROR.UserPasswordError);
+        expect(response.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+      }
+    });
+
+    test('incorrect password', async () => {
+      const user = {
+        userId: '',
+        iss: new Date().getTime(),
+      } as UserPayload;
+
+      try {
+        await service.passwordChange(user.userId, 'test@1234', '1234@test');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(AUTHENTICATION_ERROR.UserPasswordError);
+        expect(response.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+      }
+    });
+
+    test('perfomed without errors', async () => {
+      const user = {
+        userId: '',
+        iss: new Date().getTime(),
+      } as UserPayload;
+
+      const result = await service.passwordChange(user.userId, 'test@1234', '1234@test');
+      
+      expect(result.performed).toBeTruthy();
+    });
+  });
 });
