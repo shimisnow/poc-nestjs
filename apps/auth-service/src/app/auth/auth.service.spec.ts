@@ -6,6 +6,7 @@ import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
 import { BadGatewayException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
@@ -16,17 +17,11 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
+        JwtService,
         UserAuthsRepository,
         {
           provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,
-        },
-        {
-          provide: JwtService,
-          useValue: {
-            signAsync: (payload) =>
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuZGVyc29uIiwic3ViIjoxLCJpYXQiOjE2ODM4MzAyNTEsImV4cCI6MTY4MzgzMDMxMX0.eN5Cv2tJ0HGlVNKMtPv5VPeCIA7dd4OEA-8Heh7OJ_c',
-          },
         },
       ],
     }).compile();
@@ -65,11 +60,19 @@ describe('AuthService', () => {
       const result = await service.login('anderson', 'test@1234');
 
       expect(result).toHaveProperty('accessToken');
-      expect(result.accessToken).not.toBeNull();
       expect(result).toHaveProperty('refreshToken');
-      expect(result.refreshToken).not.toBeNull();
-      expect(result.accessToken.split('.').length).toBe(3);
-      expect(result.refreshToken.split('.').length).toBe(3);
+      
+      const accessToken = jsonwebtoken.verify(result.accessToken, process.env.JWT_SECRET_KEY) as JwtPayload;
+      expect(accessToken).toHaveProperty('userId');
+      expect(accessToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
+      expect(accessToken).toHaveProperty('iss');
+      expect(accessToken.iss).toBeLessThan(new Date().getTime());
+
+      const refreshToken = jsonwebtoken.verify(result.refreshToken, process.env.JWT_REFRESH_SECRET_KEY) as JwtPayload;
+      expect(refreshToken).toHaveProperty('userId');
+      expect(refreshToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
+      expect(refreshToken).toHaveProperty('iss');
+      expect(refreshToken.iss).toBeLessThan(new Date().getTime());
     });
 
     test('correct login data with INACTIVE user', async () => {
@@ -88,7 +91,7 @@ describe('AuthService', () => {
       }
     });
 
-    test('incorrect login data (user do not exists)', async () => {
+    test('incorrect login data (user does not exists)', async () => {
       try {
         await service.login('beatrice', 'test@1234');
       } catch (error) {
@@ -114,8 +117,13 @@ describe('AuthService', () => {
       const result = await service.refresh(user);
 
       expect(result).toHaveProperty('accessToken');
-      expect(result.accessToken).not.toBeNull();
       expect(result).not.toHaveProperty('refreshToken');
+
+      const accessToken = jsonwebtoken.verify(result.accessToken, process.env.JWT_SECRET_KEY) as JwtPayload;
+      expect(accessToken).toHaveProperty('userId');
+      expect(accessToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
+      expect(accessToken).toHaveProperty('iss');
+      expect(accessToken.iss).toBeLessThan(new Date().getTime());
     });
 
     test('correct login data with INACTIVE user', async () => {
