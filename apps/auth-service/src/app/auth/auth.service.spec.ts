@@ -55,6 +55,30 @@ describe('AuthService', () => {
     });
   });
 
+  describe('auth.service -> signup()', () => {
+    test('username/userId already registered', async () => {
+      try {
+        await service.signup(
+          'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
+          'thomas',
+          ''
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+      }
+    });
+
+    test('insert without errors', async () => {
+      const result = await service.signup(
+        '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        'anderson',
+        ''
+      );
+
+      expect(result.status).toBeTruthy();
+    });
+  });
+
   describe('auth.service -> login()', () => {
     test('correct login data with ACTIVE user', async () => {
       const result = await service.login('anderson', 'test@1234');
@@ -136,30 +160,6 @@ describe('AuthService', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
-    });
-  });
-
-  describe('auth.service -> signup()', () => {
-    test('username/userId already registered', async () => {
-      try {
-        await service.signup(
-          'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
-          'thomas',
-          ''
-        );
-      } catch (error) {
-        expect(error).toBeInstanceOf(ConflictException);
-      }
-    });
-
-    test('insert without errors', async () => {
-      const result = await service.signup(
-        '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-        'anderson',
-        ''
-      );
-
-      expect(result.status).toBeTruthy();
     });
   });
 });
