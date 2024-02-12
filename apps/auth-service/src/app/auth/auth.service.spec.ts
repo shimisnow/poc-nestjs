@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { BadGatewayException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AUTHENTICATION_ERROR } from '@shared/authentication/enums/authentication-error.enum';
@@ -24,6 +25,13 @@ describe('AuthService', () => {
           provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            set: (key, value) => {},
+          }
+        }
       ],
     }).compile();
 
@@ -191,6 +199,7 @@ describe('AuthService', () => {
       const result = await service.logout(user.userId, user.iss);
       
       expect(result.performed).toBeTruthy();
+      expect(result).toHaveProperty('performedAt');
     });
   });
 });

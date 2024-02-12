@@ -7,6 +7,7 @@ import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -28,6 +29,13 @@ describe('AuthController', () => {
               'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuZGVyc29uIiwic3ViIjoxLCJpYXQiOjE2ODM4MzAyNTEsImV4cCI6MTY4MzgzMDMxMX0.eN5Cv2tJ0HGlVNKMtPv5VPeCIA7dd4OEA-8Heh7OJ_c',
           },
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            set: (key, value) => {},
+          }
+        }
       ],
     }).compile();
 
