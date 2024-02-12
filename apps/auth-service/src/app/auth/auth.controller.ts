@@ -10,6 +10,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { AuthRefreshGuard } from '@shared/authentication/guards/auth-refresh.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
@@ -28,6 +29,7 @@ import { DefaultError401Serializer } from '@shared/authentication/serializers/de
 import { SignUpError400Serializer } from './serializers/signup-error-400.serializer';
 import { SignUpError409Serializer } from './serializers/signup-error-409.serializer';
 import { RefreshSerializer } from './serializers/refresh.serializer';
+import { LogoutSerializer } from './serializers/logout.serializer';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -110,6 +112,35 @@ export class AuthController {
   })
   async login(@Body() body: LoginBodyDto): Promise<LoginSerializer> {
     return await this.authService.login(body.username, body.password);
+  }
+
+  @Version('1')
+  @Post('logout')
+  @UseGuards(AuthGuard)
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
+  })
+  @ApiOkResponse({
+    description: 'Information if the logout process was performed',
+    type: LogoutSerializer,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'User does not exists or is inactive',
+    type: DefaultError401Serializer,
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'The server has encountered a situation it does not know how to handle. See server logs for details',
+    type: DefaultError500Serializer,
+  })
+  @ApiBadGatewayResponse({
+    description: 'Internal data processing error. Probably a database error',
+    type: DefaultError502Serializer,
+  })
+  async logout(@User() user: UserPayload) {
+    return await this.authService.logout(user.userId, user.iss);
   }
 
   @Version('1')

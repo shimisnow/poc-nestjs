@@ -142,6 +142,14 @@ export class AuthService {
     };
   }
 
+  /**
+   * Invalidate access and refresh tokens for an user session.
+   * 
+   * @param userId User id as UUID.
+   * @param sessionId iss information from jwt.
+   * @returns Information if the process was perfomed.
+   * @throws UnauthorizedException User does not exists or is inactive.
+   */
   async logout(userId: string, sessionId: number): Promise<LogoutSerializer> {
     let userEntity: UserAuthEntity = null;
 
@@ -163,17 +171,20 @@ export class AuthService {
         },
       });
     }
+
+    const performedAt = new Date().getTime()
     
     await this.cacheService.set([
       CacheKeyPrefix.AUTH_SESSION_LOGOUT,
       userId,
       sessionId
     ].join(':'), {
-      performedAt: new Date().getTime(),
+      performedAt,
     });
 
     return {
       performed: true,
+      performedAt, 
     };
   }
 
