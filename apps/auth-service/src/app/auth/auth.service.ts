@@ -17,6 +17,7 @@ import { UserAuthEntity } from '@shared/database/authentication/entities/user-au
 import { LoginSerializer } from './serializers/login.serializer';
 import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-auth-status.enum';
 import { RefreshSerializer } from './serializers/refresh.serializer';
+import { LogoutSerializer } from './serializers/logout.serializer';
 
 @Injectable()
 export class AuthService {
@@ -134,6 +135,10 @@ export class AuthService {
       accessToken: await this.generateAccessToken(user.userId),
       refreshToken: await this.generateRefreshToken(user.userId),
     };
+  }
+
+  async logout(userId: string): Promise<LogoutSerializer> {
+    return null;
   }
 
   /**

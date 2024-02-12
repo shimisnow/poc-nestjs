@@ -9,6 +9,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { AUTHENTICATION_ERROR } from '@shared/authentication/enums/authentication-error.enum';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -160,6 +161,33 @@ describe('AuthService', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
+    });
+  });
+
+  describe('auth.service -> logout()', () => {
+    test('INACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
+      } as UserPayload;
+
+      try {
+        await service.logout(user.userId);
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error).toHaveProperty('data');
+        expect(error.data.name).toBe(AUTHENTICATION_ERROR.TokenInvalidatedByServer);
+        expect(error.data.errors).toEqual(expect.arrayContaining(['user is inactive']));
+      }
+    });
+
+    test('ACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
+      } as UserPayload;
+
+      const result = await service.logout(user.userId);
+      
+      expect(result.performed).toBeTruthy();
     });
   });
 });
