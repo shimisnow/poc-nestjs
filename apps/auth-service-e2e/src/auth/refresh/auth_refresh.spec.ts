@@ -21,6 +21,7 @@ describe('POST /auth/refresh', () => {
       const now = Math.floor(Date.now() / 1000);
       const refreshToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a177',
+        iss: new Date().getTime(),
         iat: now,
         exp: now + 60,
       }, JWT_REFRESH_SECRET_KEY);
@@ -42,6 +43,7 @@ describe('POST /auth/refresh', () => {
       const now = Math.floor(Date.now() / 1000);
       const refreshToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        iss: new Date().getTime(),
         iat: now,
         exp: now + 60,
       }, JWT_REFRESH_SECRET_KEY);
@@ -65,6 +67,7 @@ describe('POST /auth/refresh', () => {
       const now = Math.floor(Date.now() / 1000);
       const refreshToken = jsonwebtoken.sign({
         userId: '4799cc31-7692-40b3-afff-cc562baf5374',
+        iss: new Date().getTime(),
         iat: now,
         exp: now + 60,
       }, JWT_REFRESH_SECRET_KEY);
