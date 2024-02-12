@@ -2,19 +2,26 @@ import {
   CanActivate,
   ExecutionContext,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { UserPayload } from '../payloads/user.payload';
 import { AUTHENTICATION_ERROR } from '../enums/authentication-error.enum';
+import { CacheKeyPrefix } from '../../cache/enums/cache-key-prefix.enum';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
+    private jwtService: JwtService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -35,6 +42,7 @@ export class AuthGuard implements CanActivate {
     // JWT verification
     try {
       payload = await this.jwtService.verifyAsync(token, {
+        secret: process.env.JWT_SECRET_KEY,
         maxAge: process.env.JWT_MAX_AGE,
       });
     } catch (error) {
@@ -76,6 +84,26 @@ export class AuthGuard implements CanActivate {
         data: {
           name: AUTHENTICATION_ERROR.JsonWebTokenPayloadStrutureError,
           errors: messages,
+        },
+      });
+    }
+
+    // verify if the combination of userId with iss (sessionId) is marked in cache as invalid
+    const logoutVerification = await this.cacheService.get([
+      CacheKeyPrefix.AUTH_SESSION_LOGOUT,
+      payload.userId,
+      payload.iss,
+    ].join(':'));
+
+    if (logoutVerification !== null) {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
+          errors: [
+            'invalidated by logout',
+          ],
         },
       });
     }
