@@ -24,7 +24,7 @@ export class UserAuthsRepository {
    * @param username Username to be found.
    * @returns Found entity or null.
    */
-  async findByUsername(username: string): Promise<UserAuthEntity> {
+  async findByUsername(username: string): Promise<UserAuthEntity | null> {
     return await this.repository.findOne({
       where: {
         username,

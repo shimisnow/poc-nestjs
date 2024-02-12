@@ -27,6 +27,42 @@ export class AuthService {
   ) {}
 
   /**
+   * Generates and signs a JWT token using the JWT_SECRET_KEY.
+   * 
+   * @param userId User id as UUID.
+   * @returns Signed JWT token.
+   */
+  async generateAccessToken(userId: string): Promise<string> {
+    const payload = {
+      userId,
+      iss: new Date().getTime(),
+    } as UserPayload;
+
+    return await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET_KEY,
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
+  }
+
+  /**
+   * Generates and signs a JWT token using the JWT_REFRESH_SECRET_KEY.
+   * 
+   * @param userId User id as UUID.
+   * @returns Signed JWT token.
+   */
+  async generateRefreshToken(userId: string): Promise<string> {
+    const payload = {
+      userId,
+      iss: new Date().getTime(),
+    } as UserPayload;
+
+    return await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_SECRET_KEY,
+      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+    });
+  }
+
+  /**
    * Verifies if the provided username is already registered into database.
    *
    * @param username Username to be verified.
@@ -67,6 +103,7 @@ export class AuthService {
       throw new BadGatewayException(error.message);
     }
 
+    // if the user does not exists, will throw this if error
     if (user?.status !== UserAuthStatusEnum.ACTIVE) {
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
@@ -93,26 +130,20 @@ export class AuthService {
       });
     }
 
-    const payload = {
-      userId: user.userId,
-    } as UserPayload;
-
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: process.env.JWT_SECRET_KEY,
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
-
-    const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: process.env.JWT_REFRESH_SECRET_KEY,
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-    });
-
     return {
-      accessToken,
-      refreshToken,
+      accessToken: await this.generateAccessToken(user.userId),
+      refreshToken: await this.generateRefreshToken(user.userId),
     };
   }
 
+  /**
+   * Generates a new JWT access token.
+   * 
+   * @param user User information as JWT payload. 
+   * @returns Data with a JWT signed token.
+   * @throws BadGatewayException Database error.
+   * @throws UnauthorizedException User do not exists, is inactive or password is incorrect.
+   */
   async refresh(user: UserPayload): Promise<RefreshSerializer> {
     let userEntity: UserAuthEntity = null;
 
@@ -135,17 +166,8 @@ export class AuthService {
       });
     }
 
-    const payload = {
-      userId: user.userId,
-    } as UserPayload;
-
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: process.env.JWT_SECRET_KEY,
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
-
     return {
-      accessToken,
+      accessToken: await this.generateAccessToken(user.userId),
     }
   }
 

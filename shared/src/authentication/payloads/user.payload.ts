@@ -5,6 +5,9 @@ export class UserPayload {
   userId: string;
 
   @IsNumber()
+  iss: number;
+
+  @IsNumber()
   iat: number;
 
   @IsNumber()
