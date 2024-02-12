@@ -2,15 +2,19 @@ import {
   BadGatewayException,
   ConflictException,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import * as bcrypt from 'bcrypt';
 import { AUTHENTICATION_ERROR } from '@shared/authentication/enums/authentication-error.enum';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { SignUpSerializer } from './serializers/signup.serializer';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
@@ -23,6 +27,7 @@ import { LogoutSerializer } from './serializers/logout.serializer';
 export class AuthService {
   /** @ignore */
   constructor(
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
     private userAuthsRepository: UserAuthsRepository,
     private jwtService: JwtService,
   ) {}
@@ -137,8 +142,16 @@ export class AuthService {
     };
   }
 
-  async logout(userId: string): Promise<LogoutSerializer> {
-    if (userId == '4b3c74ae-57aa-4752-9452-ed083b6d4b04') {
+  async logout(userId: string, sessionId: number): Promise<LogoutSerializer> {
+    let userEntity: UserAuthEntity = null;
+
+    try {
+      userEntity = await this.userAuthsRepository.findById(userId);
+    } catch (error) {
+      throw new BadGatewayException(error.message);
+    }
+
+    if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
@@ -150,6 +163,14 @@ export class AuthService {
         },
       });
     }
+    
+    await this.cacheService.set([
+      CacheKeyPrefix.AUTH_SESSION_LOGOUT,
+      userId,
+      sessionId
+    ].join(':'), {
+      performedAt: new Date().getTime(),
+    });
 
     return {
       performed: true,

@@ -168,10 +168,11 @@ describe('AuthService', () => {
     test('INACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
+        iss: new Date().getTime(),
       } as UserPayload;
 
       try {
-        await service.logout(user.userId);
+        await service.logout(user.userId, user.iss);
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -184,9 +185,10 @@ describe('AuthService', () => {
     test('ACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        iss: new Date().getTime(),
       } as UserPayload;
 
-      const result = await service.logout(user.userId);
+      const result = await service.logout(user.userId, user.iss);
       
       expect(result.performed).toBeTruthy();
     });
