@@ -116,6 +116,7 @@ export class AuthController {
 
   @Version('1')
   @Post('logout')
+  @HttpCode(200)
   @UseGuards(AuthGuard)
   @ApiHeader({
     name: 'X-Api-Version',
