@@ -138,7 +138,22 @@ export class AuthService {
   }
 
   async logout(userId: string): Promise<LogoutSerializer> {
-    return null;
+    if (userId == '4b3c74ae-57aa-4752-9452-ed083b6d4b04') {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
+          errors: [
+            'user is inactive',
+          ]
+        },
+      });
+    }
+
+    return {
+      performed: true,
+    };
   }
 
   /**

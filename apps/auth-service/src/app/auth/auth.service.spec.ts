@@ -174,15 +174,16 @@ describe('AuthService', () => {
         await service.logout(user.userId);
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
-        expect(error).toHaveProperty('data');
-        expect(error.data.name).toBe(AUTHENTICATION_ERROR.TokenInvalidatedByServer);
-        expect(error.data.errors).toEqual(expect.arrayContaining(['user is inactive']));
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(AUTHENTICATION_ERROR.TokenInvalidatedByServer);
+        expect(response.data.errors).toEqual(expect.arrayContaining(['user is inactive']));
       }
     });
 
     test('ACTIVE user', async () => {
       const user = {
-        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
       } as UserPayload;
 
       const result = await service.logout(user.userId);
