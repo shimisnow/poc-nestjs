@@ -23,6 +23,21 @@
         "production": {}
       }
     },
+    "build-repl": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/auth-service-repl",
+        "main": "apps/auth-service/src/repl.ts",
+        "tsConfig": "apps/auth-service/tsconfig.app.json",
+        "assets": ["apps/auth-service/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/auth-service/webpack.config.js"
+      }
+    },
     "serve": {
       "executor": "@nrwl/js:node",
       "defaultConfiguration": "development",
@@ -36,6 +51,13 @@
         "production": {
           "buildTarget": "auth-service:build:production"
         }
+      }
+    },
+    "serve-repl": {
+      "executor": "@nrwl/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "auth-service:build-repl"
       }
     },
     "lint": {

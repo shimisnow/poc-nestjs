@@ -2,26 +2,32 @@ import {
   BadGatewayException,
   ConflictException,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import * as bcrypt from 'bcrypt';
 import { AUTHENTICATION_ERROR } from '@shared/authentication/enums/authentication-error.enum';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { SignUpSerializer } from './serializers/signup.serializer';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { LoginSerializer } from './serializers/login.serializer';
 import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-auth-status.enum';
 import { RefreshSerializer } from './serializers/refresh.serializer';
+import { LogoutSerializer } from './serializers/logout.serializer';
 
 @Injectable()
 export class AuthService {
   /** @ignore */
   constructor(
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
     private userAuthsRepository: UserAuthsRepository,
     private jwtService: JwtService,
   ) {}
@@ -133,6 +139,52 @@ export class AuthService {
     return {
       accessToken: await this.generateAccessToken(user.userId),
       refreshToken: await this.generateRefreshToken(user.userId),
+    };
+  }
+
+  /**
+   * Invalidate access and refresh tokens for an user session.
+   * 
+   * @param userId User id as UUID.
+   * @param sessionId iss information from jwt.
+   * @returns Information if the process was perfomed.
+   * @throws UnauthorizedException User does not exists or is inactive.
+   */
+  async logout(userId: string, sessionId: number): Promise<LogoutSerializer> {
+    let userEntity: UserAuthEntity = null;
+
+    try {
+      userEntity = await this.userAuthsRepository.findById(userId);
+    } catch (error) {
+      throw new BadGatewayException(error.message);
+    }
+
+    if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
+          errors: [
+            'user is inactive',
+          ]
+        },
+      });
+    }
+
+    const performedAt = new Date().getTime()
+    
+    await this.cacheService.set([
+      CacheKeyPrefix.AUTH_SESSION_LOGOUT,
+      userId,
+      sessionId
+    ].join(':'), {
+      performedAt,
+    });
+
+    return {
+      performed: true,
+      performedAt, 
     };
   }
 

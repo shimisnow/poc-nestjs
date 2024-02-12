@@ -7,8 +7,10 @@ import { JwtService } from '@nestjs/jwt';
 import { BadGatewayException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { AUTHENTICATION_ERROR } from '@shared/authentication/enums/authentication-error.enum';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -23,6 +25,13 @@ describe('AuthService', () => {
           provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            set: (key, value) => {},
+          }
+        }
       ],
     }).compile();
 
@@ -52,6 +61,30 @@ describe('AuthService', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(BadGatewayException);
       }
+    });
+  });
+
+  describe('auth.service -> signup()', () => {
+    test('username/userId already registered', async () => {
+      try {
+        await service.signup(
+          'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
+          'thomas',
+          ''
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+      }
+    });
+
+    test('insert without errors', async () => {
+      const result = await service.signup(
+        '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        'anderson',
+        ''
+      );
+
+      expect(result.status).toBeTruthy();
     });
   });
 
@@ -139,27 +172,34 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> signup()', () => {
-    test('username/userId already registered', async () => {
+  describe('auth.service -> logout()', () => {
+    test('INACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
+        iss: new Date().getTime(),
+      } as UserPayload;
+
       try {
-        await service.signup(
-          'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
-          'thomas',
-          ''
-        );
+        await service.logout(user.userId, user.iss);
       } catch (error) {
-        expect(error).toBeInstanceOf(ConflictException);
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(AUTHENTICATION_ERROR.TokenInvalidatedByServer);
+        expect(response.data.errors).toEqual(expect.arrayContaining(['user is inactive']));
       }
     });
 
-    test('insert without errors', async () => {
-      const result = await service.signup(
-        '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-        'anderson',
-        ''
-      );
+    test('ACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        iss: new Date().getTime(),
+      } as UserPayload;
 
-      expect(result.status).toBeTruthy();
+      const result = await service.logout(user.userId, user.iss);
+      
+      expect(result.performed).toBeTruthy();
+      expect(result).toHaveProperty('performedAt');
     });
   });
 });
