@@ -22,6 +22,7 @@ import { LoginSerializer } from './serializers/login.serializer';
 import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-auth-status.enum';
 import { RefreshSerializer } from './serializers/refresh.serializer';
 import { LogoutSerializer } from './serializers/logout.serializer';
+import { PasswordChangeSerializer } from './serializers/password-change.serializer';
 
 @Injectable()
 export class AuthService {
@@ -268,5 +269,95 @@ export class AuthService {
     }
 
     return response;
+  }
+
+  /**
+   * Changes user password and invalidates already issued JWT tokens.
+   * 
+   * @param userId UUID user information.
+   * @param sessionId Information about the session from JWT payload.
+   * @param currentPassword Actual password in plain text.
+   * @param newPassword New password in plain text.
+   * @returns Information if the password was changed.
+   * @throws BadGatewayException Database error.
+   * @throws UnauthorizedException User do not exists, is inactive or password is incorrect.
+   * @throws UnprocessableEntityException Database error from query parser.
+   */
+  async passwordChange(
+    userId: string,
+    sessionId: number,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<PasswordChangeSerializer> {
+    let userEntity: UserAuthEntity = null;
+    const resultStatus: PasswordChangeSerializer = {
+      performed: false,
+    }
+
+    // if the user exists into database
+    try {
+      userEntity = await this.userAuthsRepository.findById(userId);
+    } catch (error) {
+      throw new BadGatewayException(error.message);
+    }
+
+    // if it does not exists or is inactive
+    if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'user is inactive or does not exists',
+          ],
+        },
+      });
+    }
+
+    // verify if the provided password is correct
+    if ((await bcrypt.compare(currentPassword, userEntity?.password)) === false) {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'wrong user or password information',
+          ],
+        },
+      });
+    }
+
+    // sets the new password
+    userEntity.password = newPassword;
+
+    try {
+      // stores the retrieved user with the new password
+      const result = await this.userAuthsRepository.save(userEntity);
+
+      if (result != null) {
+        resultStatus.performed = true;
+      }
+    } catch (error) {
+      console.log(error);
+      switch (error.constructor) {
+        case QueryFailedError:
+          throw new UnprocessableEntityException();
+        default:
+          throw new BadGatewayException();
+      }
+    }
+
+    // adds the sessionId from request to cache to invalidate other issued access token
+    await this.cacheService.set([
+      CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
+      userId,
+    ].join(':'), {
+      sessionId,
+      changedAt: new Date().getTime(),
+    });
+
+    return resultStatus;
   }
 }

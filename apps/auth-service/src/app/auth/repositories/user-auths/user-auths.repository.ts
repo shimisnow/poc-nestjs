@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
-import { InsertResult, Repository } from 'typeorm';
+import { InsertResult, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()
 export class UserAuthsRepository {
@@ -34,5 +34,9 @@ export class UserAuthsRepository {
 
   async insert(entity: UserAuthEntity): Promise<InsertResult> {
     return await this.repository.insert(entity);
+  }
+
+  async save(entity: UserAuthEntity): Promise<UserAuthEntity> {
+    return await this.repository.save(entity);
   }
 }
