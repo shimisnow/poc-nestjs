@@ -211,7 +211,7 @@ describe('AuthService', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, user.iss, 'test@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -228,7 +228,7 @@ describe('AuthService', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, user.iss, 'test@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -245,7 +245,7 @@ describe('AuthService', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, '1234@1234', '1234@test');
+        await service.passwordChange(user.userId, user.iss, '1234@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -261,7 +261,7 @@ describe('AuthService', () => {
         iss: new Date().getTime(),
       } as UserPayload;
 
-      const result = await service.passwordChange(user.userId, 'test@1234', '1234@test');
+      const result = await service.passwordChange(user.userId, user.iss, 'test@1234', '1234@test');
       
       expect(result.performed).toBeTruthy();
     });

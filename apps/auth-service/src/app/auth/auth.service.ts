@@ -273,6 +273,7 @@ export class AuthService {
 
   async passwordChange(
     userId: string,
+    sessionId: number,
     currentPassword: string,
     newPassword: string,
   ): Promise<PasswordChangeSerializer> {
@@ -330,6 +331,14 @@ export class AuthService {
           throw new BadGatewayException();
       }
     }
+
+    await this.cacheService.set([
+      CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
+      userId,
+    ].join(':'), {
+      sessionId,
+      changedAt: new Date().getTime(),
+    });
 
     return resultStatus;
   }

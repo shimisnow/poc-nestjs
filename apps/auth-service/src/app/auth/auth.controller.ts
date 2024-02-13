@@ -257,6 +257,11 @@ export class AuthController {
     @User() user: UserPayload,
     @Body() body: PasswordChangeBodyDto,
   ) {
-    return await this.authService.passwordChange(user.userId, body.currentPassword, body.newPassword);
+    return await this.authService.passwordChange(
+      user.userId,
+      user.iss,
+      body.currentPassword,
+      body.newPassword,
+    );
   }
 }
