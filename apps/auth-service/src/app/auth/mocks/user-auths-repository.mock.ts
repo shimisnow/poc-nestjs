@@ -46,6 +46,8 @@ export class UserAuthsRepositoryMock {
               '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
             status: UserAuthStatusEnum.ACTIVE,
           } as UserAuthEntity;
+        default:
+          return null;
       }
     }
   }
@@ -80,6 +82,22 @@ export class UserAuthsRepositoryMock {
         throw new QueryFailedError('', null, new Error('some error'));
       default:
         throw new Error('some error');
+    }
+  }
+
+  async save(entity: UserAuthEntity): Promise<UserAuthEntity> {
+    switch (entity.userId) {
+      case '4b3c74ae-57aa-4752-9452-ed083b6d4bfa':
+          return {
+            userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+            username: 'anderson',
+            password:
+              // test@1234
+              '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
+            status: UserAuthStatusEnum.ACTIVE,
+          } as UserAuthEntity;
+        default:
+          return null;
     }
   }
 }

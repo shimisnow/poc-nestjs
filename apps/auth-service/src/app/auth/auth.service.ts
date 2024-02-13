@@ -276,6 +276,61 @@ export class AuthService {
     currentPassword: string,
     newPassword: string,
   ): Promise<PasswordChangeSerializer> {
-    return;
+    let userEntity: UserAuthEntity = null;
+    const resultStatus: PasswordChangeSerializer = {
+      performed: false,
+    }
+
+    try {
+      userEntity = await this.userAuthsRepository.findById(userId);
+    } catch (error) {
+      throw new BadGatewayException(error.message);
+    }
+
+    if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'user is inactive or does not exists',
+          ],
+        },
+      });
+    }
+
+    if ((await bcrypt.compare(currentPassword, userEntity?.password)) === false) {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AUTHENTICATION_ERROR.UserPasswordError,
+          errors: [
+            'wrong user or password information',
+          ],
+        },
+      });
+    }
+
+    userEntity.password = newPassword;
+
+    try {
+      const result = await this.userAuthsRepository.save(userEntity);
+
+      if (result != null) {
+        resultStatus.performed = true;
+      }
+    } catch (error) {
+      console.log(error);
+      switch (error.constructor) {
+        case QueryFailedError:
+          throw new UnprocessableEntityException();
+        default:
+          throw new BadGatewayException();
+      }
+    }
+
+    return resultStatus;
   }
 }
