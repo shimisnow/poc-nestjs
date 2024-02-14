@@ -39,10 +39,10 @@ export class AuthService {
    * @param userId User id as UUID.
    * @returns Signed JWT token.
    */
-  async generateAccessToken(userId: string): Promise<string> {
+  async generateAccessToken(userId: string, sessionId: number): Promise<string> {
     const payload = {
       userId,
-      iss: new Date().getTime(),
+      iss: sessionId,
     } as UserPayload;
 
     return await this.jwtService.signAsync(payload, {
@@ -57,10 +57,10 @@ export class AuthService {
    * @param userId User id as UUID.
    * @returns Signed JWT token.
    */
-  async generateRefreshToken(userId: string): Promise<string> {
+  async generateRefreshToken(userId: string, sessionId: number): Promise<string> {
     const payload = {
       userId,
-      iss: new Date().getTime(),
+      iss: sessionId,
     } as UserPayload;
 
     return await this.jwtService.signAsync(payload, {
@@ -137,9 +137,11 @@ export class AuthService {
       });
     }
 
+    const sessionId = new Date().getTime();
+
     return {
-      accessToken: await this.generateAccessToken(user.userId),
-      refreshToken: await this.generateRefreshToken(user.userId),
+      accessToken: await this.generateAccessToken(user.userId, sessionId),
+      refreshToken: await this.generateRefreshToken(user.userId, sessionId),
     };
   }
 
@@ -220,7 +222,7 @@ export class AuthService {
     }
 
     return {
-      accessToken: await this.generateAccessToken(user.userId),
+      accessToken: await this.generateAccessToken(user.userId, user.iss),
     }
   }
 
