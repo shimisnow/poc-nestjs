@@ -355,6 +355,9 @@ export class AuthService {
       changedAt: new Date().getTime(),
     } as PasswordChangeCachePayload);
 
+    // sleeps one second to garantee that the new token timestamp will be greater than the cached one  
+    await new Promise(response => setTimeout(response, 1000));
+
     const newLoginId = new Date().getTime().toString();
 
     return {
