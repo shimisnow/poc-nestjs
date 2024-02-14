@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  Logger,
   UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
@@ -182,12 +183,18 @@ export class AuthService {
     const performedAt = new Date().getTime()
     
     await this.cacheService.set([
-      CacheKeyPrefix.AUTH_SESSION_LOGOUT,
-      userId,
-      loginId,
-    ].join(':'), {
-      performedAt,
-    });
+        CacheKeyPrefix.AUTH_SESSION_LOGOUT,
+        userId,
+        loginId,
+      ].join(':'), {
+        performedAt,
+      },
+      {
+        // the refreshToken is the one with the greater expire time
+        ttl: this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    );
 
     return {
       performed: true,
@@ -281,7 +288,6 @@ export class AuthService {
    * Changes user password and invalidates already issued JWT tokens.
    * 
    * @param userId UUID user information.
-   * @param loginId Information about the login from JWT payload.
    * @param currentPassword Actual password in plain text.
    * @param newPassword New password in plain text.
    * @returns Information if the password was changed.
@@ -291,14 +297,10 @@ export class AuthService {
    */
   async passwordChange(
     userId: string,
-    loginId: string,
     currentPassword: string,
     newPassword: string,
   ): Promise<PasswordChangeSerializer> {
     let userEntity: UserAuthEntity = null;
-    const resultStatus: PasswordChangeSerializer = {
-      performed: false,
-    }
 
     // if the user exists into database
     try {
@@ -340,11 +342,7 @@ export class AuthService {
 
     try {
       // stores the retrieved user with the new password
-      const result = await this.userAuthsRepository.save(userEntity);
-
-      if (result != null) {
-        resultStatus.performed = true;
-      }
+      await this.userAuthsRepository.save(userEntity);
     } catch (error) {
       switch (error.constructor) {
         case QueryFailedError:
@@ -354,15 +352,57 @@ export class AuthService {
       }
     }
 
-    // adds the sessionId from request to cache to invalidate other issued access token
+    // adds the timestamp to cache to invalidate tokens issued before this
     await this.cacheService.set([
-      CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
-      userId,
-    ].join(':'), {
-      loginId,
-      changedAt: new Date().getTime(),
-    } as PasswordChangeCachePayload);
+        CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
+        userId,
+      ].join(':'), {
+        changedAt: new Date().getTime(),
+      } as PasswordChangeCachePayload,
+      {
+        // the refreshToken is the one with the greater expire time
+        ttl: this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    );
 
-    return resultStatus;
+    // sleeps one second to garantee that the new token timestamp will be greater than the cached one  
+    await new Promise(response => setTimeout(response, 1000));
+
+    const newLoginId = new Date().getTime().toString();
+
+    return {
+      performed: true,
+      accessToken: await this.generateAccessToken(userEntity.userId, newLoginId),
+      refreshToken: await this.generateRefreshToken(userEntity.userId, newLoginId),
+    };
+  }
+
+  /**
+   * Convertes a string to seconds
+   * 
+   * @param timeString Time to be converted. Ex: 3m, 1h, 2d
+   * @returns Time converted to seconds
+   */
+  convertStringToSeconds(timeString: string): number {
+    const [value, type] = timeString.split(/(\d+)/).filter(Boolean);
+
+    let multiply = 1;
+
+    switch (type) {
+      case 'd':
+        multiply = 86400; // 24 * 60 * 60;
+        break;
+      case 'h':
+        multiply = 3600; // 60 * 60;
+        break;
+      case 'm':
+        multiply = 60;
+        break;
+      default:
+        Logger.log(`The time ${timeString} cannot be converted to seconds`);
+    }
+
+    return parseInt(value) * multiply;
   }
 }

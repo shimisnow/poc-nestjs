@@ -213,7 +213,7 @@ describe('AuthService', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, user.loginId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, 'test@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -230,7 +230,7 @@ describe('AuthService', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, user.loginId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, 'test@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -247,7 +247,7 @@ describe('AuthService', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, user.loginId, '1234@1234', '1234@test');
+        await service.passwordChange(user.userId,  '1234@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -263,9 +263,37 @@ describe('AuthService', () => {
         loginId: new Date().getTime().toString(),
       } as UserPayload;
 
-      const result = await service.passwordChange(user.userId, user.loginId, 'test@1234', '1234@test');
+      const result = await service.passwordChange(user.userId, 'test@1234', '1234@test');
       
       expect(result.performed).toBeTruthy();
+      expect(result).toHaveProperty('accessToken');
+      expect(result).toHaveProperty('refreshToken');
+    });
+  });
+
+  describe('auth.convertStringToSeconds()', () => {
+    test('with d (days)', () => {
+      const seconds = service.convertStringToSeconds('2d');
+
+      expect(seconds).toBe(172800);
+    });
+
+    test('with h (hours)', () => {
+      const seconds = service.convertStringToSeconds('4h');
+
+      expect(seconds).toBe(14400);
+    });
+
+    test('with m (minutes)', () => {
+      const seconds = service.convertStringToSeconds('5m');
+
+      expect(seconds).toBe(300);
+    });
+
+    test('with invalid letter', () => {
+      const seconds = service.convertStringToSeconds('2x');
+
+      expect(seconds).toBe(2);
     });
   });
 });

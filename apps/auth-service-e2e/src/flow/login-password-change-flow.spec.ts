@@ -1,14 +1,16 @@
 import request from 'supertest';
+import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
 import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
 import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
-
 describe('login logout process (with refresh)', () => {
   let host: string;
   const endpointLogin = '/auth/login';
   const endpointLogout = '/auth/logout';
   const endpointRefresh = '/auth/refresh';
   const endpointPassword = '/auth/password';
+  const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+  const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
   beforeAll(async () => {
     const containerRuntimeClient = await getContainerRuntimeClient();
@@ -64,7 +66,7 @@ describe('login logout process (with refresh)', () => {
 
     /***** PASSWORD CHANGE AT SESSION ONE *****/
 
-    await request(host)
+    const passwordChangeResult = await request(host)
       .post(endpointPassword)
       .send({
         currentPassword: 'test@1234',
@@ -73,11 +75,19 @@ describe('login logout process (with refresh)', () => {
       .set('Authorization', `Bearer ${sessionOne.body.accessToken}`)
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
-      .expect(201)
-      .then(response => {
-        expect(response.body).toHaveProperty('performed');
-        expect(response.body.performed).toBeTruthy();
-      });
+      .expect(201);
+
+    expect(passwordChangeResult.body).toHaveProperty('performed');
+    expect(passwordChangeResult.body.performed).toBeTruthy();
+    expect(passwordChangeResult.body).toHaveProperty('accessToken');
+    expect(passwordChangeResult.body).toHaveProperty('refreshToken');
+    expect(passwordChangeResult.body.accessToken).not.toBe(passwordChangeResult.body.refreshToken);
+
+    const passwordChangeAccessToken = jsonwebtoken.verify(passwordChangeResult.body.accessToken, JWT_SECRET_KEY) as JwtPayload;
+    const passwordChangeRefreshToken = jsonwebtoken.verify(passwordChangeResult.body.refreshToken, JWT_REFRESH_SECRET_KEY) as JwtPayload;
+
+    expect(passwordChangeAccessToken.userId).toBe(passwordChangeRefreshToken.userId);
+    expect(passwordChangeAccessToken.loginId).toBe(passwordChangeRefreshToken.loginId);
 
     /***** REFRESH TOKEN AT SESSION TWO (ERROR) *****/
 
@@ -126,7 +136,7 @@ describe('login logout process (with refresh)', () => {
 
     await request(host)
       .post(endpointLogout)
-      .set('Authorization', `Bearer ${sessionOne.body.accessToken}`)
+      .set('Authorization', `Bearer ${passwordChangeResult.body.accessToken}`)
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
       .expect(200)
