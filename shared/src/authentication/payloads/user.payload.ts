@@ -1,11 +1,11 @@
-import { IsUUID, IsNumber } from 'class-validator';
+import { IsUUID, IsNumber, IsNumberString } from 'class-validator';
 
 export class UserPayload {
   @IsUUID()
   userId: string;
 
-  @IsNumber()
-  iss: number;
+  @IsNumberString()
+  loginId: string;
 
   @IsNumber()
   iat: number;

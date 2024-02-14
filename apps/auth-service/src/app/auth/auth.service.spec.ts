@@ -98,14 +98,14 @@ describe('AuthService', () => {
       const accessToken = jsonwebtoken.verify(result.accessToken, process.env.JWT_SECRET_KEY) as JwtPayload;
       expect(accessToken).toHaveProperty('userId');
       expect(accessToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
-      expect(accessToken).toHaveProperty('iss');
-      expect(accessToken.iss).toBeLessThan(new Date().getTime());
+      expect(accessToken).toHaveProperty('loginId');
+      expect(parseInt(accessToken.loginId)).toBeLessThan(new Date().getTime());
 
       const refreshToken = jsonwebtoken.verify(result.refreshToken, process.env.JWT_REFRESH_SECRET_KEY) as JwtPayload;
       expect(refreshToken).toHaveProperty('userId');
       expect(refreshToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
-      expect(refreshToken).toHaveProperty('iss');
-      expect(refreshToken.iss).toBeLessThan(new Date().getTime());
+      expect(refreshToken).toHaveProperty('loginId');
+      expect(parseInt(refreshToken.loginId)).toBeLessThan(new Date().getTime());
     });
 
     test('correct login data with INACTIVE user', async () => {
@@ -145,6 +145,7 @@ describe('AuthService', () => {
     test('correct token data with ACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        loginId: new Date().getTime().toString(),
       } as UserPayload;
 
       const result = await service.refresh(user);
@@ -155,8 +156,8 @@ describe('AuthService', () => {
       const accessToken = jsonwebtoken.verify(result.accessToken, process.env.JWT_SECRET_KEY) as JwtPayload;
       expect(accessToken).toHaveProperty('userId');
       expect(accessToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
-      expect(accessToken).toHaveProperty('iss');
-      expect(accessToken.iss).toBeLessThan(new Date().getTime());
+      expect(accessToken).toHaveProperty('loginId');
+      expect(parseInt(accessToken.loginId)).toBeLessThan(new Date().getTime());
     });
 
     test('correct login data with INACTIVE user', async () => {
@@ -176,11 +177,11 @@ describe('AuthService', () => {
     test('INACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
-        iss: new Date().getTime(),
+        loginId: new Date().getTime().toString(),
       } as UserPayload;
 
       try {
-        await service.logout(user.userId, user.iss);
+        await service.logout(user.userId, user.loginId);
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -193,10 +194,10 @@ describe('AuthService', () => {
     test('ACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-        iss: new Date().getTime(),
+        loginId: new Date().getTime().toString(),
       } as UserPayload;
 
-      const result = await service.logout(user.userId, user.iss);
+      const result = await service.logout(user.userId, user.loginId);
       
       expect(result.performed).toBeTruthy();
       expect(result).toHaveProperty('performedAt');
@@ -207,11 +208,11 @@ describe('AuthService', () => {
     test('inactive user', async () => {
       const user = {
         userId: 'fcf5cccf-c217-4502-8cc3-cc24270ae0b7',
-        iss: new Date().getTime(),
+        loginId: new Date().getTime().toString(),
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, user.iss, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, user.loginId, 'test@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -224,11 +225,11 @@ describe('AuthService', () => {
     test('user does not exist', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4345',
-        iss: new Date().getTime(),
+        loginId: new Date().getTime().toString(),
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, user.iss, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, user.loginId, 'test@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -241,11 +242,11 @@ describe('AuthService', () => {
     test('incorrect password', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-        iss: new Date().getTime(),
+        loginId: new Date().getTime().toString(),
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, user.iss, '1234@1234', '1234@test');
+        await service.passwordChange(user.userId, user.loginId, '1234@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -258,10 +259,10 @@ describe('AuthService', () => {
     test('perfomed without errors', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-        iss: new Date().getTime(),
+        loginId: new Date().getTime().toString(),
       } as UserPayload;
 
-      const result = await service.passwordChange(user.userId, user.iss, 'test@1234', '1234@test');
+      const result = await service.passwordChange(user.userId, user.loginId, 'test@1234', '1234@test');
       
       expect(result.performed).toBeTruthy();
     });

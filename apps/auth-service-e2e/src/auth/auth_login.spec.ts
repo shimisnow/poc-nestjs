@@ -131,14 +131,12 @@ describe('POST /auth/login', () => {
       const accessToken = jsonwebtoken.verify(body.accessToken, JWT_SECRET_KEY) as JwtPayload;
       expect(accessToken).toHaveProperty('userId');
       expect(accessToken.userId).toBe('4799cc31-7692-40b3-afff-cc562baf5374');
-      expect(accessToken).toHaveProperty('iss');
-      expect(accessToken.iss).toBeLessThan(new Date().getTime());
+      expect(accessToken).toHaveProperty('loginId');
 
       const refreshToken = jsonwebtoken.verify(body.refreshToken, JWT_REFRESH_SECRET_KEY) as JwtPayload;
       expect(refreshToken).toHaveProperty('userId');
       expect(refreshToken.userId).toBe('4799cc31-7692-40b3-afff-cc562baf5374');
-      expect(refreshToken).toHaveProperty('iss');
-      expect(refreshToken.iss).toBeLessThan(new Date().getTime());
+      expect(refreshToken).toHaveProperty('loginId');
     });
   });
 });

@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jsonwebtoken from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 describe('POST /auth/logout', () => {
   let host: string;
@@ -19,10 +20,10 @@ describe('POST /auth/logout', () => {
     const now = Math.floor(Date.now() / 1000);
     const refreshToken = jsonwebtoken.sign({
       userId: '4799cc31-7692-40b3-afff-cc562baf5374',
-      iss: new Date().getTime(),
+      loginId: new Date().getTime().toString(),
       iat: now,
       exp: now + 60,
-    }, JWT_SECRET_KEY);
+    } as UserPayload, JWT_SECRET_KEY);
 
     await request(host)
       .post(endpoint)
@@ -42,10 +43,10 @@ describe('POST /auth/logout', () => {
     const now = Math.floor(Date.now() / 1000);
     const refreshToken = jsonwebtoken.sign({
       userId: '4b9cf2b7-1601-47a5-9668-6cb423b0d7ac',
-      iss: 1707755084516,
+      loginId: '1707755084516',
       iat: now,
       exp: now + 60,
-    }, JWT_SECRET_KEY);
+    } as UserPayload, JWT_SECRET_KEY);
 
     const containerRuntimeClient = await getContainerRuntimeClient();
     const containerCache = await containerRuntimeClient.container.fetchByLabel('poc-nestjs-name', 'auth-service-cache');
