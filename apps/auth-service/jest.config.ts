@@ -11,6 +11,7 @@ export default {
   collectCoverageFrom: ['<rootDir>/src/**'],
   coveragePathIgnorePatterns: [
     'main.ts',
+    'repl.ts',
     '.*\.(module|dto|serializer|mock)\.ts$'
   ],
   coverageReporters: ['clover', 'html'],
