@@ -56,8 +56,6 @@ describe('login logout process (with refresh)', () => {
 
     /***** REFRESH *****/
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
     const refreshSessionOne = await request(host)
       .get(endpointRefresh)
       .set('Authorization', `Bearer ${sessionOne.body.refreshToken}`)
