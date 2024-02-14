@@ -43,7 +43,7 @@ describe('BalanceService', () => {
           useValue: {
             get: (key) => {
               switch (key) {
-                case 'balance-acc-2345':
+                case 'financial:balance:2345':
                   return {
                     balance: 950,
                     updatedA: new Date(),
