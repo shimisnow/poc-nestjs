@@ -117,11 +117,12 @@ export class AuthGuard implements CanActivate {
     ].join(':'));
 
     // if there is an cache entry  
-    if (passwordChangeVerification !== null) {
+    if (passwordChangeVerification != null) {
       // this token login id is not the one that made the password change
       if (payload.loginId != passwordChangeVerification.loginId) {
         // and this token was not issued after the password change
-        if (payload.iat >= passwordChangeVerification.changedAt) {
+        // iat is in seconds and changedAt at milliseconds
+        if ((payload.iat * 1000) <= passwordChangeVerification.changedAt) {
           throw new UnauthorizedException({
             statusCode: HttpStatus.UNAUTHORIZED,
             message: 'Unauthorized',
