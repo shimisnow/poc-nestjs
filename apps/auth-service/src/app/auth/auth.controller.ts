@@ -144,7 +144,7 @@ export class AuthController {
     type: DefaultError502Serializer,
   })
   async logout(@User() user: UserPayload) {
-    return await this.authService.logout(user.userId, user.iss);
+    return await this.authService.logout(user.userId, user.loginId);
   }
 
   @Version('1')
@@ -259,7 +259,7 @@ export class AuthController {
   ) {
     return await this.authService.passwordChange(
       user.userId,
-      user.iss,
+      user.loginId,
       body.currentPassword,
       body.newPassword,
     );

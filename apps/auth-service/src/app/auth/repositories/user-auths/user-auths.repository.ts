@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
-import { InsertResult, Repository, UpdateResult } from 'typeorm';
+import { InsertResult, Repository } from 'typeorm';
 
 @Injectable()
 export class UserAuthsRepository {

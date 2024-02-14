@@ -1,8 +1,8 @@
-import { IsNumber } from 'class-validator';
+import { IsNumber, IsNumberString } from 'class-validator';
 
 export class PasswordChangeCachePayload {
-  @IsNumber()
-  sessionId: number;
+  @IsNumberString()
+  loginId: string;
 
   @IsNumber()
   changedAt: number;

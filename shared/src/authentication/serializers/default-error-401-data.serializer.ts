@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 import { AUTHENTICATION_ERROR } from '../enums/authentication-error.enum';
 
 export class DefaultError401DataSerializer {

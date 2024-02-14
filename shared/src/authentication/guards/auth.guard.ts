@@ -90,11 +90,11 @@ export class AuthGuard implements CanActivate {
       });
     }
 
-    // verify if the combination of userId with iss (sessionId) is marked in cache as invalid
+    // verify if the combination of userId with loginId is marked in cache as invalid
     const logoutVerification = await this.cacheService.get([
       CacheKeyPrefix.AUTH_SESSION_LOGOUT,
       payload.userId,
-      payload.iss,
+      payload.loginId,
     ].join(':'));
 
     if (logoutVerification !== null) {
@@ -118,8 +118,8 @@ export class AuthGuard implements CanActivate {
 
     // if there is an cache entry  
     if (passwordChangeVerification !== null) {
-      // this token session id is not the one that made the password change
-      if (payload.iss != passwordChangeVerification.sessionId) {
+      // this token login id is not the one that made the password change
+      if (payload.loginId != passwordChangeVerification.loginId) {
         // and this token was not issued after the password change
         if (payload.iat >= passwordChangeVerification.changedAt) {
           throw new UnauthorizedException({
