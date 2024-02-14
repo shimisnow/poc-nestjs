@@ -13,9 +13,9 @@ import { Request } from 'express';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { UserPayload } from '../payloads/user.payload';
-import { AUTHENTICATION_ERROR } from '../enums/authentication-error.enum';
 import { CacheKeyPrefix } from '../../cache/enums/cache-key-prefix.enum';
 import { AuthErrorMessages } from '../enums/auth-error-messages.enum';
+import { AuthErrorNames } from '../enums/auth-error-names.enum';
 import { PasswordChangeCachePayload } from '../../cache/payloads/password-change-cache.payload';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class AuthRefreshGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.EmptyJsonWebTokenError,
+          name: AuthErrorNames.JWT_EMPTY_ERROR,
         },
       });
     }
@@ -84,7 +84,7 @@ export class AuthRefreshGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.JsonWebTokenPayloadStrutureError,
+          name: AuthErrorNames.JWT_PAYLOAD_STRUCTURE_ERROR,
           errors: messages,
         },
       });
@@ -102,7 +102,7 @@ export class AuthRefreshGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
+          name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
           errors: [
             AuthErrorMessages.INVALIDATED_BY_LOGOUT,
           ],
@@ -117,16 +117,17 @@ export class AuthRefreshGuard implements CanActivate {
     ].join(':'));
 
     // if there is an cache entry  
-    if (passwordChangeVerification !== null) {
+    if (passwordChangeVerification != null) {
       // this token login id is not the one that made the password change
       if (payload.loginId != passwordChangeVerification.loginId) {
         // and this token was not issued after the password change
-        if (payload.iat >= passwordChangeVerification.changedAt) {
+        // iat is in seconds and changedAt at milliseconds
+        if ((payload.iat * 1000) <= passwordChangeVerification.changedAt) {
           throw new UnauthorizedException({
             statusCode: HttpStatus.UNAUTHORIZED,
             message: 'Unauthorized',
             data: {
-              name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
+              name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
               errors: [
                 AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE,
               ],

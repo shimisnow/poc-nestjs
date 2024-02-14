@@ -16,6 +16,7 @@ import { AccountEntity } from '@shared/database/financial/entities/account.entit
 import { BalanceService } from '../balance/balance.service';
 import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
 import { UserService } from '../user/user.service';
+import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 
 @Injectable()
 export class TransactionService {
@@ -90,7 +91,12 @@ export class TransactionService {
       }
     }
 
-    await this.cacheService.del(`balance-acc-${body.accountId}`);
+    const cacheKey = [
+      CacheKeyPrefix.FINANCIAL_BALANCE,
+      body.accountId,
+    ].join(':');
+
+    await this.cacheService.del(cacheKey);
 
     return {
       transactionId: result.transactionId,

@@ -1,6 +1,8 @@
 import request from 'supertest';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 
 describe('POST /auth/login', () => {
   let host: string;
@@ -29,8 +31,8 @@ describe('POST /auth/login', () => {
         .expect(401)
         .then(response => {
           const body = response.body;
-          expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+          expect(body.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+          expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
         });
     });
 
@@ -46,8 +48,8 @@ describe('POST /auth/login', () => {
         .expect(401)
         .then(response => {
           const body = response.body;
-          expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+          expect(body.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+          expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
         });
     });
 
@@ -63,8 +65,8 @@ describe('POST /auth/login', () => {
         .expect(401)
         .then(response => {
           const body = response.body;
-          expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+          expect(body.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+          expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
         });
     });
   });

@@ -15,4 +15,10 @@ export enum CacheKeyPrefix {
    * Does not have : at the end.
    */
   AUTH_PASSWORD_CHANGE = 'auth:password',
+
+  /**
+   * Prefix for cache key that stores account balance.
+   * Does not have : at the end.
+   */
+  FINANCIAL_BALANCE = 'financial:balance',
 }

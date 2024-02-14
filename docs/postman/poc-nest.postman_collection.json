@@ -685,9 +685,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"const accountIdFromBody = JSON.parse(pm.request.body.raw).accountId;",
-							"const ownerAccount = pm.collectionVariables.get('owner_account_' + accountIdFromBody);",
-							"const userId = pm.collectionVariables.get(ownerAccount);",
-							"",
+							"const userId = pm.collectionVariables.get('user_id_' + accountIdFromBody);",
 							"",
 							"/***** DO NOT EDIT AFTER THIS *****/",
 							"",
@@ -702,6 +700,7 @@
 							"",
 							"const payload = {",
 							"    userId,",
+							"    loginId: new Date().getTime().toString(),",
 							"    iat: issuedAtTimeSeconds,",
 							"    exp: expirationTimeSeconds,",
 							"};",
@@ -875,7 +874,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"accountId\": 3342,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
+							"raw": "{\r\n    \"accountId\": 3,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -883,7 +882,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{financial_service_host}}/balance?accountId=1",
+							"raw": "{{financial_service_host}}/balance?accountId=3",
 							"host": [
 								"{{financial_service_host}}"
 							],
@@ -893,7 +892,7 @@
 							"query": [
 								{
 									"key": "accountId",
-									"value": "1"
+									"value": "3"
 								}
 							]
 						}
@@ -933,6 +932,7 @@
 							"",
 							"const payload = {",
 							"    userId,",
+							"    loginId: new Date().getTime().toString(),",
 							"    iat: issuedAtTimeSeconds,",
 							"    exp: expirationTimeSeconds,",
 							"};",
@@ -1027,21 +1027,6 @@
 		{
 			"key": "user_id_3",
 			"value": "bc760244-ca8a-42b1-9cf6-70ceedc2e3d1",
-			"type": "string"
-		},
-		{
-			"key": "owner_account_1",
-			"value": "user_id_1",
-			"type": "string"
-		},
-		{
-			"key": "owner_account_2",
-			"value": "user_id_2",
-			"type": "string"
-		},
-		{
-			"key": "owner_account_3",
-			"value": "user_id_3",
 			"type": "string"
 		},
 		{
