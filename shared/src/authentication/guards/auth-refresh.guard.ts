@@ -15,6 +15,8 @@ import { validateOrReject } from 'class-validator';
 import { UserPayload } from '../payloads/user.payload';
 import { AUTHENTICATION_ERROR } from '../enums/authentication-error.enum';
 import { CacheKeyPrefix } from '../../cache/enums/cache-key-prefix.enum';
+import { AuthErrorMessages } from '../enums/auth-error-messages.enum';
+import { PasswordChangeCachePayload } from '../../cache/payloads/password-change-cache.payload';
 
 @Injectable()
 export class AuthRefreshGuard implements CanActivate {
@@ -102,10 +104,36 @@ export class AuthRefreshGuard implements CanActivate {
         data: {
           name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
           errors: [
-            'invalidated by logout',
+            AuthErrorMessages.INVALIDATED_BY_LOGOUT,
           ],
         },
       });
+    }
+
+    // verify if the user had a password change event
+    const passwordChangeVerification = await this.cacheService.get<PasswordChangeCachePayload>([
+      CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
+      payload.userId
+    ].join(':'));
+
+    // if there is an cache entry  
+    if (passwordChangeVerification !== null) {
+      // this token session id is not the one that made the password change
+      if (payload.iss != passwordChangeVerification.sessionId) {
+        // and this token was not issued after the password change
+        if (payload.iat >= passwordChangeVerification.changedAt) {
+          throw new UnauthorizedException({
+            statusCode: HttpStatus.UNAUTHORIZED,
+            message: 'Unauthorized',
+            data: {
+              name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
+              errors: [
+                AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE,
+              ],
+            },
+          });
+        }
+      }
     }
 
     request['user'] = payload;
