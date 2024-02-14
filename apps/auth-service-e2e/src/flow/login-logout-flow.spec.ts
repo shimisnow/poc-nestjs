@@ -32,7 +32,7 @@ describe('login logout process (with refresh)', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
-    /* const sessionTwo = await request(host)
+    const sessionTwo = await request(host)
       .post(endpointLogin)
       .send({
         username: 'anderson',
@@ -40,57 +40,43 @@ describe('login logout process (with refresh)', () => {
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
-      .expect(200); */
+      .expect(200);
 
     let sessionOneAccessToken = jsonwebtoken.verify(sessionOne.body.accessToken, JWT_SECRET_KEY) as JwtPayload;
-    //let sessionTwoAccessToken = jsonwebtoken.verify(sessionTwo.body.accessToken, JWT_SECRET_KEY) as JwtPayload;
+    let sessionTwoAccessToken = jsonwebtoken.verify(sessionTwo.body.accessToken, JWT_SECRET_KEY) as JwtPayload;
     const sessionOneRefreshToken = jsonwebtoken.verify(sessionOne.body.refreshToken, JWT_REFRESH_SECRET_KEY) as JwtPayload;
-    //const sessionTwoRefreshToken = jsonwebtoken.verify(sessionTwo.body.refreshToken, JWT_REFRESH_SECRET_KEY) as JwtPayload;
+    const sessionTwoRefreshToken = jsonwebtoken.verify(sessionTwo.body.refreshToken, JWT_REFRESH_SECRET_KEY) as JwtPayload;
 
     expect(sessionOneAccessToken.userId).toBe(sessionOneRefreshToken.userId);
-    expect(sessionOneAccessToken.iss).toBe(sessionOneRefreshToken.iss);
-    //expect(sessionTwoAccessToken.userId).toBe(sessionTwoRefreshToken.userId);
-    //expect(sessionTwoAccessToken.iss).toBe(sessionTwoRefreshToken.iss);
-    //expect(sessionOneAccessToken.iss).not.toBe(sessionTwoAccessToken.iss);
-    //expect(sessionOneRefreshToken.userId).toBe(sessionTwoRefreshToken.userId);
-
-    console.log('sessionOneAccessToken');
-    console.log(sessionOneAccessToken);
-    //console.log('sessionTwoAccessToken');
-    //console.log(sessionTwoAccessToken);
-    console.log('sessionOneRefreshToken');
-    console.log(sessionOneRefreshToken);
-    //console.log('sessionTwoRefreshToken');
-    //console.log(sessionTwoRefreshToken);
+    expect(sessionOneAccessToken.loginId).toBe(sessionOneRefreshToken.loginId);
+    expect(sessionTwoAccessToken.userId).toBe(sessionTwoRefreshToken.userId);
+    expect(sessionTwoAccessToken.loginId).toBe(sessionTwoRefreshToken.loginId);
+    expect(sessionOneAccessToken.loginId).not.toBe(sessionTwoAccessToken.loginId);
+    expect(sessionOneRefreshToken.userId).toBe(sessionTwoRefreshToken.userId);
 
     /***** REFRESH *****/
 
     await new Promise(resolve => setTimeout(resolve, 2000));
 
-    let refreshSessionOne = await request(host)
+    const refreshSessionOne = await request(host)
       .get(endpointRefresh)
       .set('Authorization', `Bearer ${sessionOne.body.refreshToken}`)
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
       .expect(200);
 
-    /* let refreshSessionTwo = await request(host)
+    let refreshSessionTwo = await request(host)
       .get(endpointRefresh)
       .set('Authorization', `Bearer ${sessionTwo.body.refreshToken}`)
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
-      .expect(200); */
+      .expect(200);
 
     sessionOneAccessToken = jsonwebtoken.verify(refreshSessionOne.body.accessToken, JWT_SECRET_KEY) as JwtPayload;
-    //sessionTwoAccessToken = jsonwebtoken.verify(refreshSessionTwo.body.accessToken, JWT_SECRET_KEY) as JwtPayload;
+    sessionTwoAccessToken = jsonwebtoken.verify(refreshSessionTwo.body.accessToken, JWT_SECRET_KEY) as JwtPayload;
 
-    console.log('sessionOneAccessToken x2');
-    console.log(sessionOneAccessToken);
-    //console.log('sessionTwoAccessToken x2');
-    //console.log(sessionTwoAccessToken);
-
-    expect(sessionOneAccessToken.iss).toBe(sessionOneRefreshToken.iss);
-    //expect(sessionTwoAccessToken.iss).toBe(sessionTwoRefreshToken.iss);
+    expect(sessionOneAccessToken.loginId).toBe(sessionOneRefreshToken.loginId);
+    expect(sessionTwoAccessToken.loginId).toBe(sessionTwoRefreshToken.loginId);
 
     /***** SESSION ONE LOGOUT *****/
 
@@ -107,9 +93,9 @@ describe('login logout process (with refresh)', () => {
         expect(body).toHaveProperty('performedAt');
       });
 
-    /***** SESSION ONE TRY TO REFRESH *****/
+    /***** SESSION ONE TRY TO REFRESH AND TRY TO LOGOUT *****/
 
-    refreshSessionOne = await request(host)
+    await request(host)
       .get(endpointRefresh)
       .set('Authorization', `Bearer ${sessionOne.body.refreshToken}`)
       .set('X-Api-Version', '1')
@@ -121,15 +107,27 @@ describe('login logout process (with refresh)', () => {
         expect(body.data.errors).toEqual(expect.arrayContaining(['invalidated by logout']));
       });
 
+    await request(host)
+      .post(endpointLogout)
+      .set('Authorization', `Bearer ${refreshSessionOne.body.accessToken}`)
+      .set('X-Api-Version', '1')
+      .expect('Content-Type', /json/)
+      .expect(401)
+      .then(response => {
+        const body = response.body;
+        expect(body.data.name).toBe('TokenInvalidatedByServer');
+        expect(body.data.errors).toEqual(expect.arrayContaining(['invalidated by logout']));
+      });
+
     /***** SESSION TWO REFRESH *****/
 
-    /* refreshSessionTwo = await request(host)
+    refreshSessionTwo = await request(host)
     .get(endpointRefresh)
     .set('Authorization', `Bearer ${sessionTwo.body.refreshToken}`)
     .set('X-Api-Version', '1')
     .expect('Content-Type', /json/)
     .expect(200);
 
-    expect(refreshSessionTwo.body).toHaveProperty('accessToken'); */
+    expect(refreshSessionTwo.body).toHaveProperty('accessToken');
   });
 });
