@@ -266,6 +266,8 @@ describe('AuthService', () => {
       const result = await service.passwordChange(user.userId, user.loginId, 'test@1234', '1234@test');
       
       expect(result.performed).toBeTruthy();
+      expect(result).toHaveProperty('accessToken');
+      expect(result).toHaveProperty('refreshToken');
     });
   });
 });

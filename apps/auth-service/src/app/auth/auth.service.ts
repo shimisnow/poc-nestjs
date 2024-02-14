@@ -296,9 +296,6 @@ export class AuthService {
     newPassword: string,
   ): Promise<PasswordChangeSerializer> {
     let userEntity: UserAuthEntity = null;
-    const resultStatus: PasswordChangeSerializer = {
-      performed: false,
-    }
 
     // if the user exists into database
     try {
@@ -340,11 +337,7 @@ export class AuthService {
 
     try {
       // stores the retrieved user with the new password
-      const result = await this.userAuthsRepository.save(userEntity);
-
-      if (result != null) {
-        resultStatus.performed = true;
-      }
+      await this.userAuthsRepository.save(userEntity);
     } catch (error) {
       switch (error.constructor) {
         case QueryFailedError:
@@ -354,15 +347,20 @@ export class AuthService {
       }
     }
 
-    // adds the sessionId from request to cache to invalidate other issued access token
+    // adds the timestamp to cache to invalidate tokens issued before this
     await this.cacheService.set([
       CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
       userId,
     ].join(':'), {
-      loginId,
       changedAt: new Date().getTime(),
     } as PasswordChangeCachePayload);
 
-    return resultStatus;
+    const newLoginId = new Date().getTime().toString();
+
+    return {
+      performed: true,
+      accessToken: await this.generateAccessToken(userEntity.userId, newLoginId),
+      refreshToken: await this.generateRefreshToken(userEntity.userId, newLoginId),
+    };
   }
 }
