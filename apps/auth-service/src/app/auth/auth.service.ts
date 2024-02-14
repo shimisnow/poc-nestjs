@@ -192,6 +192,7 @@ export class AuthService {
       {
         // the refreshToken is the one with the greater expire time
         ttl: this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     );
 
@@ -361,6 +362,7 @@ export class AuthService {
       {
         // the refreshToken is the one with the greater expire time
         ttl: this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     );
 
