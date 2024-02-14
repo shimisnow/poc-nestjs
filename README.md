@@ -14,6 +14,7 @@ This project implements a REST API for a financial backend with NestJS and serve
 ## Key features
 
 - Showcases [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
+- Showcases [how to authenticate, issue and invalidate tokens](docs/markdown//resolved-problems/authentication-flow.md)
 - Demonstrates [NestJS](https://docs.nestjs.com/) architecture and patterns.
 - Shows how to make a secure authentication with [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt).
 - Shows how to work with monorepo using [Nx](https://nx.dev/).
