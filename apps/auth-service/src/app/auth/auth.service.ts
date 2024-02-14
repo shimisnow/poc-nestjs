@@ -23,6 +23,7 @@ import { UserAuthStatusEnum } from '@shared/database/authentication/enums/user-a
 import { RefreshSerializer } from './serializers/refresh.serializer';
 import { LogoutSerializer } from './serializers/logout.serializer';
 import { PasswordChangeSerializer } from './serializers/password-change.serializer';
+import { PasswordChangeCachePayload } from '@shared/cache/payloads/password-change-cache.payload';
 
 @Injectable()
 export class AuthService {
@@ -37,12 +38,13 @@ export class AuthService {
    * Generates and signs a JWT token using the JWT_SECRET_KEY.
    * 
    * @param userId User id as UUID.
+   * @param loginId Defined by each login request.
    * @returns Signed JWT token.
    */
-  async generateAccessToken(userId: string, sessionId: number): Promise<string> {
+  async generateAccessToken(userId: string, loginId: string): Promise<string> {
     const payload = {
       userId,
-      iss: sessionId,
+      loginId,
     } as UserPayload;
 
     return await this.jwtService.signAsync(payload, {
@@ -55,12 +57,13 @@ export class AuthService {
    * Generates and signs a JWT token using the JWT_REFRESH_SECRET_KEY.
    * 
    * @param userId User id as UUID.
+   * @param loginId Defined by each login request.
    * @returns Signed JWT token.
    */
-  async generateRefreshToken(userId: string, sessionId: number): Promise<string> {
+  async generateRefreshToken(userId: string, loginId: string): Promise<string> {
     const payload = {
       userId,
-      iss: sessionId,
+      loginId,
     } as UserPayload;
 
     return await this.jwtService.signAsync(payload, {
@@ -137,11 +140,11 @@ export class AuthService {
       });
     }
 
-    const sessionId = new Date().getTime();
+    const loginId = new Date().getTime().toString();
 
     return {
-      accessToken: await this.generateAccessToken(user.userId, sessionId),
-      refreshToken: await this.generateRefreshToken(user.userId, sessionId),
+      accessToken: await this.generateAccessToken(user.userId, loginId),
+      refreshToken: await this.generateRefreshToken(user.userId, loginId),
     };
   }
 
@@ -149,11 +152,11 @@ export class AuthService {
    * Invalidate access and refresh tokens for an user session.
    * 
    * @param userId User id as UUID.
-   * @param sessionId iss information from jwt.
+   * @param loginId Login identification from JWT token.
    * @returns Information if the process was perfomed.
    * @throws UnauthorizedException User does not exists or is inactive.
    */
-  async logout(userId: string, sessionId: number): Promise<LogoutSerializer> {
+  async logout(userId: string, loginId: string): Promise<LogoutSerializer> {
     let userEntity: UserAuthEntity = null;
 
     try {
@@ -180,7 +183,7 @@ export class AuthService {
     await this.cacheService.set([
       CacheKeyPrefix.AUTH_SESSION_LOGOUT,
       userId,
-      sessionId
+      loginId,
     ].join(':'), {
       performedAt,
     });
@@ -222,7 +225,7 @@ export class AuthService {
     }
 
     return {
-      accessToken: await this.generateAccessToken(user.userId, user.iss),
+      accessToken: await this.generateAccessToken(user.userId, user.loginId),
     }
   }
 
@@ -277,7 +280,7 @@ export class AuthService {
    * Changes user password and invalidates already issued JWT tokens.
    * 
    * @param userId UUID user information.
-   * @param sessionId Information about the session from JWT payload.
+   * @param loginId Information about the login from JWT payload.
    * @param currentPassword Actual password in plain text.
    * @param newPassword New password in plain text.
    * @returns Information if the password was changed.
@@ -287,7 +290,7 @@ export class AuthService {
    */
   async passwordChange(
     userId: string,
-    sessionId: number,
+    loginId: string,
     currentPassword: string,
     newPassword: string,
   ): Promise<PasswordChangeSerializer> {
@@ -342,7 +345,6 @@ export class AuthService {
         resultStatus.performed = true;
       }
     } catch (error) {
-      console.log(error);
       switch (error.constructor) {
         case QueryFailedError:
           throw new UnprocessableEntityException();
@@ -356,9 +358,9 @@ export class AuthService {
       CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
       userId,
     ].join(':'), {
-      sessionId,
+      loginId,
       changedAt: new Date().getTime(),
-    });
+    } as PasswordChangeCachePayload);
 
     return resultStatus;
   }
