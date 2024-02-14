@@ -1,6 +1,5 @@
 import request from 'supertest';
 import { getContainerRuntimeClient } from 'testcontainers';
-import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 describe('GET /auth/signup', () => {
   let host: string;

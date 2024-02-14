@@ -13,9 +13,9 @@ import { Request } from 'express';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { UserPayload } from '../payloads/user.payload';
-import { AUTHENTICATION_ERROR } from '../enums/authentication-error.enum';
 import { CacheKeyPrefix } from '../../cache/enums/cache-key-prefix.enum';
 import { AuthErrorMessages } from '../enums/auth-error-messages.enum';
+import { AuthErrorNames } from '../enums/auth-error-names.enum';
 import { PasswordChangeCachePayload } from '../../cache/payloads/password-change-cache.payload';
 
 @Injectable()
@@ -34,7 +34,7 @@ export class AuthRefreshGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.EmptyJsonWebTokenError,
+          name: AuthErrorNames.JWT_EMPTY_ERROR,
         },
       });
     }
@@ -84,7 +84,7 @@ export class AuthRefreshGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.JsonWebTokenPayloadStrutureError,
+          name: AuthErrorNames.JWT_PAYLOAD_STRUCTURE_ERROR,
           errors: messages,
         },
       });
@@ -102,7 +102,7 @@ export class AuthRefreshGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
+          name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
           errors: [
             AuthErrorMessages.INVALIDATED_BY_LOGOUT,
           ],
@@ -127,7 +127,7 @@ export class AuthRefreshGuard implements CanActivate {
             statusCode: HttpStatus.UNAUTHORIZED,
             message: 'Unauthorized',
             data: {
-              name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
+              name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
               errors: [
                 AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE,
               ],

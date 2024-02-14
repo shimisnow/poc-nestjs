@@ -2,6 +2,8 @@ import request from 'supertest';
 import jsonwebtoken from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 
 describe('POST /auth/logout', () => {
   let host: string;
@@ -64,8 +66,8 @@ describe('POST /auth/logout', () => {
       .expect(401)
       .then(response => {
         const body = response.body;
-        expect(body.data.name).toBe('TokenInvalidatedByServer');
-        expect(body.data.errors).toEqual(expect.arrayContaining(['invalidated by logout']));
+        expect(body.data.name).toBe(AuthErrorNames.JWT_INVALIDATED_BY_SERVER);
+        expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_LOGOUT]));
       }); 
   });
 });

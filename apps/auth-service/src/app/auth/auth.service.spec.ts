@@ -10,7 +10,8 @@ import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
-import { AUTHENTICATION_ERROR } from '@shared/authentication/enums/authentication-error.enum';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -186,8 +187,8 @@ describe('AuthService', () => {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
-        expect(response.data.name).toBe(AUTHENTICATION_ERROR.TokenInvalidatedByServer);
-        expect(response.data.errors).toEqual(expect.arrayContaining(['user is inactive']));
+        expect(response.data.name).toBe(AuthErrorNames.JWT_INVALIDATED_BY_SERVER);
+        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
       }
     });
 
@@ -217,8 +218,8 @@ describe('AuthService', () => {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
-        expect(response.data.name).toBe(AUTHENTICATION_ERROR.UserPasswordError);
-        expect(response.data.errors).toEqual(expect.arrayContaining(['user is inactive or does not exists']));
+        expect(response.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
       }
     });
 
@@ -234,8 +235,8 @@ describe('AuthService', () => {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
-        expect(response.data.name).toBe(AUTHENTICATION_ERROR.UserPasswordError);
-        expect(response.data.errors).toEqual(expect.arrayContaining(['user is inactive or does not exists']));
+        expect(response.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
       }
     });
 
@@ -251,8 +252,8 @@ describe('AuthService', () => {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
-        expect(response.data.name).toBe(AUTHENTICATION_ERROR.UserPasswordError);
-        expect(response.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+        expect(response.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
       }
     });
 

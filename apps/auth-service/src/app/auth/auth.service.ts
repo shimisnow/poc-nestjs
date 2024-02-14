@@ -12,7 +12,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import * as bcrypt from 'bcrypt';
-import { AUTHENTICATION_ERROR } from '@shared/authentication/enums/authentication-error.enum';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
@@ -119,9 +120,9 @@ export class AuthService {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.UserPasswordError,
+          name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [
-            'wrong user or password information',
+            AuthErrorMessages.WRONG_USER_PASSWORD,
           ],
         },
       });
@@ -132,9 +133,9 @@ export class AuthService {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.UserPasswordError,
+          name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [
-            'wrong user or password information',
+            AuthErrorMessages.WRONG_USER_PASSWORD,
           ],
         },
       });
@@ -170,9 +171,9 @@ export class AuthService {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.TokenInvalidatedByServer,
+          name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
           errors: [
-            'user is inactive',
+            AuthErrorMessages.INACTIVE_USER,
           ]
         },
       });
@@ -216,9 +217,9 @@ export class AuthService {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.UserPasswordError,
+          name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [
-            'user is inactive or does not exists',
+            AuthErrorMessages.INACTIVE_USER,
           ],
         },
       });
@@ -312,9 +313,9 @@ export class AuthService {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.UserPasswordError,
+          name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [
-            'user is inactive or does not exists',
+            AuthErrorMessages.INACTIVE_USER,
           ],
         },
       });
@@ -326,9 +327,9 @@ export class AuthService {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.UserPasswordError,
+          name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [
-            'wrong user or password information',
+            AuthErrorMessages.WRONG_USER_PASSWORD,
           ],
         },
       });

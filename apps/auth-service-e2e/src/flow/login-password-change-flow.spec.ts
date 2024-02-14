@@ -1,7 +1,7 @@
 import request from 'supertest';
-import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
-import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 
 describe('login logout process (with refresh)', () => {
   let host: string;
@@ -89,8 +89,8 @@ describe('login logout process (with refresh)', () => {
       .expect(401)
       .then(response => {
         const body = response.body;
-        expect(body.data.name).toBe('TokenInvalidatedByServer');
-        expect(body.data.errors).toEqual(expect.arrayContaining(['invalidated by password change']));
+        expect(body.data.name).toBe(AuthErrorNames.JWT_INVALIDATED_BY_SERVER);
+        expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE]));
       });
 
     /***** LOGOUT AT SESSION THREE (ERROR) *****/
@@ -103,8 +103,8 @@ describe('login logout process (with refresh)', () => {
       .expect(401)
       .then(response => {
         const body = response.body;
-        expect(body.data.name).toBe('TokenInvalidatedByServer');
-        expect(body.data.errors).toEqual(expect.arrayContaining(['invalidated by password change']));
+        expect(body.data.name).toBe(AuthErrorNames.JWT_INVALIDATED_BY_SERVER);
+        expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE]));
       });
 
     /***** LOGOUT AT SESSION FOUR (OK - IT IS ANOTHER USER) *****/
