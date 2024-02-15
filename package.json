@@ -29,8 +29,6 @@
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
-    "@automock/adapters.nestjs": "^2.1.0",
-    "@automock/jest": "^2.1.0",
     "@compodoc/compodoc": "^1.1.23",
     "@nestjs/schematics": "^10.1.0",
     "@nestjs/testing": "^10.3.1",

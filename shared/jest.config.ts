@@ -9,11 +9,9 @@ export default {
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../coverage/shared',
   collectCoverageFrom: ['<rootDir>/src/**'],
-  /* coveragePathIgnorePatterns: [
-    'main.ts',
-    'repl.ts',
-    '.*\.(module|dto|serializer|mock)\.ts$'
-  ], */
+  coveragePathIgnorePatterns: [
+    '.*\.(serializer|enum|entity|decorator)\.ts$'
+  ],
   coverageReporters: ['clover', 'html'],
   /* coverageThreshold: {
     global: {
