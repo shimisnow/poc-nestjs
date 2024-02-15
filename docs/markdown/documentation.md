@@ -10,7 +10,8 @@ OpenAPI/Swagger documentation can be found at `apps/$SERVICE_NAME/docs/openapi/o
 ### How to visualize the documentation
 
 ```sh
-docker compose -f .\apps\$SERVICE_NAME\docker-compose.yml up -d openapi
+docker compose up -d auth-service-openapi
+docker compose up -d financial-service-openapi
 ```
 
 The documentation can be viewed at `http://localhost:$PORT/`. The port will be different to each service, see the table for reference.
