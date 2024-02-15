@@ -6,6 +6,16 @@ export default {
   transform: {
     '^.+\\.[tj]sx?$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../coverage/shared',
+  collectCoverageFrom: ['<rootDir>/src/**'],
+  coveragePathIgnorePatterns: [
+    '.*\.(serializer|enum|entity|decorator|payload)\.ts$'
+  ],
+  coverageReporters: ['clover', 'html'],
+  coverageThreshold: {
+    global: {
+      lines: 90,
+    },
+  },
 };

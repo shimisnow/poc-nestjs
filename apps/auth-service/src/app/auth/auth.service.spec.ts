@@ -6,8 +6,12 @@ import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
 import { BadGatewayException, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -16,18 +20,19 @@ describe('AuthService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
+        JwtService,
         UserAuthsRepository,
         {
           provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,
         },
         {
-          provide: JwtService,
+          provide: CACHE_MANAGER,
           useValue: {
-            signAsync: (payload) =>
-              'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFuZGVyc29uIiwic3ViIjoxLCJpYXQiOjE2ODM4MzAyNTEsImV4cCI6MTY4MzgzMDMxMX0.eN5Cv2tJ0HGlVNKMtPv5VPeCIA7dd4OEA-8Heh7OJ_c',
-          },
-        },
+            // eslint-disable-next-line @typescript-eslint/no-empty-function
+            set: (key, value) => {},
+          }
+        }
       ],
     }).compile();
 
@@ -60,77 +65,6 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> login()', () => {
-    test('correct login data with ACTIVE user', async () => {
-      const result = await service.login('anderson', 'test@1234');
-
-      expect(result).toHaveProperty('accessToken');
-      expect(result.accessToken).not.toBeNull();
-      expect(result).toHaveProperty('refreshToken');
-      expect(result.refreshToken).not.toBeNull();
-      expect(result.accessToken.split('.').length).toBe(3);
-      expect(result.refreshToken.split('.').length).toBe(3);
-    });
-
-    test('correct login data with INACTIVE user', async () => {
-      try {
-        await service.login('thomas', 'test@1234');
-      } catch (error) {
-        expect(error).toBeInstanceOf(UnauthorizedException);
-      }
-    });
-
-    test('incorrect login data (user exists)', async () => {
-      try {
-        await service.login('anderson', 'test@5678');
-      } catch (error) {
-        expect(error).toBeInstanceOf(UnauthorizedException);
-      }
-    });
-
-    test('incorrect login data (user do not exists)', async () => {
-      try {
-        await service.login('beatrice', 'test@1234');
-      } catch (error) {
-        expect(error).toBeInstanceOf(UnauthorizedException);
-      }
-    });
-
-    test('some database error', async () => {
-      try {
-        await service.login('anything', 'test@1234');
-      } catch (error) {
-        expect(error).toBeInstanceOf(BadGatewayException);
-      }
-    });
-  });
-
-  describe('auth.service -> refresh()', () => {
-    test('correct token data with ACTIVE user', async () => {
-      const user = {
-        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-      } as UserPayload;
-
-      const result = await service.refresh(user);
-
-      expect(result).toHaveProperty('accessToken');
-      expect(result.accessToken).not.toBeNull();
-      expect(result).not.toHaveProperty('refreshToken');
-    });
-
-    test('correct login data with INACTIVE user', async () => {
-      const user = {
-        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
-      } as UserPayload;
-
-      try {
-        await service.refresh(user);
-      } catch (error) {
-        expect(error).toBeInstanceOf(UnauthorizedException);
-      }
-    });
-  });
-
   describe('auth.service -> signup()', () => {
     test('username/userId already registered', async () => {
       try {
@@ -152,6 +86,214 @@ describe('AuthService', () => {
       );
 
       expect(result.status).toBeTruthy();
+    });
+  });
+
+  describe('auth.service -> login()', () => {
+    test('correct login data with ACTIVE user', async () => {
+      const result = await service.login('anderson', 'test@1234');
+
+      expect(result).toHaveProperty('accessToken');
+      expect(result).toHaveProperty('refreshToken');
+      
+      const accessToken = jsonwebtoken.verify(result.accessToken, process.env.JWT_SECRET_KEY) as JwtPayload;
+      expect(accessToken).toHaveProperty('userId');
+      expect(accessToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
+      expect(accessToken).toHaveProperty('loginId');
+      expect(parseInt(accessToken.loginId)).toBeLessThan(new Date().getTime());
+
+      const refreshToken = jsonwebtoken.verify(result.refreshToken, process.env.JWT_REFRESH_SECRET_KEY) as JwtPayload;
+      expect(refreshToken).toHaveProperty('userId');
+      expect(refreshToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
+      expect(refreshToken).toHaveProperty('loginId');
+      expect(parseInt(refreshToken.loginId)).toBeLessThan(new Date().getTime());
+    });
+
+    test('correct login data with INACTIVE user', async () => {
+      try {
+        await service.login('thomas', 'test@1234');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    });
+
+    test('incorrect login data (user exists)', async () => {
+      try {
+        await service.login('anderson', 'test@5678');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    });
+
+    test('incorrect login data (user does not exists)', async () => {
+      try {
+        await service.login('beatrice', 'test@1234');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    });
+
+    test('some database error', async () => {
+      try {
+        await service.login('anything', 'test@1234');
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadGatewayException);
+      }
+    });
+  });
+
+  describe('auth.service -> refresh()', () => {
+    test('correct token data with ACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        loginId: new Date().getTime().toString(),
+      } as UserPayload;
+
+      const result = await service.refresh(user);
+
+      expect(result).toHaveProperty('accessToken');
+      expect(result).not.toHaveProperty('refreshToken');
+
+      const accessToken = jsonwebtoken.verify(result.accessToken, process.env.JWT_SECRET_KEY) as JwtPayload;
+      expect(accessToken).toHaveProperty('userId');
+      expect(accessToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
+      expect(accessToken).toHaveProperty('loginId');
+      expect(parseInt(accessToken.loginId)).toBeLessThan(new Date().getTime());
+    });
+
+    test('correct login data with INACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
+      } as UserPayload;
+
+      try {
+        await service.refresh(user);
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+      }
+    });
+  });
+
+  describe('auth.service -> logout()', () => {
+    test('INACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
+        loginId: new Date().getTime().toString(),
+      } as UserPayload;
+
+      try {
+        await service.logout(user.userId, user.loginId);
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(AuthErrorNames.JWT_INVALIDATED_BY_SERVER);
+        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
+      }
+    });
+
+    test('ACTIVE user', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        loginId: new Date().getTime().toString(),
+      } as UserPayload;
+
+      const result = await service.logout(user.userId, user.loginId);
+      
+      expect(result.performed).toBeTruthy();
+      expect(result).toHaveProperty('performedAt');
+    });
+  });
+
+  describe('auth.service -> passwordChange()', () => {
+    test('inactive user', async () => {
+      const user = {
+        userId: 'fcf5cccf-c217-4502-8cc3-cc24270ae0b7',
+        loginId: new Date().getTime().toString(),
+      } as UserPayload;
+
+      try {
+        await service.passwordChange(user.userId, 'test@1234', '1234@test');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
+      }
+    });
+
+    test('user does not exist', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4345',
+        loginId: new Date().getTime().toString(),
+      } as UserPayload;
+
+      try {
+        await service.passwordChange(user.userId, 'test@1234', '1234@test');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
+      }
+    });
+
+    test('incorrect password', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        loginId: new Date().getTime().toString(),
+      } as UserPayload;
+
+      try {
+        await service.passwordChange(user.userId,  '1234@1234', '1234@test');
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
+      }
+    });
+
+    test('perfomed without errors', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        loginId: new Date().getTime().toString(),
+      } as UserPayload;
+
+      const result = await service.passwordChange(user.userId, 'test@1234', '1234@test');
+      
+      expect(result.performed).toBeTruthy();
+      expect(result).toHaveProperty('accessToken');
+      expect(result).toHaveProperty('refreshToken');
+    });
+  });
+
+  describe('auth.convertStringToSeconds()', () => {
+    test('with d (days)', () => {
+      const seconds = service.convertStringToSeconds('2d');
+
+      expect(seconds).toBe(172800);
+    });
+
+    test('with h (hours)', () => {
+      const seconds = service.convertStringToSeconds('4h');
+
+      expect(seconds).toBe(14400);
+    });
+
+    test('with m (minutes)', () => {
+      const seconds = service.convertStringToSeconds('5m');
+
+      expect(seconds).toBe(300);
+    });
+
+    test('with invalid letter', () => {
+      const seconds = service.convertStringToSeconds('2x');
+
+      expect(seconds).toBe(2);
     });
   });
 });

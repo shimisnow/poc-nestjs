@@ -1,6 +1,8 @@
 import request from 'supertest';
 import jsonwebtoken from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 
 describe('POST /transaction', () => {
   let host: string;
@@ -33,9 +35,10 @@ describe('POST /transaction', () => {
       const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        loginId: new Date().getTime().toString(),
         iat: now - 120,
         exp: now - 60,
-      }, JWT_SECRET_KEY);
+      } as UserPayload, JWT_SECRET_KEY);
 
       await request(host)
         .post(endpoint)
@@ -54,9 +57,10 @@ describe('POST /transaction', () => {
       const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        loginId: new Date().getTime().toString(),
         iat: now - 3660, // 1h and 1m before now
         exp: now,
-      }, JWT_SECRET_KEY);
+      } as UserPayload, JWT_SECRET_KEY);
 
       await request(host)
         .post(endpoint)
@@ -77,9 +81,10 @@ describe('POST /transaction', () => {
       const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        loginId: new Date().getTime().toString(),
         iat: now,
         exp: now + 60,
-      }, JWT_SECRET_KEY);
+      } as UserPayload, JWT_SECRET_KEY);
 
       await request(host)
         .post(endpoint)
@@ -100,9 +105,10 @@ describe('POST /transaction', () => {
       const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        loginId: new Date().getTime().toString(),
         iat: now,
         exp: now + 60,
-      }, JWT_SECRET_KEY);
+      } as UserPayload, JWT_SECRET_KEY);
 
       await request(host)
         .post(endpoint)
@@ -132,15 +138,16 @@ describe('POST /transaction', () => {
 
         await containerRuntimeClient.container.exec(
           containerCache,
-          ['redis-cli', 'SET', 'balance-acc-3', JSON.stringify(cacheValue)]
+          ['redis-cli', 'SET', `${CacheKeyPrefix.FINANCIAL_BALANCE}:3`, JSON.stringify(cacheValue)]
         );
         
         const now = Math.floor(Date.now() / 1000);
         const accessToken = jsonwebtoken.sign({
           userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e3d1',
+          loginId: new Date().getTime().toString(),
           iat: now,
           exp: now + 60,
-        }, JWT_SECRET_KEY);
+        } as UserPayload, JWT_SECRET_KEY);
 
         // request with a random balance to guarantee that is retrieved from cache and not from database
         await request(host)
@@ -208,15 +215,16 @@ describe('POST /transaction', () => {
 
         await containerRuntimeClient.container.exec(
           containerCache,
-          ['redis-cli', 'SET', 'balance-acc-5', JSON.stringify(cacheValue)]
+          ['redis-cli', 'SET', `${CacheKeyPrefix.FINANCIAL_BALANCE}:5`, JSON.stringify(cacheValue)]
         );
         
         const now = Math.floor(Date.now() / 1000);
         const accessToken = jsonwebtoken.sign({
           userId: '3132a64a-de8b-49cc-b49f-b445ee984415',
+          loginId: new Date().getTime().toString(),
           iat: now,
           exp: now + 60,
-        }, JWT_SECRET_KEY);
+        } as UserPayload, JWT_SECRET_KEY);
 
         // request with a random balance to guarantee that is retrieved from cache and not from database
         await request(host)

@@ -1,11 +1,14 @@
 import request from 'supertest';
-import jsonwebtoken from 'jsonwebtoken';
+import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 
 describe('POST /auth/login', () => {
   let host: string;
   const endpoint = '/auth/login';
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+  const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
   beforeAll(async () => {
     const containerRuntimeClient = await getContainerRuntimeClient();
@@ -28,8 +31,8 @@ describe('POST /auth/login', () => {
         .expect(401)
         .then(response => {
           const body = response.body;
-          expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+          expect(body.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+          expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
         });
     });
 
@@ -45,8 +48,8 @@ describe('POST /auth/login', () => {
         .expect(401)
         .then(response => {
           const body = response.body;
-          expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+          expect(body.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+          expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
         });
     });
 
@@ -62,8 +65,8 @@ describe('POST /auth/login', () => {
         .expect(401)
         .then(response => {
           const body = response.body;
-          expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['wrong user or password information']));
+          expect(body.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+          expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
         });
     });
   });
@@ -125,8 +128,17 @@ describe('POST /auth/login', () => {
       const body = response.body;
 
       expect(body).toHaveProperty('accessToken');
-      // throws "JsonWebTokenError: invalid signature" if token is invalid
-      jsonwebtoken.verify(body.accessToken, JWT_SECRET_KEY);
+      expect(body).toHaveProperty('refreshToken');
+
+      const accessToken = jsonwebtoken.verify(body.accessToken, JWT_SECRET_KEY) as JwtPayload;
+      expect(accessToken).toHaveProperty('userId');
+      expect(accessToken.userId).toBe('4799cc31-7692-40b3-afff-cc562baf5374');
+      expect(accessToken).toHaveProperty('loginId');
+
+      const refreshToken = jsonwebtoken.verify(body.refreshToken, JWT_REFRESH_SECRET_KEY) as JwtPayload;
+      expect(refreshToken).toHaveProperty('userId');
+      expect(refreshToken.userId).toBe('4799cc31-7692-40b3-afff-cc562baf5374');
+      expect(refreshToken).toHaveProperty('loginId');
     });
   });
 });

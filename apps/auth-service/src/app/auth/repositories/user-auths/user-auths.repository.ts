@@ -24,7 +24,7 @@ export class UserAuthsRepository {
    * @param username Username to be found.
    * @returns Found entity or null.
    */
-  async findByUsername(username: string): Promise<UserAuthEntity> {
+  async findByUsername(username: string): Promise<UserAuthEntity | null> {
     return await this.repository.findOne({
       where: {
         username,
@@ -34,5 +34,9 @@ export class UserAuthsRepository {
 
   async insert(entity: UserAuthEntity): Promise<InsertResult> {
     return await this.repository.insert(entity);
+  }
+
+  async save(entity: UserAuthEntity): Promise<UserAuthEntity> {
+    return await this.repository.save(entity);
   }
 }

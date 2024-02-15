@@ -10,6 +10,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { AuthRefreshGuard } from '@shared/authentication/guards/auth-refresh.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
@@ -28,6 +29,10 @@ import { DefaultError401Serializer } from '@shared/authentication/serializers/de
 import { SignUpError400Serializer } from './serializers/signup-error-400.serializer';
 import { SignUpError409Serializer } from './serializers/signup-error-409.serializer';
 import { RefreshSerializer } from './serializers/refresh.serializer';
+import { LogoutSerializer } from './serializers/logout.serializer';
+import { PasswordChangeBodyDto } from './dtos/password-change-body.dto';
+import { PasswordChangeSerializer } from './serializers/password-change.serializer';
+import { PasswordChangeError400Serializer } from './serializers/password-change-error-400.serializer';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -113,6 +118,36 @@ export class AuthController {
   }
 
   @Version('1')
+  @Post('logout')
+  @HttpCode(200)
+  @UseGuards(AuthGuard)
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
+  })
+  @ApiOkResponse({
+    description: 'Information if the logout process was performed',
+    type: LogoutSerializer,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'User does not exists or is inactive',
+    type: DefaultError401Serializer,
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'The server has encountered a situation it does not know how to handle. See server logs for details',
+    type: DefaultError500Serializer,
+  })
+  @ApiBadGatewayResponse({
+    description: 'Internal data processing error. Probably a database error',
+    type: DefaultError502Serializer,
+  })
+  async logout(@User() user: UserPayload) {
+    return await this.authService.logout(user.userId, user.loginId);
+  }
+
+  @Version('1')
   @Get('refresh')
   @UseGuards(AuthRefreshGuard)
   @ApiOperation({
@@ -182,6 +217,50 @@ export class AuthController {
       body.userId,
       body.username,
       body.password
+    );
+  }
+
+  @Version('1')
+  @Post('password')
+  @UseGuards(AuthGuard)
+  @ApiOperation({
+    summary: 'Changes an user password',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
+  })
+  @ApiOkResponse({
+    description: 'ID for the created user',
+    type: PasswordChangeSerializer,
+  })
+  @ApiBadRequestResponse({
+    description: 'Error validating request input data',
+    type: PasswordChangeError400Serializer,
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      'User does not exists or is inactive or password is incorrect',
+    type: DefaultError401Serializer,
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'The server has encountered a situation it does not know how to handle. See server logs for details',
+    type: DefaultError500Serializer,
+  })
+  @ApiBadGatewayResponse({
+    description: 'Internal data processing error. Probably a database error',
+    type: DefaultError502Serializer,
+  })
+  async passwordChange(
+    @User() user: UserPayload,
+    @Body() body: PasswordChangeBodyDto,
+  ) {
+    return await this.authService.passwordChange(
+      user.userId,
+      body.currentPassword,
+      body.newPassword,
     );
   }
 }

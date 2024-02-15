@@ -11,7 +11,7 @@ export class LoginBodyDto {
   username: string;
 
   @ApiProperty({
-    description: 'User password',
+    description: 'User password in plain text',
     example: 'te$st@12%34',
   })
   @IsNotEmpty()

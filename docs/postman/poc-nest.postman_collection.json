@@ -43,6 +43,282 @@
 					"response": []
 				},
 				{
+					"name": "/auth/password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userId = '4799cc31-7692-40b3-afff-cc562baf5374';\r",
+									"\r",
+									"/***** DO NOT EDIT AFTER THIS *****/\r",
+									"\r",
+									"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; \r",
+									"const issuedAtTimeSeconds = currentTimeInSeconds; // iat\r",
+									"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp\r",
+									"const SECRET_KEY = pm.collectionVariables.get('JWT_SECRET');\r",
+									"\r",
+									"const header = {\r",
+									"    alg: 'HS256',\r",
+									"}\r",
+									"\r",
+									"const payload = {\r",
+									"    userId,\r",
+									"    loginId: new Date().getTime().toString(),\r",
+									"    iat: issuedAtTimeSeconds,\r",
+									"    exp: expirationTimeSeconds,\r",
+									"};\r",
+									"\r",
+									"const removeIllegalCharacters = (input) => {\r",
+									"    return input\r",
+									"        .replace(/=/g, '')\r",
+									"        .replace(/\\+/g, '-')\r",
+									"        .replace(/\\//g, '_');\r",
+									"};\r",
+									"\r",
+									"const base64object = (input) => {\r",
+									"    const inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));\r",
+									"    const base64 = CryptoJS.enc.Base64.stringify(inputWords);\r",
+									"    const output = removeIllegalCharacters(base64);\r",
+									"    return output;\r",
+									"};\r",
+									"\r",
+									"const unsignedToken = base64object(header) + \".\" + base64object(payload);\r",
+									"const signatureHash = CryptoJS.HmacSHA256(unsignedToken, SECRET_KEY);\r",
+									"const signature = CryptoJS.enc.Base64.stringify(signatureHash);\r",
+									"const token = unsignedToken + '.' + signature;\r",
+									"const formattedToken = removeIllegalCharacters(token);\r",
+									"\r",
+									"pm.collectionVariables.set('JWT_TOKEN', formattedToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"test@1234\",\r\n    \"newPassword\": \"1234@test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_service_host}}/auth/password",
+							"host": [
+								"{{auth_service_host}}"
+							],
+							"path": [
+								"auth",
+								"password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/logout",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userId = '4799cc31-7692-40b3-afff-cc562baf5374';\r",
+									"\r",
+									"/***** DO NOT EDIT AFTER THIS *****/\r",
+									"\r",
+									"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; \r",
+									"const issuedAtTimeSeconds = currentTimeInSeconds; // iat\r",
+									"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp\r",
+									"const SECRET_KEY = pm.collectionVariables.get('JWT_SECRET');\r",
+									"\r",
+									"const header = {\r",
+									"    alg: 'HS256',\r",
+									"}\r",
+									"\r",
+									"const payload = {\r",
+									"    userId,\r",
+									"    loginId: '1707920014294',\r",
+									"    iat: issuedAtTimeSeconds,\r",
+									"    exp: expirationTimeSeconds,\r",
+									"};\r",
+									"\r",
+									"const removeIllegalCharacters = (input) => {\r",
+									"    return input\r",
+									"        .replace(/=/g, '')\r",
+									"        .replace(/\\+/g, '-')\r",
+									"        .replace(/\\//g, '_');\r",
+									"};\r",
+									"\r",
+									"const base64object = (input) => {\r",
+									"    const inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));\r",
+									"    const base64 = CryptoJS.enc.Base64.stringify(inputWords);\r",
+									"    const output = removeIllegalCharacters(base64);\r",
+									"    return output;\r",
+									"};\r",
+									"\r",
+									"const unsignedToken = base64object(header) + \".\" + base64object(payload);\r",
+									"const signatureHash = CryptoJS.HmacSHA256(unsignedToken, SECRET_KEY);\r",
+									"const signature = CryptoJS.enc.Base64.stringify(signatureHash);\r",
+									"const token = unsignedToken + '.' + signature;\r",
+									"const formattedToken = removeIllegalCharacters(token);\r",
+									"\r",
+									"pm.collectionVariables.set('JWT_TOKEN', formattedToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{auth_service_host}}/auth/logout",
+							"host": [
+								"{{auth_service_host}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/refresh",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const userId = '4799cc31-7692-40b3-afff-cc562baf5374';\r",
+									"\r",
+									"/***** DO NOT EDIT AFTER THIS *****/\r",
+									"\r",
+									"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; \r",
+									"const issuedAtTimeSeconds = currentTimeInSeconds; // iat\r",
+									"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp\r",
+									"const SECRET_KEY = pm.collectionVariables.get('JWT_REFRESH_SECRET');\r",
+									"\r",
+									"const header = {\r",
+									"    alg: 'HS256',\r",
+									"}\r",
+									"\r",
+									"const payload = {\r",
+									"    userId,\r",
+									"    loginId: new Date().getTime().toString(),\r",
+									"    iat: issuedAtTimeSeconds,\r",
+									"    exp: expirationTimeSeconds,\r",
+									"};\r",
+									"\r",
+									"const removeIllegalCharacters = (input) => {\r",
+									"    return input\r",
+									"        .replace(/=/g, '')\r",
+									"        .replace(/\\+/g, '-')\r",
+									"        .replace(/\\//g, '_');\r",
+									"};\r",
+									"\r",
+									"const base64object = (input) => {\r",
+									"    const inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));\r",
+									"    const base64 = CryptoJS.enc.Base64.stringify(inputWords);\r",
+									"    const output = removeIllegalCharacters(base64);\r",
+									"    return output;\r",
+									"};\r",
+									"\r",
+									"const unsignedToken = base64object(header) + \".\" + base64object(payload);\r",
+									"const signatureHash = CryptoJS.HmacSHA256(unsignedToken, SECRET_KEY);\r",
+									"const signature = CryptoJS.enc.Base64.stringify(signatureHash);\r",
+									"const token = unsignedToken + '.' + signature;\r",
+									"const formattedToken = removeIllegalCharacters(token);\r",
+									"\r",
+									"pm.collectionVariables.set('JWT_TOKEN', formattedToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JWT_TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_service_host}}/auth/refresh",
+							"host": [
+								"{{auth_service_host}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/signup",
 					"request": {
 						"method": "POST",
@@ -409,9 +685,7 @@
 						"type": "text/javascript",
 						"exec": [
 							"const accountIdFromBody = JSON.parse(pm.request.body.raw).accountId;",
-							"const ownerAccount = pm.collectionVariables.get('owner_account_' + accountIdFromBody);",
-							"const userId = pm.collectionVariables.get(ownerAccount);",
-							"",
+							"const userId = pm.collectionVariables.get('user_id_' + accountIdFromBody);",
 							"",
 							"/***** DO NOT EDIT AFTER THIS *****/",
 							"",
@@ -426,6 +700,7 @@
 							"",
 							"const payload = {",
 							"    userId,",
+							"    loginId: new Date().getTime().toString(),",
 							"    iat: issuedAtTimeSeconds,",
 							"    exp: expirationTimeSeconds,",
 							"};",
@@ -599,7 +874,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"accountId\": 3342,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
+							"raw": "{\r\n    \"accountId\": 3,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -607,7 +882,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{financial_service_host}}/balance?accountId=1",
+							"raw": "{{financial_service_host}}/balance?accountId=3",
 							"host": [
 								"{{financial_service_host}}"
 							],
@@ -617,7 +892,7 @@
 							"query": [
 								{
 									"key": "accountId",
-									"value": "1"
+									"value": "3"
 								}
 							]
 						}
@@ -657,6 +932,7 @@
 							"",
 							"const payload = {",
 							"    userId,",
+							"    loginId: new Date().getTime().toString(),",
 							"    iat: issuedAtTimeSeconds,",
 							"    exp: expirationTimeSeconds,",
 							"};",
@@ -754,18 +1030,8 @@
 			"type": "string"
 		},
 		{
-			"key": "owner_account_1",
-			"value": "user_id_1",
-			"type": "string"
-		},
-		{
-			"key": "owner_account_2",
-			"value": "user_id_2",
-			"type": "string"
-		},
-		{
-			"key": "owner_account_3",
-			"value": "user_id_3",
+			"key": "JWT_REFRESH_SECRET",
+			"value": "83814af2-927e-414a-abd1-83524f7cad65",
 			"type": "string"
 		}
 	]

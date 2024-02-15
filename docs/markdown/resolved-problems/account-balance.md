@@ -6,7 +6,7 @@ In an application that stores the user transactions as debit and credit operatio
 
 ### The Solution
 
-![](./account-balance.svg)
+![](./images/account-balance.svg)
 
 #### Database
 

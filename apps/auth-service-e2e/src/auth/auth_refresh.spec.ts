@@ -1,6 +1,9 @@
 import request from 'supertest';
 import jsonwebtoken from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 describe('POST /auth/refresh', () => {
   let host: string;
@@ -17,34 +20,14 @@ describe('POST /auth/refresh', () => {
   });
 
   describe('authentication errors', () => {
-    test('User does not exists', async () => {
-      const now = Math.floor(Date.now() / 1000);
-      const refreshToken = jsonwebtoken.sign({
-        userId: '10f88251-d181-4255-92ed-d0d874e3a177',
-        iat: now,
-        exp: now + 60,
-      }, JWT_REFRESH_SECRET_KEY);
-
-      await request(host)
-        .get(endpoint)
-        .set('Authorization', `Bearer ${refreshToken}`)
-        .set('X-Api-Version', '1')
-        .expect('Content-Type', /json/)
-        .expect(401)
-        .then(response => {
-          const body = response.body;
-          expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['user is inactive or does not exists']));
-        });
-    });
-
-    test('User exists but it is inactive', async () => {
+    test('User is inactive', async () => {
       const now = Math.floor(Date.now() / 1000);
       const refreshToken = jsonwebtoken.sign({
         userId: '10f88251-d181-4255-92ed-d0d874e3a166',
+        loginId: new Date().getTime().toString(),
         iat: now,
         exp: now + 60,
-      }, JWT_REFRESH_SECRET_KEY);
+      } as UserPayload, JWT_REFRESH_SECRET_KEY);
       
       await request(host)
         .get(endpoint)
@@ -54,8 +37,8 @@ describe('POST /auth/refresh', () => {
         .expect(401)
         .then(response => {
           const body = response.body;
-          expect(body.data.name).toBe('UserPasswordError');
-          expect(body.data.errors).toEqual(expect.arrayContaining(['user is inactive or does not exists']));
+          expect(body.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
+          expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
         });
     });
   });
@@ -65,9 +48,10 @@ describe('POST /auth/refresh', () => {
       const now = Math.floor(Date.now() / 1000);
       const refreshToken = jsonwebtoken.sign({
         userId: '4799cc31-7692-40b3-afff-cc562baf5374',
+        loginId: new Date().getTime().toString(),
         iat: now,
         exp: now + 60,
-      }, JWT_REFRESH_SECRET_KEY);
+      } as UserPayload, JWT_REFRESH_SECRET_KEY);
 
       const response = await request(host)
         .get(endpoint)

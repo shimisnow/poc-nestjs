@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty } from '@nestjs/swagger';
 
 export class GetBalanceSerializer {
   @ApiProperty({
@@ -12,4 +12,11 @@ export class GetBalanceSerializer {
     example: true,
   })
   cached: boolean;
+
+  @ApiProperty({
+    description: 'Informs when the value was cached',
+    example: 1707925199374,
+    required: false,
+  })
+  cachedAt?: number;
 }

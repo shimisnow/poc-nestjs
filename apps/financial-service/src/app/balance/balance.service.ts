@@ -3,8 +3,9 @@ import { Cache } from 'cache-manager';
 import { BalancesRepository } from './repositories/balances.repository';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { UserService } from '../user/user.service';
-import { CachedBalanceSerializer } from './serializers/cached-balance.serializer';
+import { CacheBalancePayload } from '@shared/cache/payloads/cache-balance.payload';
 import { GetBalanceSerializer } from './serializers/get-balance.serializer';
+import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 
 @Injectable()
 export class BalanceService {
@@ -35,15 +36,19 @@ export class BalanceService {
       throw new ForbiddenException();
     }
 
-    const cacheKey = `balance-acc-${accountId}`;
+    const cacheKey = [
+      CacheKeyPrefix.FINANCIAL_BALANCE,
+      accountId,
+    ].join(':');
 
     const cachedData =
-      await this.cacheService.get<CachedBalanceSerializer>(cacheKey);
+      await this.cacheService.get<CacheBalancePayload>(cacheKey);
 
     if (cachedData !== null) {
       return {
         balance: cachedData.balance,
         cached: true,
+        cachedAt: cachedData.updatedAt,
       };
     }
 
@@ -52,8 +57,8 @@ export class BalanceService {
 
     await this.cacheService.set(cacheKey, {
       balance: calculatedBalance,
-      updateAt: new Date(),
-    });
+      updatedAt: new Date().getTime(),
+    } as CacheBalancePayload);
 
     return {
       balance: calculatedBalance,

@@ -2,19 +2,28 @@ import {
   CanActivate,
   ExecutionContext,
   HttpStatus,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
 import { UserPayload } from '../payloads/user.payload';
-import { AUTHENTICATION_ERROR } from '../enums/authentication-error.enum';
+import { CacheKeyPrefix } from '../../cache/enums/cache-key-prefix.enum';
+import { AuthErrorMessages } from '../enums/auth-error-messages.enum';
+import { AuthErrorNames } from '../enums/auth-error-names.enum';
+import { PasswordChangeCachePayload } from '../../cache/payloads/password-change-cache.payload';
 
 @Injectable()
 export class AuthRefreshGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheService: Cache,
+    private jwtService: JwtService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -25,7 +34,7 @@ export class AuthRefreshGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.EmptyJsonWebTokenError,
+          name: AuthErrorNames.JWT_EMPTY_ERROR,
         },
       });
     }
@@ -75,10 +84,54 @@ export class AuthRefreshGuard implements CanActivate {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
         data: {
-          name: AUTHENTICATION_ERROR.JsonWebTokenPayloadStrutureError,
+          name: AuthErrorNames.JWT_PAYLOAD_STRUCTURE_ERROR,
           errors: messages,
         },
       });
+    }
+
+    // verify if the combination of userId with loginId is marked in cache as invalid
+    const logoutVerification = await this.cacheService.get([
+      CacheKeyPrefix.AUTH_SESSION_LOGOUT,
+      payload.userId,
+      payload.loginId,
+    ].join(':'));
+
+    if (logoutVerification !== null) {
+      throw new UnauthorizedException({
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Unauthorized',
+        data: {
+          name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
+          errors: [
+            AuthErrorMessages.INVALIDATED_BY_LOGOUT,
+          ],
+        },
+      });
+    }
+
+    // verify if the user had a password change event
+    const passwordChangeVerification = await this.cacheService.get<PasswordChangeCachePayload>([
+      CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
+      payload.userId
+    ].join(':'));
+
+    // if there is an cache entry  
+    if (passwordChangeVerification != null) {
+      // if this token was not issued after the password change
+      // iat is in seconds and changedAt at milliseconds
+      if ((payload.iat * 1000) <= passwordChangeVerification.changedAt) {
+        throw new UnauthorizedException({
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Unauthorized',
+          data: {
+            name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
+            errors: [
+              AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE,
+            ],
+          },
+        });
+      }
     }
 
     request['user'] = payload;
