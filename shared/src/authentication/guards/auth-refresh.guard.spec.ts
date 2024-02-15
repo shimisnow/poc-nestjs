@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 import * as jsonwebtoken from 'jsonwebtoken';
-import { AuthGuard } from './auth.guard';
+import { AuthRefreshGuard } from './auth-refresh.guard';
 import { CacheManagerMock } from './mocks/cache-manager.mock';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthErrorNames } from '../enums/auth-error-names.enum';
@@ -28,14 +28,14 @@ const generateContext = (authToken: string) => {
   return context;
 };
 
-describe('AuthGuard', () => {
-  let guard: AuthGuard;
-  const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+describe('AuthRefreshGuard', () => {
+  let guard: AuthRefreshGuard;
+  const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AuthGuard,
+        AuthRefreshGuard,
         JwtService,
         {
           provide: CACHE_MANAGER,
@@ -44,7 +44,7 @@ describe('AuthGuard', () => {
       ],
     }).compile();
 
-    guard = module.get<AuthGuard>(AuthGuard);
+    guard = module.get<AuthRefreshGuard>(AuthRefreshGuard);
   });
 
   describe('AuthGuard.canActivate()', () => {
@@ -97,7 +97,7 @@ describe('AuthGuard', () => {
         userId: '4799cc31-7692-40b3-afff-cc562baf5374',
         iat: now,
         exp: now + 60,
-      } as UserPayload, JWT_SECRET_KEY);
+      } as UserPayload, JWT_REFRESH_SECRET_KEY);
 
       try {
         await guard.canActivate(generateContext(token) as any);
@@ -118,7 +118,7 @@ describe('AuthGuard', () => {
         loginId: '1708003432088',
         iat: now,
         exp: now + 60,
-      } as UserPayload, JWT_SECRET_KEY);
+      } as UserPayload, JWT_REFRESH_SECRET_KEY);
 
       try {
         await guard.canActivate(generateContext(token) as any);
@@ -139,7 +139,7 @@ describe('AuthGuard', () => {
         loginId: new Date().getTime().toString(),
         iat: 1708003432,
         exp: now + 60,
-      } as UserPayload, JWT_SECRET_KEY);
+      } as UserPayload, JWT_REFRESH_SECRET_KEY);
 
       try {
         await guard.canActivate(generateContext(token) as any);
@@ -160,7 +160,7 @@ describe('AuthGuard', () => {
         loginId: new Date().getTime().toString(),
         iat: now,
         exp: now + 60,
-      } as UserPayload, JWT_SECRET_KEY);
+      } as UserPayload, JWT_REFRESH_SECRET_KEY);
 
       const result = await guard.canActivate(generateContext(token) as any);
       expect(result).toBeTruthy();
@@ -174,7 +174,7 @@ describe('AuthGuard', () => {
         loginId: new Date().getTime().toString(),
         iat: now,
         exp: now + 60,
-      } as UserPayload, JWT_SECRET_KEY);
+      } as UserPayload, JWT_REFRESH_SECRET_KEY);
 
       const result = await guard.canActivate(generateContext(token) as any);
       expect(result).toBeTruthy();
@@ -183,7 +183,7 @@ describe('AuthGuard', () => {
 
   describe('AuthGuard.extractTokenFromHeader()', () => {
     // necessary to access the private mothod
-    const guard = new AuthGuard(null, null) as any;
+    const guard = new AuthRefreshGuard(null, null) as any;
 
     test('empty authorization header', async () => {
       const authHeader = {

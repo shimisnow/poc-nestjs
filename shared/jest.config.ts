@@ -10,12 +10,12 @@ export default {
   coverageDirectory: '../coverage/shared',
   collectCoverageFrom: ['<rootDir>/src/**'],
   coveragePathIgnorePatterns: [
-    '.*\.(serializer|enum|entity|decorator)\.ts$'
+    '.*\.(serializer|enum|entity|decorator|payload)\.ts$'
   ],
   coverageReporters: ['clover', 'html'],
-  /* coverageThreshold: {
+  coverageThreshold: {
     global: {
-      lines: 60,
+      lines: 90,
     },
-  }, */
+  },
 };
