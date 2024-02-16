@@ -101,3 +101,19 @@ services:
       - ${DATABASE_FINANCIAL_PORT}:5432
     volumes:
       - ./deployment/database/financial:/docker-entrypoint-initdb.d:ro
+
+  auth-service-openapi:
+    image: nginx:1.25.3-alpine3.18
+    restart: always
+    ports:
+      - 8081:80
+    volumes:
+      - ./apps/auth-service/docs/openapi:/usr/share/nginx/html:ro
+
+  financial-service-openapi:
+    image: nginx:1.25.3-alpine3.18
+    restart: always
+    ports:
+      - 8082:80
+    volumes:
+      - ./apps/financial-service/docs/openapi:/usr/share/nginx/html:ro
