@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, Post, Query, UseGuards, Version } from
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiConflictResponse,
   ApiHeader,
   ApiInternalServerErrorResponse,
@@ -121,10 +122,15 @@ export class AuthController {
   @Post('logout')
   @HttpCode(200)
   @UseGuards(AuthGuard)
+  @ApiBearerAuth('AccessToken')
   @ApiHeader({
     name: 'X-Api-Version',
     description: 'Sets the API version',
     required: true,
+  })
+  @ApiOperation({
+    summary:
+      'Invalidates all tokens issued for a give login request',
   })
   @ApiOkResponse({
     description: 'Information if the logout process was performed',
@@ -150,6 +156,7 @@ export class AuthController {
   @Version('1')
   @Get('refresh')
   @UseGuards(AuthRefreshGuard)
+  @ApiBearerAuth('RefreshToken')
   @ApiOperation({
     summary:
       'Uses refresh token to get new access token',
@@ -223,6 +230,7 @@ export class AuthController {
   @Version('1')
   @Post('password')
   @UseGuards(AuthGuard)
+  @ApiBearerAuth('AccessToken')
   @ApiOperation({
     summary: 'Changes an user password',
   })
@@ -259,6 +267,7 @@ export class AuthController {
   ) {
     return await this.authService.passwordChange(
       user.userId,
+      user.loginId,
       body.currentPassword,
       body.newPassword,
     );

@@ -288,6 +288,7 @@ export class AuthService {
    * Changes user password and invalidates already issued JWT tokens.
    * 
    * @param userId UUID user information.
+   * @param loginId ID do request.
    * @param currentPassword Actual password in plain text.
    * @param newPassword New password in plain text.
    * @returns Information if the password was changed.
@@ -297,6 +298,7 @@ export class AuthService {
    */
   async passwordChange(
     userId: string,
+    loginId: string,
     currentPassword: string,
     newPassword: string,
   ): Promise<PasswordChangeSerializer> {
@@ -369,12 +371,10 @@ export class AuthService {
     // sleeps one second to garantee that the new token timestamp will be greater than the cached one  
     await new Promise(response => setTimeout(response, 1000));
 
-    const newLoginId = new Date().getTime().toString();
-
     return {
       performed: true,
-      accessToken: await this.generateAccessToken(userEntity.userId, newLoginId),
-      refreshToken: await this.generateRefreshToken(userEntity.userId, newLoginId),
+      accessToken: await this.generateAccessToken(userEntity.userId, loginId),
+      refreshToken: await this.generateRefreshToken(userEntity.userId, loginId),
     };
   }
 

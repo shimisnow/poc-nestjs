@@ -21,7 +21,23 @@ async function bootstrap() {
   const port = process.env.AUTH_SERVICE_PORT || 3000;
 
   if (process.env.AUTH_SERVICE_BUILD_OPENAPI === 'true') {
-    const config = new DocumentBuilder().setTitle('Auth Service').build();
+    const config = new DocumentBuilder()
+      .setTitle('Auth Service')
+      .addBearerAuth({
+        description: 'accessToken provided by the login, refresh, or password endpoint',
+        in: 'header',
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      }, 'AccessToken')
+      .addBearerAuth({
+        description: 'refreshToken provided by the login, or password endpoint',
+        in: 'header',
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      }, 'RefreshToken')
+      .build();
     const document = SwaggerModule.createDocument(app, config);
 
     await mkdirSync('apps/auth-service/docs/openapi/', { recursive: true });
