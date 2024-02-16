@@ -259,6 +259,7 @@ export class AuthController {
   ) {
     return await this.authService.passwordChange(
       user.userId,
+      user.loginId,
       body.currentPassword,
       body.newPassword,
     );
