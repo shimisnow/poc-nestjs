@@ -15,6 +15,8 @@ import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messa
 
 describe('AuthService', () => {
   let service: AuthService;
+  const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+  const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -207,13 +209,14 @@ describe('AuthService', () => {
 
   describe('auth.service -> passwordChange()', () => {
     test('inactive user', async () => {
+      const loginId = new Date().getTime().toString();
       const user = {
         userId: 'fcf5cccf-c217-4502-8cc3-cc24270ae0b7',
-        loginId: new Date().getTime().toString(),
+        loginId,
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -224,13 +227,14 @@ describe('AuthService', () => {
     });
 
     test('user does not exist', async () => {
+      const loginId = new Date().getTime().toString();
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4345',
-        loginId: new Date().getTime().toString(),
+        loginId,
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -241,13 +245,14 @@ describe('AuthService', () => {
     });
 
     test('incorrect password', async () => {
+      const loginId = new Date().getTime().toString();
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-        loginId: new Date().getTime().toString(),
+        loginId,
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId,  '1234@1234', '1234@test');
+        await service.passwordChange(user.userId, loginId, '1234@1234', '1234@test');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -258,16 +263,23 @@ describe('AuthService', () => {
     });
 
     test('perfomed without errors', async () => {
+      const loginId = new Date().getTime().toString();
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-        loginId: new Date().getTime().toString(),
+        loginId,
       } as UserPayload;
 
-      const result = await service.passwordChange(user.userId, 'test@1234', '1234@test');
+      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test');
       
       expect(result.performed).toBeTruthy();
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
+
+      const accessToken = jsonwebtoken.verify(result.accessToken, JWT_SECRET_KEY) as JwtPayload;
+      const refreshToken = jsonwebtoken.verify(result.refreshToken, JWT_REFRESH_SECRET_KEY) as JwtPayload;
+
+      expect(accessToken.loginId).toBe(loginId);
+      expect(refreshToken.loginId).toBe(loginId);
     });
   });
 
