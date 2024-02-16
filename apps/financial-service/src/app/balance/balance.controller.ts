@@ -11,6 +11,7 @@ import { GetBalanceSerializer } from './serializers/get-balance.serializer';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiHeader,
   ApiInternalServerErrorResponse,
@@ -30,6 +31,7 @@ import { DefaultError403Serializer } from './serializers/default-error-403.seria
 
 @Controller('balance')
 @ApiTags('balance')
+@ApiBearerAuth('AccessToken')
 export class BalanceController {
   constructor(
     private balanceService: BalanceService,

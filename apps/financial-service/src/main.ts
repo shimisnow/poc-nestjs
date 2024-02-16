@@ -21,7 +21,16 @@ async function bootstrap() {
   const port = process.env.FINANCIAL_SERVICE_PORT || 3000;
 
   if (process.env.FINANCIAL_SERVICE_BUILD_OPENAPI === 'true') {
-    const config = new DocumentBuilder().setTitle('Financial Service').build();
+    const config = new DocumentBuilder()
+      .setTitle('Financial Service')
+      .addBearerAuth({
+        description: 'accessToken provided by the auth service',
+        in: 'header',
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      }, 'AccessToken')
+      .build();
     const document = SwaggerModule.createDocument(app, config);
 
     await mkdirSync('apps/financial-service/docs/openapi/', {

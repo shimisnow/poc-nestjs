@@ -9,6 +9,7 @@ import { TransactionService } from './transaction.service';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiForbiddenResponse,
   ApiHeader,
   ApiInternalServerErrorResponse,
@@ -32,6 +33,7 @@ import { DefaultError403Serializer } from './serializers/default-error-403.seria
 
 @Controller('transaction')
 @ApiTags('transaction')
+@ApiBearerAuth('AccessToken')
 export class TransactionController {
   constructor(
     private transactionService: TransactionService,
