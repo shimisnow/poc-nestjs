@@ -23,6 +23,21 @@
         "production": {}
       }
     },
+    "build-repl": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/financial-service-repl",
+        "main": "apps/financial-service/src/repl.ts",
+        "tsConfig": "apps/financial-service/tsconfig.app.json",
+        "assets": ["apps/financial-service/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/financial-service/webpack.config.js"
+      }
+    },
     "serve": {
       "executor": "@nrwl/js:node",
       "defaultConfiguration": "development",
@@ -36,6 +51,13 @@
         "production": {
           "buildTarget": "financial-service:build:production"
         }
+      }
+    },
+    "serve-repl": {
+      "executor": "@nrwl/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "financial-service:build-repl"
       }
     },
     "lint": {
