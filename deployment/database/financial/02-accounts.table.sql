@@ -7,6 +7,7 @@
 CREATE TABLE public.accounts (
 	account_id serial4 NOT NULL,
 	user_id uuid NOT NULL,
+	status public."account_status_enum" DEFAULT 'active'::account_status_enum NULL,
 	CONSTRAINT pk_accounts PRIMARY KEY (account_id)
 );
 CREATE UNIQUE INDEX idx_accounts ON public.accounts USING btree (account_id, user_id);
