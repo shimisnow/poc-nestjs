@@ -43,7 +43,7 @@ export class TransactionController {
   @Post()
   @UseGuards(AuthGuard)
   @ApiOperation({
-    summary: 'Register a transaction',
+    summary: 'Create a transaction',
     description:
       'This endpoint receives only positive values. For debt operations, the value will be automatically inverted',
   })
