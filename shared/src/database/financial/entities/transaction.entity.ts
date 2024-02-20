@@ -49,6 +49,13 @@ export class TransactionEntity {
   })
   amount: number;
 
+  @Column({
+    name: 'transaction_pair_id',
+    type: 'integer',
+    nullable: true,
+  })
+  transactionPairId?: number;
+
   @CreateDateColumn({
     name: 'created_at',
     type: 'timestamp',
