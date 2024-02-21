@@ -1,22 +1,17 @@
 import {
-  BadGatewayException,
   ForbiddenException,
   Inject,
   Injectable,
-  NotFoundException,
   PreconditionFailedException,
 } from '@nestjs/common';
 import { CreateTransactionBodyDto } from './dtos/create-transaction-body.dto';
 import { CreateTransactionSerializer } from './serializers/create-transactions.serializer';
 import { TransactionsRepository } from './repositories/transactions/transactions.repository';
 import { AccountsRepository } from './repositories/accounts/accounts.repository';
-import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { AccountEntity } from '@shared/database/financial/entities/account.entity';
 import { BalanceService } from '../balance/balance.service';
 import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
-import { UserService } from '../user/user.service';
 import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 import { CreatePairTransactionResult } from './repositories/transactions/create-pair-transaction.result';
 
