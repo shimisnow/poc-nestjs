@@ -9,13 +9,17 @@ export class CreateTransactionError412Serializer {
 
   @ApiProperty({
     description: 'Error message',
-    example: 'Insufficient account balance',
+    example: 'PreconditionFailed',
   })
   message: string;
 
   @ApiProperty({
-    description: 'HTTP error message',
-    example: 'Precondition Failed',
+    description: 'Error information',
+    example: {
+      name: 'InsufficientAccountBalance',
+    },
   })
-  error: string;
+  data: {
+    name: string,
+  }
 }

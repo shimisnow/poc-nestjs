@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class DefaultError500Serializer {
+export class CreateTransactionError500Serializer {
   @ApiProperty({
     description: 'HTTP code',
     example: 500,

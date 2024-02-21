@@ -24,10 +24,10 @@ import { AuthGuard } from '@shared/authentication//guards/auth.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { GetBalanceError400Serializer } from './serializers/get-balance-error-400.serializer';
-import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
-import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
 import { DefaultError401Serializer } from '@shared/authentication/serializers/default-error-401.serializer';
-import { DefaultError403Serializer } from './serializers/default-error-403.serializer';
+import { GetBalanceError403Serializer } from './serializers/get-balance-error-403.serializer';
+import { GetBalanceError500Serializer } from './serializers/get-balance-error-500.serializer';
+import { GetBalanceError502Serializer } from './serializers/get-balance-error-502.serializer';
 
 @Controller('balance')
 @ApiTags('balance')
@@ -62,16 +62,16 @@ export class BalanceController {
   })
   @ApiForbiddenResponse({
     description: 'Error when the user has no access to the account or account/user does not exist',
-    type: DefaultError403Serializer,
+    type: GetBalanceError403Serializer,
   })
   @ApiInternalServerErrorResponse({
     description:
       'The server has encountered a situation it does not know how to handle. See server logs for details',
-    type: DefaultError500Serializer,
+    type: GetBalanceError500Serializer,
   })
   @ApiBadGatewayResponse({
     description: 'Internal data processing error. Probably a database error',
-    type: DefaultError502Serializer,
+    type: GetBalanceError502Serializer,
   })
   // ignore on tests because this endpoint do not manipulate data
   /* istanbul ignore next */

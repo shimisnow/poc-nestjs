@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class DefaultError502Serializer {
+export class CreateTransactionError502Serializer {
   @ApiProperty({
     description: 'HTTP code',
     example: 502,
