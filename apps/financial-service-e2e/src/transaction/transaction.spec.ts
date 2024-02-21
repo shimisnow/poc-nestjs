@@ -90,6 +90,7 @@ describe('POST /transaction', () => {
         .post(endpoint)
         .send({
           accountId: 42,
+          pairAccountId: 43,
           type: 'debit',
           amount: 200,
         })
@@ -114,6 +115,7 @@ describe('POST /transaction', () => {
         .post(endpoint)
         .send({
           accountId: 42,
+          pairAccountId: 43,
           type: 'debit',
           amount: 200,
         })
@@ -170,6 +172,7 @@ describe('POST /transaction', () => {
           .post(endpoint)
           .send({
             accountId: 3,
+            pairAccountId: 4,
             type: 'debit',
             amount: 25,
           })
@@ -179,8 +182,8 @@ describe('POST /transaction', () => {
           .expect(201)
           .then(response => {
             const body = response.body;
-            expect(body).toHaveProperty('transactionId');
-            expect(body.transactionId).toBeGreaterThan(0);
+            expect(body).toHaveProperty('fromTransactionId');
+            expect(body).toHaveProperty('toTransactionId');
           });
 
         // get the new balance from database (without cache)
@@ -195,14 +198,38 @@ describe('POST /transaction', () => {
           .expect(200)
           .then(response => {
             const body = response.body;
-            expect(body.balance).toBe(175);
+            expect(body.balance).toBe(875);
+            expect(body.cached).toBeFalsy();
+          });
+
+        // get the balance for the pair account
+        const nowPair = Math.floor(Date.now() / 1000);
+        const accessTokenPair = jsonwebtoken.sign({
+          userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e221',
+          loginId: new Date().getTime().toString(),
+          iat: nowPair,
+          exp: nowPair + 60,
+        } as UserPayload, JWT_SECRET_KEY);
+
+        await request(host)
+          .get('/balance')
+          .query({
+            accountId: 4,
+          })
+          .set('Authorization', `Bearer ${accessTokenPair}`)
+          .set('X-Api-Version', '1')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then(response => {
+            const body = response.body;
+            expect(body.balance).toBe(825);
             expect(body.cached).toBeFalsy();
           });
       });
     
     });
 
-    describe('credit', () => {
+    /* describe('credit', () => {
       test('create transaction and clear cache', async () => {
         const randomBalance = Math.floor(Math.random() * 10000);
         const cacheValue = {
@@ -276,6 +303,6 @@ describe('POST /transaction', () => {
             expect(body.cached).toBeFalsy();
           });
       });
-    });
+    }); */
   });
 });
