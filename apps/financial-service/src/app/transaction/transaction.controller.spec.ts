@@ -4,12 +4,13 @@ import { TransactionController } from './transaction.controller';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
-import { TransactionsRepository } from './repositories/transactions.repository';
+import { TransactionsRepository } from './repositories/transactions/transactions.repository';
 import { TransactionService } from './transaction.service';
 import { BalanceService } from '../balance/balance.service';
 import { BalancesRepository } from '../balance/repositories/balances.repository';
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { UserService } from '../user/user.service';
+import { AccountsRepository } from './repositories/accounts/accounts.repository';
 
 describe('TransactionController', () => {
   let controller: TransactionController;
@@ -20,6 +21,10 @@ describe('TransactionController', () => {
       providers: [
         TransactionService,
         TransactionsRepository,
+        {
+          provide: AccountsRepository,
+          useValue: {},
+        },
         {
           provide: UserService,
           useValue: {},
