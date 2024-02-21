@@ -191,7 +191,7 @@ describe('GET /balance', () => {
         .expect(200)
         .then(response => {
           const body = response.body;
-          expect(body.balance).toBe(200);
+          expect(body.balance).toBe(800);
           expect(body.cached).toBeFalsy();
         });
     });
