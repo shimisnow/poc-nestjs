@@ -14,24 +14,14 @@ export class TransactionsRepository {
     private repository: Repository<TransactionEntity>,
   ) {}
 
-  async findById(transactionId: number): Promise<TransactionEntity> {
-    return await this.repository.findOne({
-      where: {
-        transactionId,
-      },
-    });
-  }
-
-  async insert(entity: TransactionEntity): Promise<TransactionEntity> {
-    return await this.repository.save(entity);
-  }
-
   /**
    * Creates two transactions and links each one with the other
    * 
    * @param transaction Information about the two transactions that will be stored and linked each one with the other
    * @returns Ids for the created transactions
    */
+  /* istanbul ignore next */
+  /* ignored at code coverage because it uses database transactions and should not be unit tested */
   async createPairTransaction(transaction: CreatePairTransactionBody): Promise<CreatePairTransactionResult> {
     let resultFrom: TransactionEntity;
     let resultTo: TransactionEntity;
