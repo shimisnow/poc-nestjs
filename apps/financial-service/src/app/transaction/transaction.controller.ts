@@ -87,6 +87,6 @@ export class TransactionController {
     @User() user: UserPayload,
     @Body() body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
-    return await this.transactionService.createTransaction(user.userId, body);
+    return await this.transactionService.createDebitTransaction(user.userId, body);
   }
 }

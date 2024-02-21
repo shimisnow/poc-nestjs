@@ -29,83 +29,7 @@ export class TransactionService {
     private accountsRepository: AccountsRepository,
     private transactionsRepository: TransactionsRepository,
     private balanceService: BalanceService,
-    //private userService: UserService,
   ) {}
-
-  /**
-   * Register a transaction into database.
-   * This function deletes the account balance cache.
-   * This function verify if the user is the account owner.
-   * This function will make the amount negative it is positive and type is debit.
-   *
-   * @param userId Account owner
-   * @param body Transaction information
-   * @returns Information about the created transaction
-   * @throws BadGatewayException database error
-   * @throws NotFoundException account does not exists
-   * @throws PreconditionFailedException insufficient account balance
-   */
-  /* async createTransaction(
-    userId: string,
-    body: CreateTransactionBodyDto,
-  ): Promise<CreateTransactionSerializer> {
-    if (body.type == TransactionTypeEnum.DEBIT) {
-      if (body.amount > 0) {
-        body.amount *= -1;
-      }
-
-      const balance = await this.balanceService.getBalanceIgnoringCache(
-        body.accountId,
-        userId,
-      );
-      // using + because amount will be a negative number
-      if (balance + body.amount < 0) {
-        throw new PreconditionFailedException('insufficient account balance');
-      }
-    // transaction type is CREDIT, the account ownership needs to be checked
-    // it is not necessary to check for DEBIT because getBalanceIgnoringCache() does it
-    } else {
-      const hasAccess = await this.userService.hasAccessToAccount(
-        userId,
-        body.accountId,
-      );
-  
-      if (hasAccess == false) {
-        throw new ForbiddenException();
-      }
-    }
-
-    const account = new AccountEntity();
-    account.accountId = body.accountId;
-
-    const transaction = new TransactionEntity();
-    transaction.account = account;
-    transaction.amount = body.amount;
-    transaction.type = body.type;
-
-    let result = null;
-
-    try {
-      result = await this.transactionsRepository.insert(transaction);
-    } catch (error) {
-      if (error.message.startsWith('insert or update on table')) {
-        throw new NotFoundException('account does not exists');
-      } else {
-        throw new BadGatewayException('some database error');
-      }
-    }
-
-    const cacheKey = [
-      CacheKeyPrefix.FINANCIAL_BALANCE,
-      body.accountId,
-    ].join(':');
-
-    await this.cacheService.del(cacheKey);
-
-    return {
-      transactionId: result.transactionId,
-    } as CreateTransactionSerializer;
-  } */
 
   /**
    * Create a pair debit/credit transaction
@@ -197,12 +121,15 @@ export class TransactionService {
       },
     });
 
-    const cacheKey = [
+    await this.cacheService.del([
       CacheKeyPrefix.FINANCIAL_BALANCE,
       body.accountId,
-    ].join(':');
+    ].join(':'));
 
-    await this.cacheService.del(cacheKey);
+    await this.cacheService.del([
+      CacheKeyPrefix.FINANCIAL_BALANCE,
+      body.pairAccountId,
+    ].join(':'));
 
     return transactions as CreateTransactionSerializer;
   }
