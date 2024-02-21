@@ -9,14 +9,14 @@ CREATE TABLE public.transactions (
 	account_id int4 NOT NULL,
 	"type" public."transaction_type_enum" NOT NULL,
 	amount float4 NOT NULL,
-	created_at timestamp NULL DEFAULT now(),
+	created_at timestamp DEFAULT now() NULL,
+	transaction_pair_id int4 NULL,
 	CONSTRAINT pk_transactions PRIMARY KEY (transaction_id)
 );
 
 -- public.transactions seqs
 
 ALTER SEQUENCE transactions_transaction_id_seq RESTART WITH 1000;
-
 
 -- public.transactions foreign keys
 
