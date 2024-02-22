@@ -116,7 +116,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"currentPassword\": \"test@1234\",\r\n    \"newPassword\": \"1234@test\"\r\n}",
+							"raw": "{\r\n    \"currentPassword\": \"1234@test\",\r\n    \"newPassword\": \"test@1234\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -403,7 +403,7 @@
 					"name": "debit",
 					"item": [
 						{
-							"name": "transaction (use 1)",
+							"name": "transaction (use 1-2)",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -426,7 +426,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"accountId\": 1,\r\n    \"type\": \"debit\",\r\n    \"amount\": 150\r\n}",
+									"raw": "{\r\n    \"accountId\": 1,\r\n    \"pairAccountId\": 2,\r\n    \"type\": \"debit\",\r\n    \"amount\": 150\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -446,7 +446,7 @@
 							"response": []
 						},
 						{
-							"name": "transaction  (use 2)",
+							"name": "transaction  (use 3-4)",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -469,7 +469,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"accountId\": 2,\r\n    \"type\": \"debit\",\r\n    \"amount\": 200\r\n}",
+									"raw": "{\r\n    \"accountId\": 3,\r\n    \"pairAccountId\": 4,\r\n    \"type\": \"debit\",\r\n    \"amount\": 200\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -489,7 +489,7 @@
 							"response": []
 						},
 						{
-							"name": "transaction  (use 3)",
+							"name": "transaction  (use 5-6)",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -512,141 +512,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"accountId\": 3,\r\n    \"type\": \"debit\",\r\n    \"amount\": 250\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{financial_service_host}}/transaction",
-									"host": [
-										"{{financial_service_host}}"
-									],
-									"path": [
-										"transaction"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "credit",
-					"item": [
-						{
-							"name": "transaction  (use 1)",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "X-Api-Version",
-										"value": "1",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"accountId\": 1,\r\n    \"type\": \"credit\",\r\n    \"amount\": 1000\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{financial_service_host}}/transaction",
-									"host": [
-										"{{financial_service_host}}"
-									],
-									"path": [
-										"transaction"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "transaction  (use 2)",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "X-Api-Version",
-										"value": "1",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"accountId\": 2,\r\n    \"type\": \"credit\",\r\n    \"amount\": 2000\r\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{financial_service_host}}/transaction",
-									"host": [
-										"{{financial_service_host}}"
-									],
-									"path": [
-										"transaction"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "transaction  (use 3)",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [
-									{
-										"key": "X-Api-Version",
-										"value": "1",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "{\r\n    \"accountId\": 3,\r\n    \"type\": \"credit\",\r\n    \"amount\": 3000\r\n}",
+									"raw": "{\r\n    \"accountId\": 5,\r\n    \"pairAccountId\": 6,\r\n    \"type\": \"debit\",\r\n    \"amount\": 250\r\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -898,6 +764,162 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "balance (userId = 4)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountId\": 3,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{financial_service_host}}/balance?accountId=4",
+							"host": [
+								"{{financial_service_host}}"
+							],
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "balance (userId = 5)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountId\": 3,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{financial_service_host}}/balance?accountId=5",
+							"host": [
+								"{{financial_service_host}}"
+							],
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "balance (userId = 6)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"accountId\": 3,\r\n    \"type\": \"debit\",\r\n    \"amount\": 1200\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{financial_service_host}}/balance?accountId=6",
+							"host": [
+								"{{financial_service_host}}"
+							],
+							"path": [
+								"balance"
+							],
+							"query": [
+								{
+									"key": "accountId",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
@@ -1032,6 +1054,21 @@
 		{
 			"key": "JWT_REFRESH_SECRET",
 			"value": "83814af2-927e-414a-abd1-83524f7cad65",
+			"type": "string"
+		},
+		{
+			"key": "user_id_4",
+			"value": "bc760244-ca8a-42b1-9cf6-70ceedc2e221",
+			"type": "string"
+		},
+		{
+			"key": "user_id_5",
+			"value": "3132a64a-de8b-49cc-b49f-b445ee984415",
+			"type": "string"
+		},
+		{
+			"key": "user_id_6",
+			"value": "d074a9d4-a179-40bd-ab6a-38755e066312",
 			"type": "string"
 		}
 	]
