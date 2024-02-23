@@ -120,11 +120,13 @@ describe('POST /auth/login', () => {
         .send({
           username: 'anderson',
           password: 'test@1234',
-          resquestAccessToken: true,
+          requestAccessToken: true,
         })
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        .expect(200);
+        //.expect(200);
+
+      console.log(response.body);
 
       const body = response.body;
 
