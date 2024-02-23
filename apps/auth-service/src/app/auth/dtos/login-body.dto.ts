@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class LoginBodyDto {
   @ApiProperty({
@@ -17,4 +17,13 @@ export class LoginBodyDto {
   @IsNotEmpty()
   @IsString()
   password: string;
+
+  @ApiProperty({
+    description: 'If the request should include a refreshToken',
+    example: true,
+    default: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  requestAccessToken?: boolean = false;
 }

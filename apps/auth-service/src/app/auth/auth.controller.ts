@@ -115,7 +115,7 @@ export class AuthController {
     type: DefaultError502Serializer,
   })
   async login(@Body() body: LoginBodyDto): Promise<LoginSerializer> {
-    return await this.authService.login(body.username, body.password);
+    return await this.authService.login(body.username, body.password, body.requestAccessToken);
   }
 
   @Version('1')

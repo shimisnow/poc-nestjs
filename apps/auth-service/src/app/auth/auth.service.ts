@@ -100,13 +100,14 @@ export class AuthService {
   /**
    * Gets token to be used at API requests.
    * 
-   * @param username Username.
-   * @param password Password in plain text.
-   * @returns Data with token to be used at the private endpoints.
-   * @throws BadGatewayException Database error.
-   * @throws UnauthorizedException User do not exists, is inactive or password is incorrect.
+   * @param username Username
+   * @param password Password in plain text
+   * @param requestAccessToken If a refreshToken should be generated
+   * @returns Data with token to be used at the private endpoints
+   * @throws BadGatewayException Database error
+   * @throws UnauthorizedException User do not exists, is inactive or password is incorrect
    */
-  async login(username: string, password: string): Promise<LoginSerializer> {
+  async login(username: string, password: string, requestAccessToken: boolean): Promise<LoginSerializer> {
     let user: UserAuthEntity = null;
 
     try {
@@ -144,10 +145,16 @@ export class AuthService {
 
     const loginId = new Date().getTime().toString();
 
-    return {
-      accessToken: await this.generateAccessToken(user.userId, loginId),
-      refreshToken: await this.generateRefreshToken(user.userId, loginId),
-    };
+    if(requestAccessToken) {
+      return {
+        accessToken: await this.generateAccessToken(user.userId, loginId),
+        refreshToken: await this.generateRefreshToken(user.userId, loginId),
+      };
+    } else {
+      return {
+        accessToken: await this.generateAccessToken(user.userId, loginId),
+      };
+    }
   }
 
   /**

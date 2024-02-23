@@ -137,7 +137,7 @@ describe('AuthRefreshGuard', () => {
         // user in cache for password change
         userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5',
         loginId: new Date().getTime().toString(),
-        iat: 1708003432,
+        iat: Math.floor((new Date().getTime() - 10000) / 1000),
         exp: now + 60,
       } as UserPayload, JWT_REFRESH_SECRET_KEY);
 

@@ -29,6 +29,7 @@ describe('login logout process (with refresh)', () => {
       .send({
         username: 'anderson',
         password: 'test@1234',
+        requestAccessToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
@@ -39,6 +40,7 @@ describe('login logout process (with refresh)', () => {
       .send({
         username: 'anderson',
         password: 'test@1234',
+        requestAccessToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)

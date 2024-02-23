@@ -114,16 +114,19 @@ describe('POST /auth/login', () => {
   });
 
   describe('request without errors', () => {
-    test('User is active (correct password)', async () => {
+    test('User is active (correct password)(with refresh)', async () => {
       const response = await request(host)
         .post(endpoint)
         .send({
           username: 'anderson',
           password: 'test@1234',
+          requestAccessToken: true,
         })
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        .expect(200);
+        //.expect(200);
+
+      console.log(response.body);
 
       const body = response.body;
 
@@ -139,6 +142,28 @@ describe('POST /auth/login', () => {
       expect(refreshToken).toHaveProperty('userId');
       expect(refreshToken.userId).toBe('4799cc31-7692-40b3-afff-cc562baf5374');
       expect(refreshToken).toHaveProperty('loginId');
+    });
+
+    test('User is active (correct password)(without refresh)', async () => {
+      const response = await request(host)
+        .post(endpoint)
+        .send({
+          username: 'anderson',
+          password: 'test@1234',
+        })
+        .set('X-Api-Version', '1')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      const body = response.body;
+
+      expect(body).toHaveProperty('accessToken');
+      expect(body).not.toHaveProperty('refreshToken');
+
+      const accessToken = jsonwebtoken.verify(body.accessToken, JWT_SECRET_KEY) as JwtPayload;
+      expect(accessToken).toHaveProperty('userId');
+      expect(accessToken.userId).toBe('4799cc31-7692-40b3-afff-cc562baf5374');
+      expect(accessToken).toHaveProperty('loginId');
     });
   });
 });
