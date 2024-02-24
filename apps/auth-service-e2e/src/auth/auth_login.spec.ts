@@ -124,9 +124,7 @@ describe('POST /auth/login', () => {
         })
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        //.expect(200);
-
-      console.log(response.body);
+        .expect(200);
 
       const body = response.body;
 

@@ -65,7 +65,7 @@ export class UserAuthEntity {
     type: 'enum',
     enum: UserAuthStatusEnum,
     enumName: 'user_auth_status_enum',
-    default: UserAuthStatusEnum.INACTIVE,
+    default: UserAuthStatusEnum.ACTIVE,
     nullable: true,
   })
   status?: UserAuthStatusEnum;
