@@ -138,14 +138,30 @@ describe('POST /transaction', () => {
         const containerRuntimeClient = await getContainerRuntimeClient();
         const containerCache = await containerRuntimeClient.container.fetchByLabel('poc-nestjs-name', 'financial-service-cache');
 
+        // defines a cached value to main account
         await containerRuntimeClient.container.exec(
           containerCache,
           ['redis-cli', 'SET', `${CacheKeyPrefix.FINANCIAL_BALANCE}:3`, JSON.stringify(cacheValue)]
         );
+
+        // defines a cached value to pair account
+        await containerRuntimeClient.container.exec(
+          containerCache,
+          ['redis-cli', 'SET', `${CacheKeyPrefix.FINANCIAL_BALANCE}:4`, JSON.stringify(cacheValue)]
+        );
         
+        // account 3 access token
         const now = Math.floor(Date.now() / 1000);
         const accessToken = jsonwebtoken.sign({
           userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e3d1',
+          loginId: new Date().getTime().toString(),
+          iat: now,
+          exp: now + 60,
+        } as UserPayload, JWT_SECRET_KEY);
+
+        // account 4 access token
+        const accessTokenPair = jsonwebtoken.sign({
+          userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e221',
           loginId: new Date().getTime().toString(),
           iat: now,
           exp: now + 60,
@@ -158,6 +174,22 @@ describe('POST /transaction', () => {
             accountId: 3,
           })
           .set('Authorization', `Bearer ${accessToken}`)
+          .set('X-Api-Version', '1')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then(response => {
+            const body = response.body;
+            expect(body.balance).toBe(randomBalance);
+            expect(body.cached).toBeTruthy();
+          });
+
+        // request with a random balance to guarantee that is retrieved from cache and not from database
+        await request(host)
+          .get('/balance')
+          .query({
+            accountId: 4,
+          })
+          .set('Authorization', `Bearer ${accessTokenPair}`)
           .set('X-Api-Version', '1')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -202,15 +234,7 @@ describe('POST /transaction', () => {
             expect(body.cached).toBeFalsy();
           });
 
-        // get the balance for the pair account
-        const nowPair = Math.floor(Date.now() / 1000);
-        const accessTokenPair = jsonwebtoken.sign({
-          userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e221',
-          loginId: new Date().getTime().toString(),
-          iat: nowPair,
-          exp: nowPair + 60,
-        } as UserPayload, JWT_SECRET_KEY);
-
+        // get the new balance from database (without cache)
         await request(host)
           .get('/balance')
           .query({
@@ -225,84 +249,7 @@ describe('POST /transaction', () => {
             expect(body.balance).toBe(825);
             expect(body.cached).toBeFalsy();
           });
-      });
-    
+      }); 
     });
-
-    /* describe('credit', () => {
-      test('create transaction and clear cache', async () => {
-        const randomBalance = Math.floor(Math.random() * 10000);
-        const cacheValue = {
-          balance: randomBalance,
-          updatedAt: new Date(),
-        };
-
-        const containerRuntimeClient = await getContainerRuntimeClient();
-        const containerCache = await containerRuntimeClient.container.fetchByLabel('poc-nestjs-name', 'financial-service-cache');
-
-        await containerRuntimeClient.container.exec(
-          containerCache,
-          ['redis-cli', 'SET', `${CacheKeyPrefix.FINANCIAL_BALANCE}:5`, JSON.stringify(cacheValue)]
-        );
-        
-        const now = Math.floor(Date.now() / 1000);
-        const accessToken = jsonwebtoken.sign({
-          userId: '3132a64a-de8b-49cc-b49f-b445ee984415',
-          loginId: new Date().getTime().toString(),
-          iat: now,
-          exp: now + 60,
-        } as UserPayload, JWT_SECRET_KEY);
-
-        // request with a random balance to guarantee that is retrieved from cache and not from database
-        await request(host)
-          .get('/balance')
-          .query({
-            accountId: 5,
-          })
-          .set('Authorization', `Bearer ${accessToken}`)
-          .set('X-Api-Version', '1')
-          .expect('Content-Type', /json/)
-          .expect(200)
-          .then(response => {
-            const body = response.body;
-            expect(body.balance).toBe(randomBalance);
-            expect(body.cached).toBeTruthy();
-          });
-
-        // make a transaction request
-        await request(host)
-          .post(endpoint)
-          .send({
-            accountId: 5,
-            type: 'credit',
-            amount: 49,
-          })
-          .set('Authorization', `Bearer ${accessToken}`)
-          .set('X-Api-Version', '1')
-          .expect('Content-Type', /json/)
-          .expect(201)
-          .then(response => {
-            const body = response.body;
-            expect(body).toHaveProperty('transactionId');
-            expect(body.transactionId).toBeGreaterThan(0);
-          });
-
-        // get the new balance from database (without cache)
-        await request(host)
-          .get('/balance')
-          .query({
-            accountId: 5,
-          })
-          .set('Authorization', `Bearer ${accessToken}`)
-          .set('X-Api-Version', '1')
-          .expect('Content-Type', /json/)
-          .expect(200)
-          .then(response => {
-            const body = response.body;
-            expect(body.balance).toBe(1050);
-            expect(body.cached).toBeFalsy();
-          });
-      });
-    }); */
   });
 });

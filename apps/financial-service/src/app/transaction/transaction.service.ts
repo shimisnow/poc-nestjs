@@ -52,7 +52,10 @@ export class TransactionService {
     }
 
     // verify if both accounts exists AND is active
-    const accountExists = await Promise.all([
+    const [
+      accountIdExists,
+      pairAccountIdExists,
+    ] = await Promise.all([
       this.accountsRepository.accountExists(body.accountId, true),
       this.accountsRepository.accountExists(body.pairAccountId, true),
     ]);
@@ -60,12 +63,12 @@ export class TransactionService {
     const errorMessages = [];
 
     // verify the main account
-    if(accountExists[0] === false) {
+    if(accountIdExists === false) {
       errorMessages.push('accountId does not exists or it is inactive');
     }
 
     // verify the destination account
-    if(accountExists[1] === false) {
+    if(pairAccountIdExists === false) {
       errorMessages.push('pairAccountId does not exists or it is inactive');
     }
 
@@ -80,16 +83,16 @@ export class TransactionService {
       });
     }
 
-    if (body.amount > 0) {
-      body.amount *= -1;
-    }
-
     // it is not necessary to verify if user has access to the account
     // because this function already does it
     const balance = await this.balanceService.getBalanceIgnoringCache(
       body.accountId,
       userId,
     );
+
+    if (body.amount > 0) {
+      body.amount *= -1;
+    }
 
     // using + because amount will be a negative number
     if (balance + body.amount < 0) {
@@ -116,15 +119,18 @@ export class TransactionService {
       },
     });
 
-    await this.cacheService.del([
-      CacheKeyPrefix.FINANCIAL_BALANCE,
-      body.accountId,
-    ].join(':'));
-
-    await this.cacheService.del([
-      CacheKeyPrefix.FINANCIAL_BALANCE,
-      body.pairAccountId,
-    ].join(':'));
+    await Promise.all([
+      // delete main account cache
+      this.cacheService.del([
+        CacheKeyPrefix.FINANCIAL_BALANCE,
+        body.accountId,
+      ].join(':')),
+      // delete pair account cache
+      this.cacheService.del([
+        CacheKeyPrefix.FINANCIAL_BALANCE,
+        body.pairAccountId,
+      ].join(':'))
+    ]);
 
     return transactions as CreateTransactionSerializer;
   }
