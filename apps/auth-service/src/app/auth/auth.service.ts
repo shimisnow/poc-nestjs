@@ -44,15 +44,13 @@ export class AuthService {
    * @returns Signed JWT token.
    */
   async generateAccessToken(userId: string, loginId: string): Promise<string> {
-    const payload = {
-      userId,
-      loginId,
-    } as UserPayload;
-
-    return await this.jwtService.signAsync(payload, {
-      secret: process.env.JWT_SECRET_KEY,
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
+    return await this.jwtService.signAsync({
+        userId,
+        loginId,
+      }, {
+        secret: process.env.JWT_SECRET_KEY,
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      });
   }
 
   /**
@@ -63,15 +61,13 @@ export class AuthService {
    * @returns Signed JWT token.
    */
   async generateRefreshToken(userId: string, loginId: string): Promise<string> {
-    const payload = {
-      userId,
-      loginId,
-    } as UserPayload;
-
-    return await this.jwtService.signAsync(payload, {
-      secret: process.env.JWT_REFRESH_SECRET_KEY,
-      expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-    });
+    return await this.jwtService.signAsync({
+        userId,
+        loginId,
+      }, {
+        secret: process.env.JWT_REFRESH_SECRET_KEY,
+        expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+      });
   }
 
   /**
@@ -146,9 +142,17 @@ export class AuthService {
     const loginId = new Date().getTime().toString();
 
     if(requestAccessToken) {
+      const [
+        accessToken,
+        refreshToken,
+      ] = await Promise.all([
+        this.generateAccessToken(user.userId, loginId),
+        this.generateRefreshToken(user.userId, loginId),
+      ]);
+
       return {
-        accessToken: await this.generateAccessToken(user.userId, loginId),
-        refreshToken: await this.generateRefreshToken(user.userId, loginId),
+        accessToken,
+        refreshToken,
       };
     } else {
       return {
@@ -378,10 +382,18 @@ export class AuthService {
     // sleeps one second to garantee that the new token timestamp will be greater than the cached one  
     await new Promise(response => setTimeout(response, 1000));
 
+    const [
+      accessToken,
+      refreshToken,
+    ] = await Promise.all([
+      this.generateAccessToken(userEntity.userId, loginId),
+      this.generateRefreshToken(userEntity.userId, loginId)
+    ]);
+
     return {
       performed: true,
-      accessToken: await this.generateAccessToken(userEntity.userId, loginId),
-      refreshToken: await this.generateRefreshToken(userEntity.userId, loginId),
+      accessToken,
+      refreshToken,
     };
   }
 

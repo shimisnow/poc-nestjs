@@ -138,17 +138,18 @@ describe('POST /transaction', () => {
         const containerRuntimeClient = await getContainerRuntimeClient();
         const containerCache = await containerRuntimeClient.container.fetchByLabel('poc-nestjs-name', 'financial-service-cache');
 
-        // defines a cached value to main account
-        await containerRuntimeClient.container.exec(
-          containerCache,
-          ['redis-cli', 'SET', `${CacheKeyPrefix.FINANCIAL_BALANCE}:3`, JSON.stringify(cacheValue)]
-        );
-
-        // defines a cached value to pair account
-        await containerRuntimeClient.container.exec(
-          containerCache,
-          ['redis-cli', 'SET', `${CacheKeyPrefix.FINANCIAL_BALANCE}:4`, JSON.stringify(cacheValue)]
-        );
+        await Promise.all([
+          // defines a cached value to main account
+          containerRuntimeClient.container.exec(
+            containerCache,
+            ['redis-cli', 'SET', `${CacheKeyPrefix.FINANCIAL_BALANCE}:3`, JSON.stringify(cacheValue)]
+          ),
+          // defines a cached value to pair account
+          containerRuntimeClient.container.exec(
+            containerCache,
+            ['redis-cli', 'SET', `${CacheKeyPrefix.FINANCIAL_BALANCE}:4`, JSON.stringify(cacheValue)]
+          )
+        ]);
         
         // account 3 access token
         const now = Math.floor(Date.now() / 1000);
