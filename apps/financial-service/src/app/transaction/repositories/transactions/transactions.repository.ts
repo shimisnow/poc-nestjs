@@ -32,26 +32,26 @@ export class TransactionsRepository {
       await queryRunner.startTransaction();
 
       // create from transaction
-      const entityFrom = new TransactionEntity;
+      const entityFrom = new TransactionEntity();
       entityFrom.type = transaction.from.type as TransactionTypeEnum;
       entityFrom.amount = transaction.from.amount;
-      entityFrom.account = new AccountEntity;
+      entityFrom.account = new AccountEntity();
       entityFrom.account.accountId = transaction.from.accountId;
 
       resultFrom = await queryRunner.manager.save<TransactionEntity>(entityFrom);
 
       // create to transaction
-      const entityTo = new TransactionEntity;
+      const entityTo = new TransactionEntity();
       entityTo.type = transaction.to.type as TransactionTypeEnum;
       entityTo.amount = transaction.to.amount;
-      entityTo.account = new AccountEntity;
+      entityTo.account = new AccountEntity();
       entityTo.account.accountId = transaction.to.accountId;
       entityTo.transactionPairId = resultFrom.transactionId;
 
       resultTo = await queryRunner.manager.save<TransactionEntity>(entityTo);
 
       // update from transaction with the transactionId for from
-      const entityFromUpdatePair = new TransactionEntity;
+      const entityFromUpdatePair = new TransactionEntity();
       entityFromUpdatePair.transactionPairId = resultTo.transactionId;
 
       await queryRunner.manager.update<TransactionEntity>(

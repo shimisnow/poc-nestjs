@@ -280,7 +280,7 @@ export class AuthService {
       status: false,
     };
 
-    const entity = new UserAuthEntity;
+    const entity = new UserAuthEntity();
     entity.userId = userId;
     entity.username = username;
     entity.password = password;
