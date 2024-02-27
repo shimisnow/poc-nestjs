@@ -58,7 +58,12 @@ export class BalanceService {
     await this.cacheService.set(cacheKey, {
       balance: calculatedBalance,
       updatedAt: new Date().getTime(),
-    } as CacheBalancePayload);
+    } as CacheBalancePayload,
+    {
+      // 24 hours in seconds
+      ttl: 86400,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any,);
 
     return {
       balance: calculatedBalance,
