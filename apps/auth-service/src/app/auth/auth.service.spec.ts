@@ -13,7 +13,7 @@ import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
 import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 
-describe('AuthService', () => {
+describe('auth.service', () => {
   let service: AuthService;
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
   const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
@@ -45,7 +45,7 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('auth.service -> verifyIfUsernameExists()', () => {
+  describe('verifyIfUsernameExists()', () => {
     test('username already registered', async () => {
       const result = await service.verifyIfUsernameExists('anderson');
 
@@ -67,12 +67,24 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> signup()', () => {
-    test('username/userId already registered', async () => {
+  describe('signup()', () => {
+    test('username already registered', async () => {
       try {
         await service.signup(
           'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
           'thomas',
+          ''
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+      }
+    });
+
+    test('userId already registered', async () => {
+      try {
+        await service.signup(
+          'c3914f88-9a70-4775-9e32-7bcc8fbaeaaa',
+          'nathan',
           ''
         );
       } catch (error) {
@@ -91,7 +103,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> login()', () => {
+  describe('login()', () => {
     test('correct login data with ACTIVE user (with refresh)', async () => {
       const result = await service.login('anderson', 'test@1234', true);
 
@@ -157,7 +169,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> refresh()', () => {
+  describe('refresh()', () => {
     test('correct token data with ACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
@@ -189,7 +201,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> logout()', () => {
+  describe('logout()', () => {
     test('INACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
@@ -220,7 +232,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> passwordChange()', () => {
+  describe('passwordChange()', () => {
     test('inactive user', async () => {
       const loginId = new Date().getTime().toString();
       const user = {
@@ -296,7 +308,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.convertStringToSeconds()', () => {
+  describe('convertStringToSeconds()', () => {
     test('with d (days)', () => {
       const seconds = service.convertStringToSeconds('2d');
 

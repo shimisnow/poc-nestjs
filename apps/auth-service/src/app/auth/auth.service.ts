@@ -264,11 +264,23 @@ export class AuthService {
     username: string,
     password: string,
   ): Promise<SignUpSerializer> {
+    let entities = null;
+    
+    try {
+      entities = await this.userAuthsRepository.findByIdOrUsername(userId, username);
+    } catch (error) {
+      throw new BadGatewayException();
+    }
+
+    if(entities.length > 0) {
+      throw new ConflictException();
+    }
+
     const response = {
       status: false,
     };
 
-    const entity = new UserAuthEntity();
+    const entity = new UserAuthEntity;
     entity.userId = userId;
     entity.username = username;
     entity.password = password;
@@ -280,16 +292,7 @@ export class AuthService {
         response.status = true;
       }
     } catch (error) {
-      switch (error.constructor) {
-        case QueryFailedError:
-          if (error.message.startsWith('duplicate key')) {
-            throw new ConflictException();
-          } else {
-            throw new UnprocessableEntityException();
-          }
-        default:
-          throw new BadGatewayException();
-      }
+      throw new BadGatewayException();
     }
 
     return response;

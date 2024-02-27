@@ -100,4 +100,33 @@ export class UserAuthsRepositoryMock {
           return null;
     }
   }
+
+  async find(options): Promise<UserAuthEntity[]> {
+    // typeorm where with OR clause
+    if(Array.isArray(options.where)) {
+      for(let i = 0; i < options.where.length; i++) {
+        if(options.where[i].userId !== undefined) {
+          switch(options.where[i].userId) {
+            case 'c3914f88-9a70-4775-9e32-7bcc8fbaeaaa':
+              return [{
+                userId: 'c3914f88-9a70-4775-9e32-7bcc8fbaeaaa',
+                username: 'nathan',
+              } as UserAuthEntity];
+          }
+        }
+
+        if(options.where[i].username !== undefined) {
+          switch(options.where[i].username) {
+            case 'thomas':
+              return [{
+                userId: 'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
+                username: 'thomas',
+              } as UserAuthEntity];
+          }
+        }
+      }
+
+      return [];
+    }
+  }
 }
