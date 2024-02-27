@@ -8,7 +8,7 @@ import { BalancesRepository } from './repositories/balances.repository';
 import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { UserService } from '../user/user.service';
 
-describe('BalanceController', () => {
+describe('balance.controller', () => {
   let controller: BalanceController;
 
   beforeEach(async () => {

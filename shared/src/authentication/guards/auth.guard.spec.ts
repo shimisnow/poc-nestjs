@@ -28,7 +28,7 @@ const generateContext = (authToken: string) => {
   return context;
 };
 
-describe('AuthGuard', () => {
+describe('auth.guard', () => {
   let guard: AuthGuard;
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
@@ -47,7 +47,7 @@ describe('AuthGuard', () => {
     guard = module.get<AuthGuard>(AuthGuard);
   });
 
-  describe('AuthGuard.canActivate()', () => {
+  describe('canActivate()', () => {
     test('empty token', async () => {
       try {
         await guard.canActivate(generateContext('') as any);
@@ -181,7 +181,7 @@ describe('AuthGuard', () => {
     });
   });
 
-  describe('AuthGuard.extractTokenFromHeader()', () => {
+  describe('extractTokenFromHeader()', () => {
     // necessary to access the private mothod
     const guard = new AuthGuard(null, null) as any;
 

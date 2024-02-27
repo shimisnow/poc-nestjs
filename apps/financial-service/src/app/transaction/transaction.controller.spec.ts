@@ -12,7 +12,7 @@ import { AuthGuard } from '@shared/authentication/guards/auth.guard';
 import { UserService } from '../user/user.service';
 import { AccountsRepository } from './repositories/accounts/accounts.repository';
 
-describe('TransactionController', () => {
+describe('transaction.controller', () => {
   let controller: TransactionController;
 
   beforeEach(async () => {

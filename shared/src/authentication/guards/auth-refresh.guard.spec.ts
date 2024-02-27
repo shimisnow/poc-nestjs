@@ -28,7 +28,7 @@ const generateContext = (authToken: string) => {
   return context;
 };
 
-describe('AuthRefreshGuard', () => {
+describe('auth-refresh.guard', () => {
   let guard: AuthRefreshGuard;
   const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
@@ -47,7 +47,7 @@ describe('AuthRefreshGuard', () => {
     guard = module.get<AuthRefreshGuard>(AuthRefreshGuard);
   });
 
-  describe('AuthGuard.canActivate()', () => {
+  describe('canActivate()', () => {
     test('empty token', async () => {
       try {
         await guard.canActivate(generateContext('') as any);
@@ -181,7 +181,7 @@ describe('AuthRefreshGuard', () => {
     });
   });
 
-  describe('AuthGuard.extractTokenFromHeader()', () => {
+  describe('extractTokenFromHeader()', () => {
     // necessary to access the private mothod
     const guard = new AuthRefreshGuard(null, null) as any;
 

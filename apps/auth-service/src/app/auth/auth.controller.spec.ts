@@ -9,7 +9,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
-describe('AuthController', () => {
+describe('auth.controller', () => {
   let controller: AuthController;
 
   beforeEach(async () => {
@@ -46,7 +46,7 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('auth.controller -> verifyIfUsernameExists()', () => {
+  describe('verifyIfUsernameExists()', () => {
     test('username already registered', async () => {
       const result = await controller.verifyIfUsernameIsAvailable({
         username: 'anderson',
