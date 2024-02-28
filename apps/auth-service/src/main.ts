@@ -4,7 +4,6 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { mkdirSync, writeFileSync } from 'fs';
 import { WinstonModule } from 'nest-winston';
 import * as winston from 'winston';
-import path from 'path';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
