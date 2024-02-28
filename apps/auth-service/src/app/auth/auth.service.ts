@@ -26,7 +26,7 @@ import { RefreshSerializer } from './serializers/refresh.serializer';
 import { LogoutSerializer } from './serializers/logout.serializer';
 import { PasswordChangeSerializer } from './serializers/password-change.serializer';
 import { PasswordChangeCachePayload } from '@shared/cache/payloads/password-change-cache.payload';
-import { GenerateLog } from '@shared/logging/generate-log';
+import { GenerateLog } from '../utils/logging/generate-log';
 
 @Injectable()
 export class AuthService {
