@@ -2,7 +2,9 @@ import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { mkdirSync, writeFileSync } from 'fs';
-
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
+import path from 'path';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -18,7 +20,31 @@ async function bootstrap() {
     header: 'X-Api-Version',
     defaultVersion: '1',
   });
+  // docs at https://github.com/gremo/nest-winston/blob/main/README.md
+  const logDate = new Date().toLocaleDateString('en-ca').replace(/-/g,'');
+  app.useLogger(
+    WinstonModule.createLogger({
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.json(),
+      ),
+      transports: [
+        new winston.transports.File({
+          dirname: path.join(__dirname, './../../logs/auth-service/'),
+          filename: `info.${logDate}.log`,
+          level: 'info',
+        }),
+        new winston.transports.File({
+          dirname: path.join(__dirname, './../../logs/auth-service/'),
+          filename: `error.${logDate}.log`,
+          level: 'error',
+        }),
+      ],
+    })
+  );
   const port = process.env.AUTH_SERVICE_PORT || 3000;
+
+
 
   if (process.env.AUTH_SERVICE_BUILD_OPENAPI === 'true') {
     const config = new DocumentBuilder()
