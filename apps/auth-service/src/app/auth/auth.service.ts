@@ -26,6 +26,7 @@ import { RefreshSerializer } from './serializers/refresh.serializer';
 import { LogoutSerializer } from './serializers/logout.serializer';
 import { PasswordChangeSerializer } from './serializers/password-change.serializer';
 import { PasswordChangeCachePayload } from '@shared/cache/payloads/password-change-cache.payload';
+import { GenerateLog } from '@shared/logging/generate-log';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +35,7 @@ export class AuthService {
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private userAuthsRepository: UserAuthsRepository,
     private jwtService: JwtService,
+    private readonly logger: Logger,
   ) {}
 
   /**
@@ -99,11 +101,19 @@ export class AuthService {
    * @param username Username
    * @param password Password in plain text
    * @param requestAccessToken If a refreshToken should be generated
+   * @param ip Request IP
+   * @param headers Request headers
    * @returns Data with token to be used at the private endpoints
    * @throws BadGatewayException Database error
    * @throws UnauthorizedException User do not exists, is inactive or password is incorrect
    */
-  async login(username: string, password: string, requestAccessToken: boolean): Promise<LoginSerializer> {
+  async login(
+    username: string,
+    password: string,
+    requestAccessToken: boolean,
+    ip: string,
+    headers,
+  ): Promise<LoginSerializer> {
     let user: UserAuthEntity = null;
 
     try {
@@ -114,6 +124,15 @@ export class AuthService {
 
     // if the user does not exists, will throw this if error
     if (user?.status !== UserAuthStatusEnum.ACTIVE) {
+      this.logger.error(
+        GenerateLog.loginFail({
+          userId: user.userId,
+          errorBy: 'status',
+          ip,
+          headers,
+        })
+      );
+
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
@@ -127,6 +146,15 @@ export class AuthService {
     }
 
     if ((await bcrypt.compare(password, user?.password)) === false) {
+      this.logger.error(
+        GenerateLog.loginFail({
+          userId: user.userId,
+          errorBy: 'password',
+          ip,
+          headers,
+        })
+      );
+
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
@@ -150,11 +178,31 @@ export class AuthService {
         this.generateRefreshToken(user.userId, loginId),
       ]);
 
+      this.logger.log(
+        GenerateLog.loginSuccess({
+          userId: user.userId,
+          loginId,
+          withRefreshToken: true,
+          ip,
+          headers,
+        })
+      );
+
       return {
         accessToken,
         refreshToken,
       };
     } else {
+      this.logger.log(
+        GenerateLog.loginSuccess({
+          userId: user.userId,
+          loginId,
+          withRefreshToken: false,
+          ip,
+          headers,
+        })
+      );
+
       return {
         accessToken: await this.generateAccessToken(user.userId, loginId),
       };
