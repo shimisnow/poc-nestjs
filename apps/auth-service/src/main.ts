@@ -30,12 +30,12 @@ async function bootstrap() {
       ),
       transports: [
         new winston.transports.File({
-          dirname: path.join(__dirname, './../../logs/auth-service/'),
+          dirname: process.env.AUTH_SERVICE_LOG_DIR,
           filename: `info.${logDate}.log`,
           level: 'info',
         }),
         new winston.transports.File({
-          dirname: path.join(__dirname, './../../logs/auth-service/'),
+          dirname: process.env.AUTH_SERVICE_LOG_DIR,
           filename: `error.${logDate}.log`,
           level: 'error',
         }),
