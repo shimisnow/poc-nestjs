@@ -6,7 +6,6 @@ import {
   Injectable,
   Logger,
   UnauthorizedException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -126,7 +125,7 @@ export class AuthService {
     if (user?.status !== UserAuthStatusEnum.ACTIVE) {
       this.logger.error(
         GenerateLog.loginFail({
-          userId: user.userId,
+          username,
           errorBy: 'status',
           ip,
           headers,
@@ -148,7 +147,7 @@ export class AuthService {
     if ((await bcrypt.compare(password, user?.password)) === false) {
       this.logger.error(
         GenerateLog.loginFail({
-          userId: user.userId,
+          username,
           errorBy: 'password',
           ip,
           headers,
@@ -180,7 +179,7 @@ export class AuthService {
 
       this.logger.log(
         GenerateLog.loginSuccess({
-          userId: user.userId,
+          username,
           loginId,
           withRefreshToken: true,
           ip,
@@ -195,7 +194,7 @@ export class AuthService {
     } else {
       this.logger.log(
         GenerateLog.loginSuccess({
-          userId: user.userId,
+          username,
           loginId,
           withRefreshToken: false,
           ip,
@@ -379,7 +378,7 @@ export class AuthService {
     if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
       this.logger.log(
         GenerateLog.passwordChangeFail({
-          userId: userEntity.userId,
+          userId,
           loginId,
           errorBy: 'status',
           ip,

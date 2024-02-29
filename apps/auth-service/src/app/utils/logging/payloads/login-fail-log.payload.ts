@@ -2,7 +2,7 @@
  * Data for login fail operation
  */
 export class LoginFailLogPayload {
-  userId: string;
+  username: string;
   errorBy: 'status' | 'password';
   /** request IP address */
   ip?: string;

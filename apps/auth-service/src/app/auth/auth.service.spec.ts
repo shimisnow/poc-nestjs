@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
-import { BadGatewayException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { BadGatewayException, ConflictException, Logger, UnauthorizedException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -24,6 +24,7 @@ describe('auth.service', () => {
         AuthService,
         JwtService,
         UserAuthsRepository,
+        Logger,
         {
           provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,
@@ -105,7 +106,7 @@ describe('auth.service', () => {
 
   describe('login()', () => {
     test('correct login data with ACTIVE user (with refresh)', async () => {
-      const result = await service.login('anderson', 'test@1234', true);
+      const result = await service.login('anderson', 'test@1234', true, '', '');
 
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
@@ -124,7 +125,7 @@ describe('auth.service', () => {
     });
 
     test('correct login data with ACTIVE user (without refresh)', async () => {
-      const result = await service.login('anderson', 'test@1234', false);
+      const result = await service.login('anderson', 'test@1234', false, '', '');
 
       expect(result).toHaveProperty('accessToken');
       expect(result).not.toHaveProperty('refreshToken');
@@ -138,7 +139,7 @@ describe('auth.service', () => {
 
     test('correct login data with INACTIVE user', async () => {
       try {
-        await service.login('thomas', 'test@1234', true);
+        await service.login('thomas', 'test@1234', true, '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
@@ -146,7 +147,7 @@ describe('auth.service', () => {
 
     test('incorrect login data (user exists)', async () => {
       try {
-        await service.login('anderson', 'test@5678', true);
+        await service.login('anderson', 'test@5678', true, '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
@@ -154,15 +155,16 @@ describe('auth.service', () => {
 
     test('incorrect login data (user does not exists)', async () => {
       try {
-        await service.login('beatrice', 'test@1234', true);
+        await service.login('beatrice', 'test@1234', true, '', '');
       } catch (error) {
+        console.log(error);
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
     });
 
     test('some database error', async () => {
       try {
-        await service.login('anything', 'test@1234', true);
+        await service.login('anything', 'test@1234', true, '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(BadGatewayException);
       }
@@ -241,7 +243,7 @@ describe('auth.service', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -259,7 +261,7 @@ describe('auth.service', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -277,7 +279,7 @@ describe('auth.service', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, '1234@1234', '1234@test');
+        await service.passwordChange(user.userId, loginId, '1234@1234', '1234@test', '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -294,7 +296,7 @@ describe('auth.service', () => {
         loginId,
       } as UserPayload;
 
-      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test');
+      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', '', '');
       
       expect(result.performed).toBeTruthy();
       expect(result).toHaveProperty('accessToken');

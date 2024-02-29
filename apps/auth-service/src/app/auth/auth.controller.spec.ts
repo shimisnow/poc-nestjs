@@ -8,6 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Logger } from '@nestjs/common';
 
 describe('auth.controller', () => {
   let controller: AuthController;
@@ -18,6 +19,7 @@ describe('auth.controller', () => {
       providers: [
         AuthService,
         UserAuthsRepository,
+        Logger,
         {
           provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,

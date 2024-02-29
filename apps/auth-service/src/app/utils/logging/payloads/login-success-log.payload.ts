@@ -2,7 +2,7 @@
  * Data for login success operation
  */
 export class LoginSuccessLogPayload {
-  userId: string;
+  username: string;
   loginId: string;
   /** if the request also generated a refresh token */
   withRefreshToken = false;
