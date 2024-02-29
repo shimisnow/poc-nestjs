@@ -66,6 +66,7 @@ module.exports = async function () {
       JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN,
       JWT_REFRESH_MAX_AGE: process.env.JWT_REFRESH_MAX_AGE,
       AUTH_SERVICE_PORT: process.env.AUTH_SERVICE_PORT,
+      AUTH_SERVICE_LOG_DIR: './logs',
     })
     .start();
 

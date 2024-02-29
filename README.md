@@ -16,9 +16,10 @@ This project implements a REST API for a financial backend with NestJS and serve
 - Showcases [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Showcases [how to authenticate, issue and invalidate tokens](docs/markdown//resolved-problems/authentication-flow.md)
 - Demonstrates [NestJS](https://docs.nestjs.com/) architecture and patterns.
-- Shows how to make a secure authentication with [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt).
+- Shows how to make a secure authentication with [JWT](https://jwt.io/).
 - Shows how to work with monorepo using [Nx](https://nx.dev/).
 - Integrates with PostgreSQL (using [TypeORM](https://typeorm.io/)) and Redis.
+- Shows how to log in JSON with [winston](https://github.com/winstonjs/winston).
 - Shows how to test with [Jest](https://jestjs.io/), [Supertest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/).
 - Shows how to deploy with Docker using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
 - Shows how to [Github Actions](https://github.com/features/actions) to E2E test the application and publish the compiled code to [Docker Hub](https://hub.docker.com/).
@@ -34,7 +35,7 @@ This project implements a REST API for a financial backend with NestJS and serve
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
 - CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
 - Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/)
-- Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, JWT
+- Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, JWT, [winston](https://github.com/winstonjs/winston)
 
 ## Details about
 
