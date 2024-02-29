@@ -4,7 +4,7 @@ import { AuthService } from './auth.service';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
-import { BadGatewayException, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { BadGatewayException, ConflictException, Logger, UnauthorizedException } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -13,7 +13,7 @@ import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
 import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 
-describe('AuthService', () => {
+describe('auth.service', () => {
   let service: AuthService;
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
   const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
@@ -24,6 +24,7 @@ describe('AuthService', () => {
         AuthService,
         JwtService,
         UserAuthsRepository,
+        Logger,
         {
           provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,
@@ -45,7 +46,7 @@ describe('AuthService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('auth.service -> verifyIfUsernameExists()', () => {
+  describe('verifyIfUsernameExists()', () => {
     test('username already registered', async () => {
       const result = await service.verifyIfUsernameExists('anderson');
 
@@ -67,12 +68,24 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> signup()', () => {
-    test('username/userId already registered', async () => {
+  describe('signup()', () => {
+    test('username already registered', async () => {
       try {
         await service.signup(
           'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
           'thomas',
+          ''
+        );
+      } catch (error) {
+        expect(error).toBeInstanceOf(ConflictException);
+      }
+    });
+
+    test('userId already registered', async () => {
+      try {
+        await service.signup(
+          'c3914f88-9a70-4775-9e32-7bcc8fbaeaaa',
+          'nathan',
           ''
         );
       } catch (error) {
@@ -91,9 +104,9 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> login()', () => {
+  describe('login()', () => {
     test('correct login data with ACTIVE user (with refresh)', async () => {
-      const result = await service.login('anderson', 'test@1234', true);
+      const result = await service.login('anderson', 'test@1234', true, '', '');
 
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
@@ -112,7 +125,7 @@ describe('AuthService', () => {
     });
 
     test('correct login data with ACTIVE user (without refresh)', async () => {
-      const result = await service.login('anderson', 'test@1234', false);
+      const result = await service.login('anderson', 'test@1234', false, '', '');
 
       expect(result).toHaveProperty('accessToken');
       expect(result).not.toHaveProperty('refreshToken');
@@ -126,7 +139,7 @@ describe('AuthService', () => {
 
     test('correct login data with INACTIVE user', async () => {
       try {
-        await service.login('thomas', 'test@1234', true);
+        await service.login('thomas', 'test@1234', true, '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
@@ -134,7 +147,7 @@ describe('AuthService', () => {
 
     test('incorrect login data (user exists)', async () => {
       try {
-        await service.login('anderson', 'test@5678', true);
+        await service.login('anderson', 'test@5678', true, '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
@@ -142,22 +155,23 @@ describe('AuthService', () => {
 
     test('incorrect login data (user does not exists)', async () => {
       try {
-        await service.login('beatrice', 'test@1234', true);
+        await service.login('beatrice', 'test@1234', true, '', '');
       } catch (error) {
+        console.log(error);
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
     });
 
     test('some database error', async () => {
       try {
-        await service.login('anything', 'test@1234', true);
+        await service.login('anything', 'test@1234', true, '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(BadGatewayException);
       }
     });
   });
 
-  describe('auth.service -> refresh()', () => {
+  describe('refresh()', () => {
     test('correct token data with ACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
@@ -189,7 +203,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> logout()', () => {
+  describe('logout()', () => {
     test('INACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
@@ -220,7 +234,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.service -> passwordChange()', () => {
+  describe('passwordChange()', () => {
     test('inactive user', async () => {
       const loginId = new Date().getTime().toString();
       const user = {
@@ -229,7 +243,7 @@ describe('AuthService', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -247,7 +261,7 @@ describe('AuthService', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test');
+        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -265,7 +279,7 @@ describe('AuthService', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, '1234@1234', '1234@test');
+        await service.passwordChange(user.userId, loginId, '1234@1234', '1234@test', '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -282,7 +296,7 @@ describe('AuthService', () => {
         loginId,
       } as UserPayload;
 
-      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test');
+      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', '', '');
       
       expect(result.performed).toBeTruthy();
       expect(result).toHaveProperty('accessToken');
@@ -296,7 +310,7 @@ describe('AuthService', () => {
     });
   });
 
-  describe('auth.convertStringToSeconds()', () => {
+  describe('convertStringToSeconds()', () => {
     test('with d (days)', () => {
       const seconds = service.convertStringToSeconds('2d');
 

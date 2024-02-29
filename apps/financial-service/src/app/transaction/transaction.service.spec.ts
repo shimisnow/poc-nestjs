@@ -12,7 +12,7 @@ import { ForbiddenException, PreconditionFailedException } from '@nestjs/common'
 import { CreatePairTransactionBody } from './repositories/transactions/create-pair-transaction.body';
 import { CreatePairTransactionResult } from './repositories/transactions/create-pair-transaction.result';
 
-describe('TransactionService', () => {
+describe('transaction.service', () => {
   let service: TransactionService;
 
   beforeEach(async () => {
@@ -84,7 +84,7 @@ describe('TransactionService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('transaction.service -> createDebitTransaction()', () => {
+  describe('createDebitTransaction()', () => {
     describe('transaction type errors', () => {
       test('transaction type is not a debit', async () => {
         try {
@@ -185,5 +185,4 @@ describe('TransactionService', () => {
       });
     });
   });
-
 });

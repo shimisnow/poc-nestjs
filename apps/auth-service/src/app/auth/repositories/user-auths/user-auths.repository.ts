@@ -10,6 +10,23 @@ export class UserAuthsRepository {
     private repository: Repository<UserAuthEntity>,
   ) {}
 
+  /**
+   * Verifies if the given userId OR username already exists.
+   * If they exists at different entities, both entities will be returned
+   * 
+   * @param userId ID to be retrieved
+   * @param username Username to be retrieved
+   * @returns List with the found entities. This can have zero, one or two items
+   */
+  async findByIdOrUsername(userId: string, username: string): Promise<UserAuthEntity[]> {
+    return await this.repository.find({
+      where: [
+        { userId },
+        { username },
+      ],
+    });
+  }
+
   async findById(userId: string): Promise<UserAuthEntity> {
     return await this.repository.findOne({
       where: {

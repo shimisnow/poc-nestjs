@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { AccountEntity } from '@shared/database/financial/entities/account.entity';
 import { AccountsRepository } from './repositories/accounts/accounts.repository';
 
-describe('UserService', () => {
+describe('user.service', () => {
   let service: UserService;
 
   beforeEach(async () => {
@@ -42,7 +42,7 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('user.service -> hasAccessToAccount()', () => {
+  describe('hasAccessToAccount()', () => {
     test('user has no access to the account', async () => {
       const result = await service.hasAccessToAccount(
         '44a6eaeb-fcaa-4889-9ddc-9e6b86db7351',

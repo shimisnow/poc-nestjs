@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Query, UseGuards, Version } from '@nestjs/common';
+import { Body, Controller, Get, Headers, HttpCode, Ip, Post, Query, UseGuards, Version } from '@nestjs/common';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
@@ -114,8 +114,8 @@ export class AuthController {
     description: 'Internal data processing error. Probably a database error',
     type: DefaultError502Serializer,
   })
-  async login(@Body() body: LoginBodyDto): Promise<LoginSerializer> {
-    return await this.authService.login(body.username, body.password, body.requestAccessToken);
+  async login(@Body() body: LoginBodyDto, @Ip() ip, @Headers() headers): Promise<LoginSerializer> {
+    return await this.authService.login(body.username, body.password, body.requestAccessToken, ip, headers);
   }
 
   @Version('1')
@@ -264,12 +264,16 @@ export class AuthController {
   async passwordChange(
     @User() user: UserPayload,
     @Body() body: PasswordChangeBodyDto,
+    @Ip() ip,
+    @Headers() headers,
   ) {
     return await this.authService.passwordChange(
       user.userId,
       user.loginId,
       body.currentPassword,
       body.newPassword,
+      ip,
+      headers,
     );
   }
 }

@@ -6,7 +6,6 @@ import {
   Injectable,
   Logger,
   UnauthorizedException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
@@ -26,6 +25,7 @@ import { RefreshSerializer } from './serializers/refresh.serializer';
 import { LogoutSerializer } from './serializers/logout.serializer';
 import { PasswordChangeSerializer } from './serializers/password-change.serializer';
 import { PasswordChangeCachePayload } from '@shared/cache/payloads/password-change-cache.payload';
+import { GenerateLog } from '../utils/logging/generate-log';
 
 @Injectable()
 export class AuthService {
@@ -34,6 +34,7 @@ export class AuthService {
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private userAuthsRepository: UserAuthsRepository,
     private jwtService: JwtService,
+    private readonly logger: Logger,
   ) {}
 
   /**
@@ -99,11 +100,19 @@ export class AuthService {
    * @param username Username
    * @param password Password in plain text
    * @param requestAccessToken If a refreshToken should be generated
+   * @param ip Request IP
+   * @param headers Request headers
    * @returns Data with token to be used at the private endpoints
    * @throws BadGatewayException Database error
    * @throws UnauthorizedException User do not exists, is inactive or password is incorrect
    */
-  async login(username: string, password: string, requestAccessToken: boolean): Promise<LoginSerializer> {
+  async login(
+    username: string,
+    password: string,
+    requestAccessToken: boolean,
+    ip: string,
+    headers,
+  ): Promise<LoginSerializer> {
     let user: UserAuthEntity = null;
 
     try {
@@ -114,6 +123,15 @@ export class AuthService {
 
     // if the user does not exists, will throw this if error
     if (user?.status !== UserAuthStatusEnum.ACTIVE) {
+      this.logger.error(
+        GenerateLog.loginFail({
+          username,
+          errorBy: 'status',
+          ip,
+          headers,
+        })
+      );
+
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
@@ -127,6 +145,15 @@ export class AuthService {
     }
 
     if ((await bcrypt.compare(password, user?.password)) === false) {
+      this.logger.error(
+        GenerateLog.loginFail({
+          username,
+          errorBy: 'password',
+          ip,
+          headers,
+        })
+      );
+
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
@@ -150,11 +177,31 @@ export class AuthService {
         this.generateRefreshToken(user.userId, loginId),
       ]);
 
+      this.logger.log(
+        GenerateLog.loginSuccess({
+          username,
+          loginId,
+          withRefreshToken: true,
+          ip,
+          headers,
+        })
+      );
+
       return {
         accessToken,
         refreshToken,
       };
     } else {
+      this.logger.log(
+        GenerateLog.loginSuccess({
+          username,
+          loginId,
+          withRefreshToken: false,
+          ip,
+          headers,
+        })
+      );
+
       return {
         accessToken: await this.generateAccessToken(user.userId, loginId),
       };
@@ -264,6 +311,18 @@ export class AuthService {
     username: string,
     password: string,
   ): Promise<SignUpSerializer> {
+    let entities = null;
+    
+    try {
+      entities = await this.userAuthsRepository.findByIdOrUsername(userId, username);
+    } catch (error) {
+      throw new BadGatewayException();
+    }
+
+    if(entities.length > 0) {
+      throw new ConflictException();
+    }
+
     const response = {
       status: false,
     };
@@ -280,16 +339,7 @@ export class AuthService {
         response.status = true;
       }
     } catch (error) {
-      switch (error.constructor) {
-        case QueryFailedError:
-          if (error.message.startsWith('duplicate key')) {
-            throw new ConflictException();
-          } else {
-            throw new UnprocessableEntityException();
-          }
-        default:
-          throw new BadGatewayException();
-      }
+      throw new BadGatewayException();
     }
 
     return response;
@@ -312,6 +362,8 @@ export class AuthService {
     loginId: string,
     currentPassword: string,
     newPassword: string,
+    ip: string,
+    headers: any,
   ): Promise<PasswordChangeSerializer> {
     let userEntity: UserAuthEntity = null;
 
@@ -324,6 +376,16 @@ export class AuthService {
 
     // if it does not exists or is inactive
     if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
+      this.logger.log(
+        GenerateLog.passwordChangeFail({
+          userId,
+          loginId,
+          errorBy: 'status',
+          ip,
+          headers,
+        })
+      );
+
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
@@ -338,6 +400,16 @@ export class AuthService {
 
     // verify if the provided password is correct
     if ((await bcrypt.compare(currentPassword, userEntity?.password)) === false) {
+      this.logger.log(
+        GenerateLog.passwordChangeFail({
+          userId: userEntity.userId,
+          loginId,
+          errorBy: 'password',
+          ip,
+          headers,
+        })
+      );
+
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
@@ -357,12 +429,7 @@ export class AuthService {
       // stores the retrieved user with the new password
       await this.userAuthsRepository.save(userEntity);
     } catch (error) {
-      switch (error.constructor) {
-        case QueryFailedError:
-          throw new UnprocessableEntityException();
-        default:
-          throw new BadGatewayException();
-      }
+      throw new BadGatewayException();
     }
 
     // adds the timestamp to cache to invalidate tokens issued before this
@@ -389,6 +456,15 @@ export class AuthService {
       this.generateAccessToken(userEntity.userId, loginId),
       this.generateRefreshToken(userEntity.userId, loginId)
     ]);
+
+    this.logger.log(
+      GenerateLog.passwordChangeSuccess({
+        userId: userEntity.userId,
+        loginId,
+        ip,
+        headers,
+      })
+    );
 
     return {
       performed: true,

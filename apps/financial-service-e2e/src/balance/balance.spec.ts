@@ -174,7 +174,7 @@ describe('GET /balance', () => {
     test('get balance from database (no cache)', async () => {
       const now = Math.floor(Date.now() / 1000);
       const accessToken = jsonwebtoken.sign({
-        userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e221',
+        userId: '17e31ebd-7728-4fa1-9942-0971b176f342',
         loginId: new Date().getTime().toString(),
         iat: now,
         exp: now + 60,
@@ -183,7 +183,7 @@ describe('GET /balance', () => {
       await request(host)
         .get(endpoint)
         .query({
-          accountId: 4,
+          accountId: 10,
         })
         .set('Authorization', `Bearer ${accessToken}`)
         .set('X-Api-Version', '1')
@@ -191,7 +191,7 @@ describe('GET /balance', () => {
         .expect(200)
         .then(response => {
           const body = response.body;
-          expect(body.balance).toBe(800);
+          expect(body.balance).toBe(200);
           expect(body.cached).toBeFalsy();
         });
     });

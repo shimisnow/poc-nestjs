@@ -8,8 +8,9 @@ import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Logger } from '@nestjs/common';
 
-describe('AuthController', () => {
+describe('auth.controller', () => {
   let controller: AuthController;
 
   beforeEach(async () => {
@@ -18,6 +19,7 @@ describe('AuthController', () => {
       providers: [
         AuthService,
         UserAuthsRepository,
+        Logger,
         {
           provide: getRepositoryToken(UserAuthEntity),
           useClass: UserAuthsRepositoryMock,
@@ -46,7 +48,7 @@ describe('AuthController', () => {
     expect(controller).toBeDefined();
   });
 
-  describe('auth.controller -> verifyIfUsernameExists()', () => {
+  describe('verifyIfUsernameExists()', () => {
     test('username already registered', async () => {
       const result = await controller.verifyIfUsernameIsAvailable({
         username: 'anderson',

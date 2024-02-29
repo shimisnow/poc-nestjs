@@ -1,7 +1,8 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nrwl/nx"],
+  "plugins": ["@typescript-eslint", "prettier", "@nrwl/nx"],
+  "extends": ["eslint:recommended", "google", "prettier"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
@@ -25,7 +26,12 @@
       "files": ["*.ts", "*.tsx"],
       "extends": ["plugin:@nrwl/nx/typescript"],
       "rules": {
-        "quotes": ["error", "single"]
+        "quotes": ["error", "single"],
+        "new-parens": ["error", "always"],
+        "eol-last": ["error", "always"],
+        "new-cap": "off",
+        "require-jsdoc": "off",
+        "valid-jsdoc": "off"
       }
     },
     {
@@ -39,7 +45,8 @@
         "jest": true
       },
       "rules": {
-        "quotes": ["error", "single"]
+        "quotes": ["error", "single"],
+        "eol-last": ["error", "always"]
       }
     }
   ]

@@ -11,7 +11,7 @@ import { TransactionEntity } from '@shared/database/financial/entities/transacti
 import { ForbiddenException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
-describe('BalanceService', () => {
+describe('balance.service', () => {
   let service: BalanceService;
 
   beforeEach(async () => {
@@ -110,7 +110,7 @@ describe('BalanceService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('balance.service -> getBalance()', () => {
+  describe('getBalance()', () => {
     describe('account ownership and existence', () => {
       test('user does not have access rights to the account', async () => {
         try {
@@ -145,7 +145,7 @@ describe('BalanceService', () => {
     });
   });
 
-  describe('balance.service -> getBalanceIgnoringCache()', () => {
+  describe('getBalanceIgnoringCache()', () => {
     describe('account ownership and existence', () => {
       test('user does not have access rights to the account', async () => {
         try {
