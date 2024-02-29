@@ -272,6 +272,7 @@ export class AuthController {
       user.loginId,
       body.currentPassword,
       body.newPassword,
+      body.requestAccessToken,
       ip,
       headers,
     );

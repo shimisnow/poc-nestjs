@@ -352,6 +352,9 @@ export class AuthService {
    * @param loginId ID do request.
    * @param currentPassword Actual password in plain text.
    * @param newPassword New password in plain text.
+   * @param requestAccessToken If a refreshToken should be generated
+   * @param ip Request IP
+   * @param headers Request headers
    * @returns Information if the password was changed.
    * @throws BadGatewayException Database error.
    * @throws UnauthorizedException User do not exists, is inactive or password is incorrect.
@@ -362,6 +365,7 @@ export class AuthService {
     loginId: string,
     currentPassword: string,
     newPassword: string,
+    requestAccessToken: boolean,
     ip: string,
     headers: any,
   ): Promise<PasswordChangeSerializer> {
@@ -449,28 +453,48 @@ export class AuthService {
     // sleeps one second to garantee that the new token timestamp will be greater than the cached one  
     await new Promise(response => setTimeout(response, 1000));
 
-    const [
-      accessToken,
-      refreshToken,
-    ] = await Promise.all([
-      this.generateAccessToken(userEntity.userId, loginId),
-      this.generateRefreshToken(userEntity.userId, loginId)
-    ]);
+    if(requestAccessToken) {
+      const [
+        accessToken,
+        refreshToken,
+      ] = await Promise.all([
+        this.generateAccessToken(userEntity.userId, loginId),
+        this.generateRefreshToken(userEntity.userId, loginId)
+      ]);
+  
+      this.logger.log(
+        GenerateLog.passwordChangeSuccess({
+          userId: userEntity.userId,
+          loginId,
+          withRefreshToken: true,
+          ip,
+          headers,
+        })
+      );
 
-    this.logger.log(
-      GenerateLog.passwordChangeSuccess({
-        userId: userEntity.userId,
-        loginId,
-        ip,
-        headers,
-      })
-    );
+      return {
+        performed: true,
+        accessToken,
+        refreshToken,
+      };
+    } else {
+      const accessToken = await this.generateAccessToken(userEntity.userId, loginId);
 
-    return {
-      performed: true,
-      accessToken,
-      refreshToken,
-    };
+      this.logger.log(
+        GenerateLog.passwordChangeSuccess({
+          userId: userEntity.userId,
+          loginId,
+          withRefreshToken: false,
+          ip,
+          headers,
+        })
+      );
+
+      return {
+        performed: true,
+        accessToken,
+      };
+    }
   }
 
   /**
