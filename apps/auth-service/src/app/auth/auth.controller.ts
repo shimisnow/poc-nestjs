@@ -264,12 +264,16 @@ export class AuthController {
   async passwordChange(
     @User() user: UserPayload,
     @Body() body: PasswordChangeBodyDto,
+    @Ip() ip,
+    @Headers() headers,
   ) {
     return await this.authService.passwordChange(
       user.userId,
       user.loginId,
       body.currentPassword,
       body.newPassword,
+      ip,
+      headers,
     );
   }
 }

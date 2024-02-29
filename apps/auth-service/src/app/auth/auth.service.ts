@@ -363,6 +363,8 @@ export class AuthService {
     loginId: string,
     currentPassword: string,
     newPassword: string,
+    ip: string,
+    headers: any,
   ): Promise<PasswordChangeSerializer> {
     let userEntity: UserAuthEntity = null;
 
@@ -375,6 +377,16 @@ export class AuthService {
 
     // if it does not exists or is inactive
     if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
+      this.logger.log(
+        GenerateLog.passwordChangeFail({
+          userId: userEntity.userId,
+          loginId,
+          errorBy: 'status',
+          ip,
+          headers,
+        })
+      );
+
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
@@ -389,6 +401,16 @@ export class AuthService {
 
     // verify if the provided password is correct
     if ((await bcrypt.compare(currentPassword, userEntity?.password)) === false) {
+      this.logger.log(
+        GenerateLog.passwordChangeFail({
+          userId: userEntity.userId,
+          loginId,
+          errorBy: 'password',
+          ip,
+          headers,
+        })
+      );
+
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Unauthorized',
@@ -408,12 +430,7 @@ export class AuthService {
       // stores the retrieved user with the new password
       await this.userAuthsRepository.save(userEntity);
     } catch (error) {
-      switch (error.constructor) {
-        case QueryFailedError:
-          throw new UnprocessableEntityException();
-        default:
-          throw new BadGatewayException();
-      }
+      throw new BadGatewayException();
     }
 
     // adds the timestamp to cache to invalidate tokens issued before this
@@ -440,6 +457,15 @@ export class AuthService {
       this.generateAccessToken(userEntity.userId, loginId),
       this.generateRefreshToken(userEntity.userId, loginId)
     ]);
+
+    this.logger.log(
+      GenerateLog.passwordChangeSuccess({
+        userId: userEntity.userId,
+        loginId,
+        ip,
+        headers,
+      })
+    );
 
     return {
       performed: true,
