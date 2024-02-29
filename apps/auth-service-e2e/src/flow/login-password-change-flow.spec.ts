@@ -75,6 +75,7 @@ describe('login logout process (with refresh)', () => {
       .send({
         currentPassword: 'test@1234',
         newPassword: '1234@test',
+        withRefreshToken: true,
       })
       .set('Authorization', `Bearer ${sessionOne.body.accessToken}`)
       .set('X-Api-Version', '1')
