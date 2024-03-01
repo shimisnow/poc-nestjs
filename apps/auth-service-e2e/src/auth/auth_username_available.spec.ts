@@ -7,9 +7,15 @@ describe('GET /auth/username/available', () => {
 
   beforeAll(async () => {
     const containerRuntimeClient = await getContainerRuntimeClient();
-    const containerCode = await containerRuntimeClient.container.fetchByLabel('poc-nestjs-name', 'auth-service-code');
+    const containerCode = await containerRuntimeClient.container.fetchByLabel(
+      'poc-nestjs-name',
+      'auth-service-code',
+    );
     const containerInfo = await containerCode.inspect();
-    const AUTH_SERVICE_TEST_PORT = containerInfo.NetworkSettings.Ports[`${process.env.AUTH_SERVICE_PORT}/tcp`][0].HostPort;
+    const AUTH_SERVICE_TEST_PORT =
+      containerInfo.NetworkSettings.Ports[
+        `${process.env.AUTH_SERVICE_PORT}/tcp`
+      ][0].HostPort;
     host = `http://localhost:${AUTH_SERVICE_TEST_PORT}`;
   });
 

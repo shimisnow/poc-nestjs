@@ -177,7 +177,6 @@ describe('auth.service', () => {
       try {
         await service.login('beatrice', 'test@1234', true, '', '');
       } catch (error) {
-        console.log(error);
         expect(error).toBeInstanceOf(UnauthorizedException);
       }
     });

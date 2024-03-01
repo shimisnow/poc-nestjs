@@ -6,7 +6,10 @@ module.exports = async function () {
   await ensureFile(archivePath);
   const outputFileStream = fs.createWriteStream(archivePath);
 
-  const homeNodeAppArquive: NodeJS.ReadableStream = await globalThis.containerCode.copyArchiveFromContainer('/home/node/app/logs');
+  const homeNodeAppArquive: NodeJS.ReadableStream =
+    await globalThis.containerCode.copyArchiveFromContainer(
+      '/home/node/app/logs',
+    );
   homeNodeAppArquive.pipe(outputFileStream);
 
   await Promise.all([

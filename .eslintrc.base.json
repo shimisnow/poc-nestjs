@@ -29,6 +29,15 @@
         "quotes": ["error", "single"],
         "new-parens": ["error", "always"],
         "eol-last": ["error", "always"],
+        "max-len": [
+          "error",
+          {
+            "code": 100,
+            "ignoreStrings": true,
+            "ignoreTemplateLiterals": true,
+            "ignoreRegExpLiterals": true
+          }
+        ],
         "new-cap": "off",
         "require-jsdoc": "off",
         "valid-jsdoc": "off"
@@ -46,7 +55,16 @@
       },
       "rules": {
         "quotes": ["error", "single"],
-        "eol-last": ["error", "always"]
+        "eol-last": ["error", "always"],
+        "max-len": [
+          "error",
+          {
+            "code": 100,
+            "ignoreStrings": true,
+            "ignoreTemplateLiterals": true,
+            "ignoreRegExpLiterals": true
+          }
+        ]
       }
     }
   ]
