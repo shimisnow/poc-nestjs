@@ -3,7 +3,7 @@ import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
 import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
 import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
-describe('login logout process (with refresh)', () => {
+describe('login password change', () => {
   let host: string;
   const endpointLogin = '/auth/login';
   const endpointLogout = '/auth/logout';
@@ -75,7 +75,7 @@ describe('login logout process (with refresh)', () => {
       .send({
         currentPassword: 'test@1234',
         newPassword: '1234@test',
-        withRefreshToken: true,
+        requestRefreshToken: true,
       })
       .set('Authorization', `Bearer ${sessionOne.body.accessToken}`)
       .set('X-Api-Version', '1')
