@@ -9,7 +9,7 @@ module.exports = async function () {
   
   const dockerNetwork = await new Network().start();
 
-  /***** DATABASE *****/
+  /** *** DATABASE *****/
 
   const postgreSqlContainer = new PostgreSqlContainer(DOCKER_POSTGRES_TAG)
     .withNetwork(dockerNetwork)
@@ -24,7 +24,7 @@ module.exports = async function () {
     }])
     .withWaitStrategy(Wait.forLogMessage('PostgreSQL init process complete; ready for start up.'));
 
-  /***** CACHE *****/
+  /** *** CACHE *****/
 
   const redisContainer = new RedisContainer(DOCKER_REDIS_TAG)
     .withLabels({ 'poc-nestjs-name': 'financial-service-cache' })
@@ -32,7 +32,7 @@ module.exports = async function () {
     .withNetworkAliases('redis')
     .withExposedPorts(parseInt(process.env.REDIS_PORT));
 
-  /***** DEPENDENCIES START AND CODE BUILD *****/
+  /** *** DEPENDENCIES START AND CODE BUILD *****/
 
   const [
     containerDatabase,
@@ -47,7 +47,7 @@ module.exports = async function () {
       .build(DOCKER_IMAGE_BUILD_NAME, { deleteOnExit: false })
   ]);
 
-  /***** CODE *****/
+  /** *** CODE *****/
 
   const containerCode: StartedTestContainer = await buildContainerCode
     .withLabels({ 'poc-nestjs-name': 'financial-service-code' })

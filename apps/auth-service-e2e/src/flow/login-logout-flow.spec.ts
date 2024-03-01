@@ -22,7 +22,7 @@ describe('login logout process (with refresh)', () => {
 
   test('simple login-logout with multiple sessions', async () => {
 
-    /***** LOGIN *****/
+    /** *** LOGIN *****/
 
     const sessionOne = await request(host)
       .post(endpointLogin)
@@ -58,7 +58,7 @@ describe('login logout process (with refresh)', () => {
     expect(sessionOneAccessToken.loginId).not.toBe(sessionTwoAccessToken.loginId);
     expect(sessionOneRefreshToken.userId).toBe(sessionTwoRefreshToken.userId);
 
-    /***** REFRESH *****/
+    /** *** REFRESH *****/
 
     const refreshSessionOne = await request(host)
       .get(endpointRefresh)
@@ -80,7 +80,7 @@ describe('login logout process (with refresh)', () => {
     expect(sessionOneAccessToken.loginId).toBe(sessionOneRefreshToken.loginId);
     expect(sessionTwoAccessToken.loginId).toBe(sessionTwoRefreshToken.loginId);
 
-    /***** SESSION ONE LOGOUT *****/
+    /** *** SESSION ONE LOGOUT *****/
 
     await request(host)
       .post(endpointLogout)
@@ -95,7 +95,7 @@ describe('login logout process (with refresh)', () => {
         expect(body).toHaveProperty('performedAt');
       });
 
-    /***** SESSION ONE TRY TO REFRESH AND TRY TO LOGOUT *****/
+    /** *** SESSION ONE TRY TO REFRESH AND TRY TO LOGOUT *****/
 
     await request(host)
       .get(endpointRefresh)
@@ -121,7 +121,7 @@ describe('login logout process (with refresh)', () => {
         expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_LOGOUT]));
       });
 
-    /***** SESSION TWO REFRESH *****/
+    /** *** SESSION TWO REFRESH *****/
 
     refreshSessionTwo = await request(host)
     .get(endpointRefresh)

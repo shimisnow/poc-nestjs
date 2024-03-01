@@ -22,7 +22,7 @@ describe('login password change', () => {
 
   test('login and password change with multiple sessions', async () => {
 
-    /***** LOGIN *****/
+    /** *** LOGIN *****/
 
     let sessionOne = await request(host)
       .post(endpointLogin)
@@ -68,7 +68,7 @@ describe('login password change', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
-    /***** PASSWORD CHANGE AT SESSION ONE *****/
+    /** *** PASSWORD CHANGE AT SESSION ONE *****/
 
     const passwordChangeResult = await request(host)
       .post(endpointPassword)
@@ -94,7 +94,7 @@ describe('login password change', () => {
     expect(passwordChangeAccessToken.userId).toBe(passwordChangeRefreshToken.userId);
     expect(passwordChangeAccessToken.loginId).toBe(passwordChangeRefreshToken.loginId);
 
-    /***** REFRESH TOKEN AT SESSION TWO (ERROR) *****/
+    /** *** REFRESH TOKEN AT SESSION TWO (ERROR) *****/
 
     await request(host)
       .get(endpointRefresh)
@@ -108,7 +108,7 @@ describe('login password change', () => {
         expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE]));
       });
 
-    /***** LOGOUT AT SESSION THREE (ERROR) *****/
+    /** *** LOGOUT AT SESSION THREE (ERROR) *****/
 
     await request(host)
       .post(endpointLogout)
@@ -122,7 +122,7 @@ describe('login password change', () => {
         expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE]));
       });
 
-    /***** LOGOUT AT SESSION FOUR (OK - IT IS ANOTHER USER) *****/
+    /** *** LOGOUT AT SESSION FOUR (OK - IT IS ANOTHER USER) *****/
 
     await request(host)
       .post(endpointLogout)
@@ -137,7 +137,7 @@ describe('login password change', () => {
         expect(body).toHaveProperty('performedAt');
       });
 
-    /***** LOGOUT AT SESSION ONE (OK) *****/
+    /** *** LOGOUT AT SESSION ONE (OK) *****/
 
     await request(host)
       .post(endpointLogout)
@@ -152,7 +152,7 @@ describe('login password change', () => {
         expect(body).toHaveProperty('performedAt');
       });
 
-    /***** LOGIN WITH THE NEW PASSWORD *****/
+    /** *** LOGIN WITH THE NEW PASSWORD *****/
 
     // sleeps for two seconds to ensure that the password change and new login will not be at the same second
     await new Promise(response => setTimeout(response, 2000));
@@ -167,7 +167,7 @@ describe('login password change', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
-    /***** LOGOUT FROM THE NEW PASSWORD *****/
+    /** *** LOGOUT FROM THE NEW PASSWORD *****/
 
     await request(host)
       .post(endpointLogout)
