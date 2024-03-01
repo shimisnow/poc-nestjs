@@ -7,7 +7,6 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { QueryFailedError } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -367,7 +366,7 @@ export class AuthService {
     newPassword: string,
     requestRefreshToken: boolean,
     ip: string,
-    headers: any,
+    headers,
   ): Promise<PasswordChangeSerializer> {
     let userEntity: UserAuthEntity = null;
 
