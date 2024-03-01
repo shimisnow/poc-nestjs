@@ -99,7 +99,7 @@ export class AuthService {
    * 
    * @param username Username
    * @param password Password in plain text
-   * @param requestAccessToken If a refreshToken should be generated
+   * @param requestRefreshToken If a refreshToken should be generated
    * @param ip Request IP
    * @param headers Request headers
    * @returns Data with token to be used at the private endpoints
@@ -109,7 +109,7 @@ export class AuthService {
   async login(
     username: string,
     password: string,
-    requestAccessToken: boolean,
+    requestRefreshToken: boolean,
     ip: string,
     headers,
   ): Promise<LoginSerializer> {
@@ -168,7 +168,7 @@ export class AuthService {
 
     const loginId = new Date().getTime().toString();
 
-    if(requestAccessToken) {
+    if(requestRefreshToken) {
       const [
         accessToken,
         refreshToken,
