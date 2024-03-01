@@ -29,7 +29,7 @@ describe('login password change', () => {
       .send({
         username: 'yara',
         password: 'test@1234',
-        requestAccessToken: true,
+        requestRefreshToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
@@ -40,7 +40,7 @@ describe('login password change', () => {
       .send({
         username: 'yara',
         password: 'test@1234',
-        requestAccessToken: true,
+        requestRefreshToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
@@ -51,7 +51,7 @@ describe('login password change', () => {
       .send({
         username: 'yara',
         password: 'test@1234',
-        requestAccessToken: true,
+        requestRefreshToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
@@ -62,7 +62,7 @@ describe('login password change', () => {
       .send({
         username: 'markleid',
         password: 'test@1234',
-        requestAccessToken: true,
+        requestRefreshToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
