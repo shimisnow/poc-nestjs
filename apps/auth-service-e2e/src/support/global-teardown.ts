@@ -1,4 +1,3 @@
-/* eslint-disable */
 import * as fs from 'fs';
 import { ensureFile } from 'fs-extra';
 

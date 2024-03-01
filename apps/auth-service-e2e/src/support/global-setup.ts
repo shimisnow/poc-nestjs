@@ -1,21 +1,18 @@
 /* eslint-disable */
 import { GenericContainer, Network, StartedNetwork, StartedTestContainer, Wait } from 'testcontainers';
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@testcontainers/postgresql';
-import { RedisContainer, StartedRedisContainer } from '@testcontainers/redis';
+import { PostgreSqlContainer } from '@testcontainers/postgresql';
+import { RedisContainer } from '@testcontainers/redis';
 
 module.exports = async function () {
   const DOCKER_IMAGE_BUILD_NAME = 'poc-nestjs-node';
   const DOCKER_POSTGRES_TAG = 'postgres:16.1';
   const DOCKER_REDIS_TAG = 'redis:7.2.4';
 
-  let dockerNetwork: StartedNetwork;
-  let containerDatabase: StartedPostgreSqlContainer;
-  let containerCache: StartedRedisContainer;
-  let containerCode: StartedTestContainer;
+  const dockerNetwork: StartedNetwork = await new Network().start();
 
-  dockerNetwork = await new Network().start();
+  /***** DATABASE *****/
 
-  containerDatabase = await new PostgreSqlContainer(DOCKER_POSTGRES_TAG)
+  const postgreSqlContainer = new PostgreSqlContainer(DOCKER_POSTGRES_TAG)
     .withNetwork(dockerNetwork)
     .withNetworkAliases('database-authentication')
     .withDatabase(process.env.DATABASE_AUTH_DBNAME)
@@ -26,23 +23,34 @@ module.exports = async function () {
       source: './apps/auth-service-e2e/dependencies/database',
       target: '/docker-entrypoint-initdb.d',
     }])
-    .withWaitStrategy(Wait.forLogMessage('PostgreSQL init process complete; ready for start up.'))
-    .start();
+    .withWaitStrategy(Wait.forLogMessage('PostgreSQL init process complete; ready for start up.'));
 
   /***** CACHE *****/
 
-  containerCache = await new RedisContainer(DOCKER_REDIS_TAG)
+  const redisContainer = new RedisContainer(DOCKER_REDIS_TAG)
     .withLabels({ 'poc-nestjs-name': 'auth-service-cache' })
     .withNetwork(dockerNetwork)
     .withNetworkAliases('redis')
-    .withExposedPorts(parseInt(process.env.REDIS_PORT))
-    .start();
+    .withExposedPorts(parseInt(process.env.REDIS_PORT));
 
-  const buildContainerCode = await GenericContainer
-    .fromDockerfile('./')
-    .build(DOCKER_IMAGE_BUILD_NAME, { deleteOnExit: false });
+  /***** DEPENDENCIES START AND CODE BUILD *****/
 
-  containerCode = await buildContainerCode
+  const [
+    containerDatabase,
+    containerCache,
+    buildContainerCode,
+  ] = await Promise.all([
+    postgreSqlContainer.start(),
+    redisContainer.start(),
+    // build docker image with compiled code
+    GenericContainer
+      .fromDockerfile('./')
+      .build(DOCKER_IMAGE_BUILD_NAME, { deleteOnExit: false })
+  ]);
+
+  /***** CODE *****/
+
+  const containerCode: StartedTestContainer = await buildContainerCode
     .withLabels({ 'poc-nestjs-name': 'auth-service-code' })
     .withNetwork(dockerNetwork)
     .withNetworkAliases('auth-service')
