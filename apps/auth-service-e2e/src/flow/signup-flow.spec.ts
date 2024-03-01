@@ -2,8 +2,6 @@ import request from 'supertest';
 import { v4 as uuidv4 } from 'uuid';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
-import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
-import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
 
 describe('login logout process (with refresh)', () => {
   let host: string;
@@ -83,7 +81,7 @@ describe('login logout process (with refresh)', () => {
       .send({
         username,
         password,
-        requestAccessToken: true,
+        requestRefreshToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)

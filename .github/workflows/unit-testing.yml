@@ -3,11 +3,11 @@ name: Lint and Test
 on:
   push:
     branches:
-      - 'milestone-**'
-      - 'issue-**'
+      - "milestone-**"
+      - "issue-**"
   pull_request:
     branches:
-      - 'milestone-**'
+      - "milestone-**"
       - development
       - main
 
@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: "npm"
 
       - run: npm ci --force
 
@@ -39,12 +39,18 @@ jobs:
       - name: Lint shared code
         run: npx nx lint shared
 
+      - name: Lint financial-service-e2e
+        run: npx nx lint financial-service-e2e
+
+      - name: Lint auth-service-e2e
+        run: npx nx lint auth-service-e2e
+
       - name: Test auth-service
         run: npx nx test auth-service -- --coverage --coverageReporters=cobertura
 
       - name: Test financial-service
         run: npx nx test financial-service -- --coverage --coverageReporters=cobertura
-      
+
       - name: Test shared code
         run: npx nx test shared -- --coverage --coverageReporters=cobertura
 
@@ -60,7 +66,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: '80 90'
+          thresholds: "80 90"
 
       - name: Rename report file for shared code
         if: github.event_name == 'pull_request'
@@ -78,7 +84,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: '80 90'
+          thresholds: "80 90"
 
       - name: Rename report file for auth-service
         if: github.event_name == 'pull_request'
@@ -96,7 +102,7 @@ jobs:
           hide_complexity: true
           indicators: true
           output: both
-          thresholds: '80 90'
+          thresholds: "80 90"
 
       - name: Set title for shared code
         if: github.event_name == 'pull_request'
@@ -114,7 +120,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           cat <<EOF >> code-coverage-output.md
-          
+
           ## 📦 Auth Service
 
           EOF
@@ -129,7 +135,7 @@ jobs:
           cat <<EOF >> code-coverage-output.md
 
           ## 📦 Financial Service
-          
+
           EOF
 
       - name: Merge report files

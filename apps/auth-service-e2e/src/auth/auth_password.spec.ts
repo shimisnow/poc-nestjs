@@ -118,6 +118,7 @@ describe('POST /auth/password', () => {
         .send({
           currentPassword: 'test@1234',
           newPassword: '1234@test',
+          requestRefreshToken: true,
         })
         .set('Authorization', `Bearer ${token}`)
         .set('X-Api-Version', '1')

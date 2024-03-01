@@ -243,7 +243,7 @@ describe('auth.service', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', '', '');
+        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', true, '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -261,7 +261,7 @@ describe('auth.service', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', '', '');
+        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', true, '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -279,7 +279,7 @@ describe('auth.service', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, '1234@1234', '1234@test', '', '');
+        await service.passwordChange(user.userId, loginId, '1234@1234', '1234@test', true, '', '');
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
@@ -289,14 +289,14 @@ describe('auth.service', () => {
       }
     });
 
-    test('perfomed without errors', async () => {
+    test('perfomed without errors (with refresh token)', async () => {
       const loginId = new Date().getTime().toString();
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
         loginId,
       } as UserPayload;
 
-      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', '', '');
+      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', true, '', '');
       
       expect(result.performed).toBeTruthy();
       expect(result).toHaveProperty('accessToken');
@@ -307,6 +307,24 @@ describe('auth.service', () => {
 
       expect(accessToken.loginId).toBe(loginId);
       expect(refreshToken.loginId).toBe(loginId);
+    });
+
+    test('perfomed without errors (without refresh token)', async () => {
+      const loginId = new Date().getTime().toString();
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        loginId,
+      } as UserPayload;
+
+      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', false, '', '');
+      
+      expect(result.performed).toBeTruthy();
+      expect(result).toHaveProperty('accessToken');
+      expect(result).not.toHaveProperty('refreshToken');
+
+      const accessToken = jsonwebtoken.verify(result.accessToken, JWT_SECRET_KEY) as JwtPayload;
+
+      expect(accessToken.loginId).toBe(loginId);
     });
   });
 

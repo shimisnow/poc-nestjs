@@ -3,7 +3,7 @@ import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
 import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
 import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
-describe('login logout process (with refresh)', () => {
+describe('login password change', () => {
   let host: string;
   const endpointLogin = '/auth/login';
   const endpointLogout = '/auth/logout';
@@ -22,14 +22,14 @@ describe('login logout process (with refresh)', () => {
 
   test('login and password change with multiple sessions', async () => {
 
-    /***** LOGIN *****/
+    /** *** LOGIN *****/
 
     let sessionOne = await request(host)
       .post(endpointLogin)
       .send({
         username: 'yara',
         password: 'test@1234',
-        requestAccessToken: true,
+        requestRefreshToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
@@ -40,7 +40,7 @@ describe('login logout process (with refresh)', () => {
       .send({
         username: 'yara',
         password: 'test@1234',
-        requestAccessToken: true,
+        requestRefreshToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
@@ -51,7 +51,7 @@ describe('login logout process (with refresh)', () => {
       .send({
         username: 'yara',
         password: 'test@1234',
-        requestAccessToken: true,
+        requestRefreshToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
@@ -62,19 +62,20 @@ describe('login logout process (with refresh)', () => {
       .send({
         username: 'markleid',
         password: 'test@1234',
-        requestAccessToken: true,
+        requestRefreshToken: true,
       })
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
       .expect(200);
 
-    /***** PASSWORD CHANGE AT SESSION ONE *****/
+    /** *** PASSWORD CHANGE AT SESSION ONE *****/
 
     const passwordChangeResult = await request(host)
       .post(endpointPassword)
       .send({
         currentPassword: 'test@1234',
         newPassword: '1234@test',
+        requestRefreshToken: true,
       })
       .set('Authorization', `Bearer ${sessionOne.body.accessToken}`)
       .set('X-Api-Version', '1')
@@ -93,7 +94,7 @@ describe('login logout process (with refresh)', () => {
     expect(passwordChangeAccessToken.userId).toBe(passwordChangeRefreshToken.userId);
     expect(passwordChangeAccessToken.loginId).toBe(passwordChangeRefreshToken.loginId);
 
-    /***** REFRESH TOKEN AT SESSION TWO (ERROR) *****/
+    /** *** REFRESH TOKEN AT SESSION TWO (ERROR) *****/
 
     await request(host)
       .get(endpointRefresh)
@@ -107,7 +108,7 @@ describe('login logout process (with refresh)', () => {
         expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE]));
       });
 
-    /***** LOGOUT AT SESSION THREE (ERROR) *****/
+    /** *** LOGOUT AT SESSION THREE (ERROR) *****/
 
     await request(host)
       .post(endpointLogout)
@@ -121,7 +122,7 @@ describe('login logout process (with refresh)', () => {
         expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE]));
       });
 
-    /***** LOGOUT AT SESSION FOUR (OK - IT IS ANOTHER USER) *****/
+    /** *** LOGOUT AT SESSION FOUR (OK - IT IS ANOTHER USER) *****/
 
     await request(host)
       .post(endpointLogout)
@@ -136,7 +137,7 @@ describe('login logout process (with refresh)', () => {
         expect(body).toHaveProperty('performedAt');
       });
 
-    /***** LOGOUT AT SESSION ONE (OK) *****/
+    /** *** LOGOUT AT SESSION ONE (OK) *****/
 
     await request(host)
       .post(endpointLogout)
@@ -151,7 +152,7 @@ describe('login logout process (with refresh)', () => {
         expect(body).toHaveProperty('performedAt');
       });
 
-    /***** LOGIN WITH THE NEW PASSWORD *****/
+    /** *** LOGIN WITH THE NEW PASSWORD *****/
 
     // sleeps for two seconds to ensure that the password change and new login will not be at the same second
     await new Promise(response => setTimeout(response, 2000));
@@ -166,7 +167,7 @@ describe('login logout process (with refresh)', () => {
       .expect('Content-Type', /json/)
       .expect(200);
 
-    /***** LOGOUT FROM THE NEW PASSWORD *****/
+    /** *** LOGOUT FROM THE NEW PASSWORD *****/
 
     await request(host)
       .post(endpointLogout)

@@ -28,9 +28,8 @@ describe('POST /auth/login', () => {
         })
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)
-        // .expect(401)
+        .expect(401)
         .then(response => {
-          console.log(response.body);
           const body = response.body;
           expect(body.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
           expect(body.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
@@ -121,7 +120,7 @@ describe('POST /auth/login', () => {
         .send({
           username: 'anderson',
           password: 'test@1234',
-          requestAccessToken: true,
+          requestRefreshToken: true,
         })
         .set('X-Api-Version', '1')
         .expect('Content-Type', /json/)

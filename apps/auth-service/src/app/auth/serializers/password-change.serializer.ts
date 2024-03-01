@@ -19,5 +19,5 @@ export class PasswordChangeSerializer {
     example:
       'eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOiI0Nzk5Y2MzMS03NjkyLTQwYjMtYWZmZi1jYzU2MmJhZjUzNzQiLCJsb2dpbklkIjoiMTcwNzk0NzY5MzE0OSIsImlhdCI6MTcwNzk0NzY5My4xNDksImV4cCI6MTcwNzk0Nzc1My4xNDl9.XDvAHGsDeqdmzz6P_5DMd7wFbsIooVAxfw44Jlpkc34',
   })
-  refreshToken: string;
+  refreshToken?: string;
 }

@@ -25,5 +25,5 @@ export class LoginBodyDto {
   })
   @IsOptional()
   @IsBoolean()
-  requestAccessToken?: boolean = false;
+  requestRefreshToken?: boolean = false;
 }
