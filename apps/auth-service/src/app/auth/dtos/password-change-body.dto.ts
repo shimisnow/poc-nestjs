@@ -25,5 +25,5 @@ export class PasswordChangeBodyDto {
   })
   @IsOptional()
   @IsBoolean()
-  requestAccessToken?: boolean = false;
+  requestRefreshToken?: boolean = false;
 }

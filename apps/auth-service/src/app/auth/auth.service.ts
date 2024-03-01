@@ -365,7 +365,7 @@ export class AuthService {
     loginId: string,
     currentPassword: string,
     newPassword: string,
-    requestAccessToken: boolean,
+    requestRefreshToken: boolean,
     ip: string,
     headers: any,
   ): Promise<PasswordChangeSerializer> {
@@ -453,7 +453,7 @@ export class AuthService {
     // sleeps one second to garantee that the new token timestamp will be greater than the cached one  
     await new Promise(response => setTimeout(response, 1000));
 
-    if(requestAccessToken) {
+    if(requestRefreshToken) {
       const [
         accessToken,
         refreshToken,
