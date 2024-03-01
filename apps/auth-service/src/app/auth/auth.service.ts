@@ -38,36 +38,42 @@ export class AuthService {
 
   /**
    * Generates and signs a JWT token using the JWT_SECRET_KEY.
-   * 
+   *
    * @param userId User id as UUID.
    * @param loginId Defined by each login request.
    * @returns Signed JWT token.
    */
   async generateAccessToken(userId: string, loginId: string): Promise<string> {
-    return await this.jwtService.signAsync({
+    return await this.jwtService.signAsync(
+      {
         userId,
         loginId,
-      }, {
+      },
+      {
         secret: process.env.JWT_SECRET_KEY,
         expiresIn: process.env.JWT_EXPIRES_IN,
-      });
+      },
+    );
   }
 
   /**
    * Generates and signs a JWT token using the JWT_REFRESH_SECRET_KEY.
-   * 
+   *
    * @param userId User id as UUID.
    * @param loginId Defined by each login request.
    * @returns Signed JWT token.
    */
   async generateRefreshToken(userId: string, loginId: string): Promise<string> {
-    return await this.jwtService.signAsync({
+    return await this.jwtService.signAsync(
+      {
         userId,
         loginId,
-      }, {
+      },
+      {
         secret: process.env.JWT_REFRESH_SECRET_KEY,
         expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-      });
+      },
+    );
   }
 
   /**
@@ -95,7 +101,7 @@ export class AuthService {
 
   /**
    * Gets token to be used at API requests.
-   * 
+   *
    * @param username Username
    * @param password Password in plain text
    * @param requestRefreshToken If a refreshToken should be generated
@@ -128,7 +134,7 @@ export class AuthService {
           errorBy: 'status',
           ip,
           headers,
-        })
+        }),
       );
 
       throw new UnauthorizedException({
@@ -136,9 +142,7 @@ export class AuthService {
         message: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
-          errors: [
-            AuthErrorMessages.WRONG_USER_PASSWORD,
-          ],
+          errors: [AuthErrorMessages.WRONG_USER_PASSWORD],
         },
       });
     }
@@ -150,7 +154,7 @@ export class AuthService {
           errorBy: 'password',
           ip,
           headers,
-        })
+        }),
       );
 
       throw new UnauthorizedException({
@@ -158,20 +162,15 @@ export class AuthService {
         message: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
-          errors: [
-            AuthErrorMessages.WRONG_USER_PASSWORD,
-          ],
+          errors: [AuthErrorMessages.WRONG_USER_PASSWORD],
         },
       });
     }
 
     const loginId = new Date().getTime().toString();
 
-    if(requestRefreshToken) {
-      const [
-        accessToken,
-        refreshToken,
-      ] = await Promise.all([
+    if (requestRefreshToken) {
+      const [accessToken, refreshToken] = await Promise.all([
         this.generateAccessToken(user.userId, loginId),
         this.generateRefreshToken(user.userId, loginId),
       ]);
@@ -183,7 +182,7 @@ export class AuthService {
           withRefreshToken: true,
           ip,
           headers,
-        })
+        }),
       );
 
       return {
@@ -198,7 +197,7 @@ export class AuthService {
           withRefreshToken: false,
           ip,
           headers,
-        })
+        }),
       );
 
       return {
@@ -209,7 +208,7 @@ export class AuthService {
 
   /**
    * Invalidate access and refresh tokens for an user session.
-   * 
+   *
    * @param userId User id as UUID.
    * @param loginId Login identification from JWT token.
    * @returns Information if the process was perfomed.
@@ -230,39 +229,35 @@ export class AuthService {
         message: 'Unauthorized',
         data: {
           name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
-          errors: [
-            AuthErrorMessages.INACTIVE_USER,
-          ]
+          errors: [AuthErrorMessages.INACTIVE_USER],
         },
       });
     }
 
-    const performedAt = new Date().getTime()
-    
-    await this.cacheService.set([
-        CacheKeyPrefix.AUTH_SESSION_LOGOUT,
-        userId,
-        loginId,
-      ].join(':'), {
+    const performedAt = new Date().getTime();
+
+    await this.cacheService.set(
+      [CacheKeyPrefix.AUTH_SESSION_LOGOUT, userId, loginId].join(':'),
+      {
         performedAt,
       },
       {
         // the refreshToken is the one with the greater expire time
         ttl: this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     );
 
     return {
       performed: true,
-      performedAt, 
+      performedAt,
     };
   }
 
   /**
    * Generates a new JWT access token.
-   * 
-   * @param user User information as JWT payload. 
+   *
+   * @param user User information as JWT payload.
    * @returns Data with a JWT signed token.
    * @throws BadGatewayException Database error.
    * @throws UnauthorizedException User do not exists, is inactive or password is incorrect.
@@ -282,21 +277,19 @@ export class AuthService {
         message: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
-          errors: [
-            AuthErrorMessages.INACTIVE_USER,
-          ],
+          errors: [AuthErrorMessages.INACTIVE_USER],
         },
       });
     }
 
     return {
       accessToken: await this.generateAccessToken(user.userId, user.loginId),
-    }
+    };
   }
 
   /**
    * Register an user authentication information.
-   * 
+   *
    * @param userId UUID user information.
    * @param username Username.
    * @param password Password in plain text.
@@ -311,14 +304,17 @@ export class AuthService {
     password: string,
   ): Promise<SignUpSerializer> {
     let entities = null;
-    
+
     try {
-      entities = await this.userAuthsRepository.findByIdOrUsername(userId, username);
+      entities = await this.userAuthsRepository.findByIdOrUsername(
+        userId,
+        username,
+      );
     } catch (error) {
       throw new BadGatewayException();
     }
 
-    if(entities.length > 0) {
+    if (entities.length > 0) {
       throw new ConflictException();
     }
 
@@ -346,7 +342,7 @@ export class AuthService {
 
   /**
    * Changes user password and invalidates already issued JWT tokens.
-   * 
+   *
    * @param userId UUID user information.
    * @param loginId ID do request.
    * @param currentPassword Actual password in plain text.
@@ -386,7 +382,7 @@ export class AuthService {
           errorBy: 'status',
           ip,
           headers,
-        })
+        }),
       );
 
       throw new UnauthorizedException({
@@ -394,15 +390,15 @@ export class AuthService {
         message: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
-          errors: [
-            AuthErrorMessages.INACTIVE_USER,
-          ],
+          errors: [AuthErrorMessages.INACTIVE_USER],
         },
       });
     }
 
     // verify if the provided password is correct
-    if ((await bcrypt.compare(currentPassword, userEntity?.password)) === false) {
+    if (
+      (await bcrypt.compare(currentPassword, userEntity?.password)) === false
+    ) {
       this.logger.log(
         GenerateLog.passwordChangeFail({
           userId: userEntity.userId,
@@ -410,7 +406,7 @@ export class AuthService {
           errorBy: 'password',
           ip,
           headers,
-        })
+        }),
       );
 
       throw new UnauthorizedException({
@@ -418,9 +414,7 @@ export class AuthService {
         message: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
-          errors: [
-            AuthErrorMessages.WRONG_USER_PASSWORD,
-          ],
+          errors: [AuthErrorMessages.WRONG_USER_PASSWORD],
         },
       });
     }
@@ -436,31 +430,28 @@ export class AuthService {
     }
 
     // adds the timestamp to cache to invalidate tokens issued before this
-    await this.cacheService.set([
-        CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
-        userId,
-      ].join(':'), {
+    await this.cacheService.set(
+      [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, userId].join(':'),
+      {
         changedAt: new Date().getTime(),
       } as PasswordChangeCachePayload,
       {
         // the refreshToken is the one with the greater expire time
         ttl: this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
     );
 
-    // sleeps one second to garantee that the new token timestamp will be greater than the cached one  
-    await new Promise(response => setTimeout(response, 1000));
+    // sleeps one second to garantee that the new token timestamp
+    // will be greater than the cached one
+    await new Promise((response) => setTimeout(response, 1000));
 
-    if(requestRefreshToken) {
-      const [
-        accessToken,
-        refreshToken,
-      ] = await Promise.all([
+    if (requestRefreshToken) {
+      const [accessToken, refreshToken] = await Promise.all([
         this.generateAccessToken(userEntity.userId, loginId),
-        this.generateRefreshToken(userEntity.userId, loginId)
+        this.generateRefreshToken(userEntity.userId, loginId),
       ]);
-  
+
       this.logger.log(
         GenerateLog.passwordChangeSuccess({
           userId: userEntity.userId,
@@ -468,7 +459,7 @@ export class AuthService {
           withRefreshToken: true,
           ip,
           headers,
-        })
+        }),
       );
 
       return {
@@ -477,7 +468,10 @@ export class AuthService {
         refreshToken,
       };
     } else {
-      const accessToken = await this.generateAccessToken(userEntity.userId, loginId);
+      const accessToken = await this.generateAccessToken(
+        userEntity.userId,
+        loginId,
+      );
 
       this.logger.log(
         GenerateLog.passwordChangeSuccess({
@@ -486,7 +480,7 @@ export class AuthService {
           withRefreshToken: false,
           ip,
           headers,
-        })
+        }),
       );
 
       return {
@@ -498,7 +492,7 @@ export class AuthService {
 
   /**
    * Convertes a string to seconds
-   * 
+   *
    * @param timeString Time to be converted. Ex: 3m, 1h, 2d
    * @returns Time converted to seconds
    */

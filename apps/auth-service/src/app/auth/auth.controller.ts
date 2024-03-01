@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Headers, HttpCode, Ip, Post, Query, UseGuards, Version } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  HttpCode,
+  Ip,
+  Post,
+  Query,
+  UseGuards,
+  Version,
+} from '@nestjs/common';
 import {
   ApiBadGatewayResponse,
   ApiBadRequestResponse,
@@ -69,10 +80,10 @@ export class AuthController {
     type: DefaultError502Serializer,
   })
   async verifyIfUsernameIsAvailable(
-    @Query() query: VerifyUsernameQueryDto
+    @Query() query: VerifyUsernameQueryDto,
   ): Promise<VerifyUsernameSerializer> {
     const result = await this.authService.verifyIfUsernameExists(
-      query.username
+      query.username,
     );
 
     return {
@@ -114,8 +125,18 @@ export class AuthController {
     description: 'Internal data processing error. Probably a database error',
     type: DefaultError502Serializer,
   })
-  async login(@Body() body: LoginBodyDto, @Ip() ip, @Headers() headers): Promise<LoginSerializer> {
-    return await this.authService.login(body.username, body.password, body.requestRefreshToken, ip, headers);
+  async login(
+    @Body() body: LoginBodyDto,
+    @Ip() ip,
+    @Headers() headers,
+  ): Promise<LoginSerializer> {
+    return await this.authService.login(
+      body.username,
+      body.password,
+      body.requestRefreshToken,
+      ip,
+      headers,
+    );
   }
 
   @Version('1')
@@ -129,8 +150,7 @@ export class AuthController {
     required: true,
   })
   @ApiOperation({
-    summary:
-      'Invalidates all tokens issued for a give login request',
+    summary: 'Invalidates all tokens issued for a give login request',
   })
   @ApiOkResponse({
     description: 'Information if the logout process was performed',
@@ -158,8 +178,7 @@ export class AuthController {
   @UseGuards(AuthRefreshGuard)
   @ApiBearerAuth('RefreshToken')
   @ApiOperation({
-    summary:
-      'Uses refresh token to get new access token',
+    summary: 'Uses refresh token to get new access token',
   })
   @ApiHeader({
     name: 'X-Api-Version',
@@ -171,8 +190,7 @@ export class AuthController {
     type: RefreshSerializer,
   })
   @ApiUnauthorizedResponse({
-    description:
-      'User does not exists or is inactive',
+    description: 'User does not exists or is inactive',
     type: DefaultError401Serializer,
   })
   @ApiInternalServerErrorResponse({
@@ -223,7 +241,7 @@ export class AuthController {
     return await this.authService.signup(
       body.userId,
       body.username,
-      body.password
+      body.password,
     );
   }
 
@@ -248,8 +266,7 @@ export class AuthController {
     type: PasswordChangeError400Serializer,
   })
   @ApiUnauthorizedResponse({
-    description:
-      'User does not exists or is inactive or password is incorrect',
+    description: 'User does not exists or is inactive or password is incorrect',
     type: DefaultError401Serializer,
   })
   @ApiInternalServerErrorResponse({

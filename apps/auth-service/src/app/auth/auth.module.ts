@@ -6,10 +6,7 @@ import { UserAuthsRepositoryModule } from './repositories/user-auths/user-auths-
 @Module({
   imports: [UserAuthsRepositoryModule],
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    Logger,
-    ],
+  providers: [AuthService, Logger],
   exports: [AuthService],
 })
 export class AuthModule {}

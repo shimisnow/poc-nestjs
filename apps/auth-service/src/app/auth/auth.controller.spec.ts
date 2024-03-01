@@ -36,8 +36,8 @@ describe('auth.controller', () => {
           useValue: {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             set: (key, value) => {},
-          }
-        }
+          },
+        },
       ],
     }).compile();
 

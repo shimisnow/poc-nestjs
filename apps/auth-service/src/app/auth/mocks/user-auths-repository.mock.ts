@@ -88,40 +88,44 @@ export class UserAuthsRepositoryMock {
   async save(entity: UserAuthEntity): Promise<UserAuthEntity> {
     switch (entity.userId) {
       case '4b3c74ae-57aa-4752-9452-ed083b6d4bfa':
-          return {
-            userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-            username: 'anderson',
-            password:
-              // test@1234
-              '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
-            status: UserAuthStatusEnum.ACTIVE,
-          } as UserAuthEntity;
-        default:
-          return null;
+        return {
+          userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+          username: 'anderson',
+          password:
+            // test@1234
+            '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
+          status: UserAuthStatusEnum.ACTIVE,
+        } as UserAuthEntity;
+      default:
+        return null;
     }
   }
 
   async find(options): Promise<UserAuthEntity[]> {
     // typeorm where with OR clause
-    if(Array.isArray(options.where)) {
-      for(let i = 0; i < options.where.length; i++) {
-        if(options.where[i].userId !== undefined) {
-          switch(options.where[i].userId) {
+    if (Array.isArray(options.where)) {
+      for (let i = 0; i < options.where.length; i++) {
+        if (options.where[i].userId !== undefined) {
+          switch (options.where[i].userId) {
             case 'c3914f88-9a70-4775-9e32-7bcc8fbaeaaa':
-              return [{
-                userId: 'c3914f88-9a70-4775-9e32-7bcc8fbaeaaa',
-                username: 'nathan',
-              } as UserAuthEntity];
+              return [
+                {
+                  userId: 'c3914f88-9a70-4775-9e32-7bcc8fbaeaaa',
+                  username: 'nathan',
+                } as UserAuthEntity,
+              ];
           }
         }
 
-        if(options.where[i].username !== undefined) {
-          switch(options.where[i].username) {
+        if (options.where[i].username !== undefined) {
+          switch (options.where[i].username) {
             case 'thomas':
-              return [{
-                userId: 'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
-                username: 'thomas',
-              } as UserAuthEntity];
+              return [
+                {
+                  userId: 'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
+                  username: 'thomas',
+                } as UserAuthEntity,
+              ];
           }
         }
       }

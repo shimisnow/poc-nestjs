@@ -4,7 +4,12 @@ import { AuthService } from './auth.service';
 import { UserAuthsRepository } from './repositories/user-auths/user-auths.repository';
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
-import { BadGatewayException, ConflictException, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  BadGatewayException,
+  ConflictException,
+  Logger,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -34,8 +39,8 @@ describe('auth.service', () => {
           useValue: {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             set: (key, value) => {},
-          }
-        }
+          },
+        },
       ],
     }).compile();
 
@@ -55,10 +60,10 @@ describe('auth.service', () => {
 
     test('username not registered', async () => {
       const result = await service.verifyIfUsernameExists('beatrice');
-  
+
       expect(result).toBeFalsy();
     });
-  
+
     test('some database error', async () => {
       try {
         await service.verifyIfUsernameExists('anything');
@@ -74,7 +79,7 @@ describe('auth.service', () => {
         await service.signup(
           'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
           'thomas',
-          ''
+          '',
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ConflictException);
@@ -86,7 +91,7 @@ describe('auth.service', () => {
         await service.signup(
           'c3914f88-9a70-4775-9e32-7bcc8fbaeaaa',
           'nathan',
-          ''
+          '',
         );
       } catch (error) {
         expect(error).toBeInstanceOf(ConflictException);
@@ -97,7 +102,7 @@ describe('auth.service', () => {
       const result = await service.signup(
         '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
         'anderson',
-        ''
+        '',
       );
 
       expect(result.status).toBeTruthy();
@@ -110,14 +115,20 @@ describe('auth.service', () => {
 
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
-      
-      const accessToken = jsonwebtoken.verify(result.accessToken, process.env.JWT_SECRET_KEY) as JwtPayload;
+
+      const accessToken = jsonwebtoken.verify(
+        result.accessToken,
+        process.env.JWT_SECRET_KEY,
+      ) as JwtPayload;
       expect(accessToken).toHaveProperty('userId');
       expect(accessToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
       expect(accessToken).toHaveProperty('loginId');
       expect(parseInt(accessToken.loginId)).toBeLessThan(new Date().getTime());
 
-      const refreshToken = jsonwebtoken.verify(result.refreshToken, process.env.JWT_REFRESH_SECRET_KEY) as JwtPayload;
+      const refreshToken = jsonwebtoken.verify(
+        result.refreshToken,
+        process.env.JWT_REFRESH_SECRET_KEY,
+      ) as JwtPayload;
       expect(refreshToken).toHaveProperty('userId');
       expect(refreshToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
       expect(refreshToken).toHaveProperty('loginId');
@@ -125,12 +136,21 @@ describe('auth.service', () => {
     });
 
     test('correct login data with ACTIVE user (without refresh)', async () => {
-      const result = await service.login('anderson', 'test@1234', false, '', '');
+      const result = await service.login(
+        'anderson',
+        'test@1234',
+        false,
+        '',
+        '',
+      );
 
       expect(result).toHaveProperty('accessToken');
       expect(result).not.toHaveProperty('refreshToken');
-      
-      const accessToken = jsonwebtoken.verify(result.accessToken, process.env.JWT_SECRET_KEY) as JwtPayload;
+
+      const accessToken = jsonwebtoken.verify(
+        result.accessToken,
+        process.env.JWT_SECRET_KEY,
+      ) as JwtPayload;
       expect(accessToken).toHaveProperty('userId');
       expect(accessToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
       expect(accessToken).toHaveProperty('loginId');
@@ -183,7 +203,10 @@ describe('auth.service', () => {
       expect(result).toHaveProperty('accessToken');
       expect(result).not.toHaveProperty('refreshToken');
 
-      const accessToken = jsonwebtoken.verify(result.accessToken, process.env.JWT_SECRET_KEY) as JwtPayload;
+      const accessToken = jsonwebtoken.verify(
+        result.accessToken,
+        process.env.JWT_SECRET_KEY,
+      ) as JwtPayload;
       expect(accessToken).toHaveProperty('userId');
       expect(accessToken.userId).toBe('4b3c74ae-57aa-4752-9452-ed083b6d4bfa');
       expect(accessToken).toHaveProperty('loginId');
@@ -216,8 +239,12 @@ describe('auth.service', () => {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
-        expect(response.data.name).toBe(AuthErrorNames.JWT_INVALIDATED_BY_SERVER);
-        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
+        expect(response.data.name).toBe(
+          AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
+        );
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]),
+        );
       }
     });
 
@@ -228,7 +255,7 @@ describe('auth.service', () => {
       } as UserPayload;
 
       const result = await service.logout(user.userId, user.loginId);
-      
+
       expect(result.performed).toBeTruthy();
       expect(result).toHaveProperty('performedAt');
     });
@@ -243,13 +270,23 @@ describe('auth.service', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', true, '', '');
+        await service.passwordChange(
+          user.userId,
+          loginId,
+          'test@1234',
+          '1234@test',
+          true,
+          '',
+          '',
+        );
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
         expect(response.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
-        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]),
+        );
       }
     });
 
@@ -261,13 +298,23 @@ describe('auth.service', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', true, '', '');
+        await service.passwordChange(
+          user.userId,
+          loginId,
+          'test@1234',
+          '1234@test',
+          true,
+          '',
+          '',
+        );
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
         expect(response.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
-        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]));
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]),
+        );
       }
     });
 
@@ -279,13 +326,23 @@ describe('auth.service', () => {
       } as UserPayload;
 
       try {
-        await service.passwordChange(user.userId, loginId, '1234@1234', '1234@test', true, '', '');
+        await service.passwordChange(
+          user.userId,
+          loginId,
+          '1234@1234',
+          '1234@test',
+          true,
+          '',
+          '',
+        );
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
         expect(response.data.name).toBe(AuthErrorNames.CREDENTIAL_ERROR);
-        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]));
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining([AuthErrorMessages.WRONG_USER_PASSWORD]),
+        );
       }
     });
 
@@ -296,14 +353,28 @@ describe('auth.service', () => {
         loginId,
       } as UserPayload;
 
-      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', true, '', '');
-      
+      const result = await service.passwordChange(
+        user.userId,
+        loginId,
+        'test@1234',
+        '1234@test',
+        true,
+        '',
+        '',
+      );
+
       expect(result.performed).toBeTruthy();
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
 
-      const accessToken = jsonwebtoken.verify(result.accessToken, JWT_SECRET_KEY) as JwtPayload;
-      const refreshToken = jsonwebtoken.verify(result.refreshToken, JWT_REFRESH_SECRET_KEY) as JwtPayload;
+      const accessToken = jsonwebtoken.verify(
+        result.accessToken,
+        JWT_SECRET_KEY,
+      ) as JwtPayload;
+      const refreshToken = jsonwebtoken.verify(
+        result.refreshToken,
+        JWT_REFRESH_SECRET_KEY,
+      ) as JwtPayload;
 
       expect(accessToken.loginId).toBe(loginId);
       expect(refreshToken.loginId).toBe(loginId);
@@ -316,13 +387,24 @@ describe('auth.service', () => {
         loginId,
       } as UserPayload;
 
-      const result = await service.passwordChange(user.userId, loginId, 'test@1234', '1234@test', false, '', '');
-      
+      const result = await service.passwordChange(
+        user.userId,
+        loginId,
+        'test@1234',
+        '1234@test',
+        false,
+        '',
+        '',
+      );
+
       expect(result.performed).toBeTruthy();
       expect(result).toHaveProperty('accessToken');
       expect(result).not.toHaveProperty('refreshToken');
 
-      const accessToken = jsonwebtoken.verify(result.accessToken, JWT_SECRET_KEY) as JwtPayload;
+      const accessToken = jsonwebtoken.verify(
+        result.accessToken,
+        JWT_SECRET_KEY,
+      ) as JwtPayload;
 
       expect(accessToken.loginId).toBe(loginId);
     });

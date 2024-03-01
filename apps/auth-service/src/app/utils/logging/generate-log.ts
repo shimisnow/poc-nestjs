@@ -13,7 +13,7 @@ import { PasswordChangeSuccessLogPayload } from './payloads/password-change-succ
 export class GenerateLog {
   /**
    * Generates a JSON log with data from a login success operation
-   * 
+   *
    * @param {LoginSuccessLogPayload} data Information to be logged
    * @return {LoginSuccessLogOutput} JSON log
    */
@@ -27,7 +27,7 @@ export class GenerateLog {
 
   /**
    * Generates a JSON log with data from a login fail operation
-   * 
+   *
    * @param {LoginFailLogPayload} data Information to be logged
    * @return {LoginFailLogOutput} JSON log
    */
@@ -41,11 +41,13 @@ export class GenerateLog {
 
   /**
    * Generates a JSON log with data from a password change success operation
-   * 
+   *
    * @param {PasswordChangeSuccessLogPayload} data Information to be logged
    * @return {PasswordChangeSuccessLogOutput} JSON log
    */
-  static passwordChangeSuccess(data: PasswordChangeSuccessLogPayload): PasswordChangeSuccessLogOutput {
+  static passwordChangeSuccess(
+    data: PasswordChangeSuccessLogPayload,
+  ): PasswordChangeSuccessLogOutput {
     return {
       type: 'password-change',
       status: 'success',
@@ -55,11 +57,13 @@ export class GenerateLog {
 
   /**
    * Generates a JSON log with data from a password change fail operation
-   * 
+   *
    * @param {PasswordChangeFailLogPayload} data Information to be logged
    * @return {PasswordChangeFailLogOutput} JSON log
    */
-  static passwordChangeFail(data: PasswordChangeFailLogPayload): PasswordChangeFailLogOutput {
+  static passwordChangeFail(
+    data: PasswordChangeFailLogPayload,
+  ): PasswordChangeFailLogOutput {
     return {
       type: 'password-change',
       status: 'fail',

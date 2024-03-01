@@ -12,7 +12,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-    })
+    }),
   );
   app.enableVersioning({
     type: VersioningType.HEADER,
@@ -20,7 +20,7 @@ async function bootstrap() {
     defaultVersion: '1',
   });
   // docs at https://github.com/gremo/nest-winston/blob/main/README.md
-  const logDate = new Date().toLocaleDateString('en-ca').replace(/-/g,'');
+  const logDate = new Date().toLocaleDateString('en-ca').replace(/-/g, '');
   app.useLogger(
     WinstonModule.createLogger({
       format: winston.format.combine(
@@ -39,29 +39,35 @@ async function bootstrap() {
           level: 'error',
         }),
       ],
-    })
+    }),
   );
   const port = process.env.AUTH_SERVICE_PORT || 3000;
-
-
 
   if (process.env.AUTH_SERVICE_BUILD_OPENAPI === 'true') {
     const config = new DocumentBuilder()
       .setTitle('Auth Service')
-      .addBearerAuth({
-        description: 'accessToken provided by the login, refresh, or password endpoint',
-        in: 'header',
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      }, 'AccessToken')
-      .addBearerAuth({
-        description: 'refreshToken provided by the login, or password endpoint',
-        in: 'header',
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      }, 'RefreshToken')
+      .addBearerAuth(
+        {
+          description:
+            'accessToken provided by the login, refresh, or password endpoint',
+          in: 'header',
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        'AccessToken',
+      )
+      .addBearerAuth(
+        {
+          description:
+            'refreshToken provided by the login, or password endpoint',
+          in: 'header',
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        'RefreshToken',
+      )
       .build();
     const document = SwaggerModule.createDocument(app, config);
 
@@ -69,7 +75,7 @@ async function bootstrap() {
     await writeFileSync(
       'apps/auth-service/docs/openapi/openapi-docs.json',
       JSON.stringify(document),
-      { encoding: 'utf8' }
+      { encoding: 'utf8' },
     );
   }
 
