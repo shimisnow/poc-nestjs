@@ -47,7 +47,8 @@ export class UserAuthEntity {
 
   /**
    * Password to generate access_tokens.
-   * WARNING: the password should be provided as plain text. The entity will apply the correct hash function before store.
+   * WARNING: the password should be provided as plain text.
+   * The entity will apply the correct hash function before store.
    */
   @Column({
     name: 'password',

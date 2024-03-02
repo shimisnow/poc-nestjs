@@ -11,5 +11,5 @@ export enum AuthErrorNames {
   JWT_INVALIDATED_BY_SERVER = 'TokenInvalidatedByServer',
 
   /** User does not exists, is inactive or password is incorrect */
-  CREDENTIAL_ERROR = 'CredentialError'
+  CREDENTIAL_ERROR = 'CredentialError',
 }

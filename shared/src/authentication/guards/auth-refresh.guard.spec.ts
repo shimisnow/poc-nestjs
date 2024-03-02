@@ -20,9 +20,9 @@ const generateContext = (authToken: string) => {
               authorization: `Bearer ${authToken}`,
             },
           };
-        }
+        },
       };
-    }
+    },
   };
 
   return context;
@@ -40,7 +40,7 @@ describe('auth-refresh.guard', () => {
         {
           provide: CACHE_MANAGER,
           useClass: CacheManagerMock,
-        }
+        },
       ],
     }).compile();
 
@@ -61,24 +61,31 @@ describe('auth-refresh.guard', () => {
 
     test('invalid jwt token', async () => {
       try {
-        await guard.canActivate(generateContext('abcdefghijklmnopqrstuvwxyz') as any);
+        await guard.canActivate(
+          generateContext('abcdefghijklmnopqrstuvwxyz') as any,
+        );
       } catch (error) {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
         expect(response.data.name).toBe(AuthErrorNames.JWT_ERROR);
-        expect(response.data.errors).toEqual(expect.arrayContaining(['jwt malformed']));
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining(['jwt malformed']),
+        );
       }
     });
 
     test('invalid jwt token signature', async () => {
       const now = Math.floor(Date.now() / 1000);
-      const token = jsonwebtoken.sign({
-        userId: '4799cc31-7692-40b3-afff-cc562baf5374',
-        loginId: new Date().getTime().toString(),
-        iat: now,
-        exp: now + 60,
-      } as UserPayload, 'fake-key');
+      const token = jsonwebtoken.sign(
+        {
+          userId: '4799cc31-7692-40b3-afff-cc562baf5374',
+          loginId: new Date().getTime().toString(),
+          iat: now,
+          exp: now + 60,
+        } as UserPayload,
+        'fake-key',
+      );
 
       try {
         await guard.canActivate(generateContext(token) as any);
@@ -87,17 +94,22 @@ describe('auth-refresh.guard', () => {
         const response = error.response;
         expect(response).toHaveProperty('data');
         expect(response.data.name).toBe(AuthErrorNames.JWT_ERROR);
-        expect(response.data.errors).toEqual(expect.arrayContaining(['invalid signature']));
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining(['invalid signature']),
+        );
       }
     });
 
     test('payload with incorrect structure', async () => {
       const now = Math.floor(Date.now() / 1000);
-      const token = jsonwebtoken.sign({
-        userId: '4799cc31-7692-40b3-afff-cc562baf5374',
-        iat: now,
-        exp: now + 60,
-      } as UserPayload, JWT_REFRESH_SECRET_KEY);
+      const token = jsonwebtoken.sign(
+        {
+          userId: '4799cc31-7692-40b3-afff-cc562baf5374',
+          iat: now,
+          exp: now + 60,
+        } as UserPayload,
+        JWT_REFRESH_SECRET_KEY,
+      );
 
       try {
         await guard.canActivate(generateContext(token) as any);
@@ -105,20 +117,27 @@ describe('auth-refresh.guard', () => {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
-        expect(response.data.name).toBe(AuthErrorNames.JWT_PAYLOAD_STRUCTURE_ERROR);
-        expect(response.data.errors).toEqual(expect.arrayContaining(['loginId must be a number string']));
+        expect(response.data.name).toBe(
+          AuthErrorNames.JWT_PAYLOAD_STRUCTURE_ERROR,
+        );
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining(['loginId must be a number string']),
+        );
       }
     });
 
     test('invalidated by user logout', async () => {
       const now = Math.floor(Date.now() / 1000);
-      const token = jsonwebtoken.sign({
-        // user in cache for logout
-        userId: '01e57c05-45d6-4d6f-8f30-2bddce37df5f',
-        loginId: '1708003432088',
-        iat: now,
-        exp: now + 60,
-      } as UserPayload, JWT_REFRESH_SECRET_KEY);
+      const token = jsonwebtoken.sign(
+        {
+          // user in cache for logout
+          userId: '01e57c05-45d6-4d6f-8f30-2bddce37df5f',
+          loginId: '1708003432088',
+          iat: now,
+          exp: now + 60,
+        } as UserPayload,
+        JWT_REFRESH_SECRET_KEY,
+      );
 
       try {
         await guard.canActivate(generateContext(token) as any);
@@ -126,20 +145,27 @@ describe('auth-refresh.guard', () => {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
-        expect(response.data.name).toBe(AuthErrorNames.JWT_INVALIDATED_BY_SERVER);
-        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_LOGOUT]));
+        expect(response.data.name).toBe(
+          AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
+        );
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_LOGOUT]),
+        );
       }
     });
 
     test('invalidated by user password change', async () => {
       const now = Math.floor(Date.now() / 1000);
-      const token = jsonwebtoken.sign({
-        // user in cache for password change
-        userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5',
-        loginId: new Date().getTime().toString(),
-        iat: Math.floor((new Date().getTime() - 10000) / 1000),
-        exp: now + 60,
-      } as UserPayload, JWT_REFRESH_SECRET_KEY);
+      const token = jsonwebtoken.sign(
+        {
+          // user in cache for password change
+          userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5',
+          loginId: new Date().getTime().toString(),
+          iat: Math.floor((new Date().getTime() - 10000) / 1000),
+          exp: now + 60,
+        } as UserPayload,
+        JWT_REFRESH_SECRET_KEY,
+      );
 
       try {
         await guard.canActivate(generateContext(token) as any);
@@ -147,20 +173,29 @@ describe('auth-refresh.guard', () => {
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');
-        expect(response.data.name).toBe(AuthErrorNames.JWT_INVALIDATED_BY_SERVER);
-        expect(response.data.errors).toEqual(expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE]));
+        expect(response.data.name).toBe(
+          AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
+        );
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining([
+            AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE,
+          ]),
+        );
       }
     });
 
     test('token issued after password change', async () => {
       const now = Math.floor(Date.now() / 1000);
-      const token = jsonwebtoken.sign({
-        // user in cache for password change
-        userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5',
-        loginId: new Date().getTime().toString(),
-        iat: now,
-        exp: now + 60,
-      } as UserPayload, JWT_REFRESH_SECRET_KEY);
+      const token = jsonwebtoken.sign(
+        {
+          // user in cache for password change
+          userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5',
+          loginId: new Date().getTime().toString(),
+          iat: now,
+          exp: now + 60,
+        } as UserPayload,
+        JWT_REFRESH_SECRET_KEY,
+      );
 
       const result = await guard.canActivate(generateContext(token) as any);
       expect(result).toBeTruthy();
@@ -168,13 +203,16 @@ describe('auth-refresh.guard', () => {
 
     test('token without events', async () => {
       const now = Math.floor(Date.now() / 1000);
-      const token = jsonwebtoken.sign({
-        // user not in cache
-        userId: '68ec369c-30f3-4e56-b286-290cde1efd7c',
-        loginId: new Date().getTime().toString(),
-        iat: now,
-        exp: now + 60,
-      } as UserPayload, JWT_REFRESH_SECRET_KEY);
+      const token = jsonwebtoken.sign(
+        {
+          // user not in cache
+          userId: '68ec369c-30f3-4e56-b286-290cde1efd7c',
+          loginId: new Date().getTime().toString(),
+          iat: now,
+          exp: now + 60,
+        } as UserPayload,
+        JWT_REFRESH_SECRET_KEY,
+      );
 
       const result = await guard.canActivate(generateContext(token) as any);
       expect(result).toBeTruthy();
@@ -189,8 +227,8 @@ describe('auth-refresh.guard', () => {
       const authHeader = {
         headers: {
           authorization: '',
-        }
-      }
+        },
+      };
 
       const result = guard.extractTokenFromHeader(authHeader);
 
@@ -201,8 +239,8 @@ describe('auth-refresh.guard', () => {
       const authHeader = {
         headers: {
           authorization: 'Header eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
-        }
-      }
+        },
+      };
 
       const result = guard.extractTokenFromHeader(authHeader);
 
@@ -213,8 +251,8 @@ describe('auth-refresh.guard', () => {
       const authHeader = {
         headers: {
           authorization: 'Bearer',
-        }
-      }
+        },
+      };
 
       const result = guard.extractTokenFromHeader(authHeader);
 
@@ -225,8 +263,8 @@ describe('auth-refresh.guard', () => {
       const authHeader = {
         headers: {
           authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9',
-        }
-      }
+        },
+      };
 
       const result = guard.extractTokenFromHeader(authHeader);
 

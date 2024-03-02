@@ -57,9 +57,7 @@ export class AuthGuard implements CanActivate {
       // if there is a message at the body, change it to the errors key
       // done for the sake of pattern
       if (exceptionBody.data?.message) {
-        exceptionBody.data.errors = [
-          exceptionBody.data?.message,
-        ];
+        exceptionBody.data.errors = [exceptionBody.data?.message];
 
         delete exceptionBody.data['message'];
       }
@@ -91,11 +89,13 @@ export class AuthGuard implements CanActivate {
     }
 
     // verify if the combination of userId with loginId is marked in cache as invalid
-    const logoutVerification = await this.cacheService.get([
-      CacheKeyPrefix.AUTH_SESSION_LOGOUT,
-      payload.userId,
-      payload.loginId,
-    ].join(':'));
+    const logoutVerification = await this.cacheService.get(
+      [
+        CacheKeyPrefix.AUTH_SESSION_LOGOUT,
+        payload.userId,
+        payload.loginId,
+      ].join(':'),
+    );
 
     if (logoutVerification !== null) {
       throw new UnauthorizedException({
@@ -103,32 +103,28 @@ export class AuthGuard implements CanActivate {
         message: 'Unauthorized',
         data: {
           name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
-          errors: [
-            AuthErrorMessages.INVALIDATED_BY_LOGOUT,
-          ],
+          errors: [AuthErrorMessages.INVALIDATED_BY_LOGOUT],
         },
       });
     }
 
     // verify if the user had a password change event
-    const passwordChangeVerification = await this.cacheService.get<PasswordChangeCachePayload>([
-      CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
-      payload.userId
-    ].join(':'));
+    const passwordChangeVerification =
+      await this.cacheService.get<PasswordChangeCachePayload>(
+        [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, payload.userId].join(':'),
+      );
 
-    // if there is an cache entry  
+    // if there is an cache entry
     if (passwordChangeVerification != null) {
       // if this token was not issued after the password change
       // iat is in seconds and changedAt at milliseconds
-      if ((payload.iat * 1000) <= passwordChangeVerification.changedAt) {
+      if (payload.iat * 1000 <= passwordChangeVerification.changedAt) {
         throw new UnauthorizedException({
           statusCode: HttpStatus.UNAUTHORIZED,
           message: 'Unauthorized',
           data: {
             name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
-            errors: [
-              AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE,
-            ],
+            errors: [AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE],
           },
         });
       }
