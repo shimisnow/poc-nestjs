@@ -16,16 +16,19 @@ export class TransactionsRepository {
 
   /**
    * Creates two transactions and links each one with the other
-   * 
+   *
    * @param transaction Information about the two transactions that will be stored and linked each one with the other
    * @returns Ids for the created transactions
    */
   /* istanbul ignore next */
   /* ignored at code coverage because it uses database transactions and should not be unit tested */
-  async createPairTransaction(transaction: CreatePairTransactionBody): Promise<CreatePairTransactionResult> {
+  async createPairTransaction(
+    transaction: CreatePairTransactionBody,
+  ): Promise<CreatePairTransactionResult> {
     let resultFrom: TransactionEntity;
     let resultTo: TransactionEntity;
-    const queryRunner: QueryRunner = this.repository.manager.connection.createQueryRunner();
+    const queryRunner: QueryRunner =
+      this.repository.manager.connection.createQueryRunner();
 
     try {
       await queryRunner.connect();
@@ -38,7 +41,8 @@ export class TransactionsRepository {
       entityFrom.account = new AccountEntity();
       entityFrom.account.accountId = transaction.from.accountId;
 
-      resultFrom = await queryRunner.manager.save<TransactionEntity>(entityFrom);
+      resultFrom =
+        await queryRunner.manager.save<TransactionEntity>(entityFrom);
 
       // create to transaction
       const entityTo = new TransactionEntity();
@@ -57,11 +61,11 @@ export class TransactionsRepository {
       await queryRunner.manager.update<TransactionEntity>(
         TransactionEntity,
         { transactionId: resultFrom.transactionId },
-        entityFromUpdatePair
+        entityFromUpdatePair,
       );
 
       await queryRunner.commitTransaction();
-    } catch(error) {
+    } catch (error) {
       queryRunner.rollbackTransaction();
     } finally {
       queryRunner.release();

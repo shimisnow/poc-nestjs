@@ -21,12 +21,15 @@ export class BalanceService {
    *
    * @param accountId Desired account balance
    * @param userId Account owner. Used to verify ownership
-   * 
+   *
    * @throws ForbiddenException User has no ownership of the account or account does not exists
-   * 
+   *
    * @returns Account balance and a flag for value from cache
    */
-  async getBalance(accountId: number, userId: string): Promise<GetBalanceSerializer> {
+  async getBalance(
+    accountId: number,
+    userId: string,
+  ): Promise<GetBalanceSerializer> {
     const hasAccess = await this.userService.hasAccessToAccount(
       userId,
       accountId,
@@ -36,10 +39,7 @@ export class BalanceService {
       throw new ForbiddenException();
     }
 
-    const cacheKey = [
-      CacheKeyPrefix.FINANCIAL_BALANCE,
-      accountId,
-    ].join(':');
+    const cacheKey = [CacheKeyPrefix.FINANCIAL_BALANCE, accountId].join(':');
 
     const cachedData =
       await this.cacheService.get<CacheBalancePayload>(cacheKey);
@@ -55,15 +55,18 @@ export class BalanceService {
     const calculatedBalance =
       await this.balancesRepository.getBalance(accountId);
 
-    await this.cacheService.set(cacheKey, {
-      balance: calculatedBalance,
-      updatedAt: new Date().getTime(),
-    } as CacheBalancePayload,
-    {
-      // 24 hours in seconds
-      ttl: 86400,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any,);
+    await this.cacheService.set(
+      cacheKey,
+      {
+        balance: calculatedBalance,
+        updatedAt: new Date().getTime(),
+      } as CacheBalancePayload,
+      {
+        // 24 hours in seconds
+        ttl: 86400,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    );
 
     return {
       balance: calculatedBalance,
@@ -76,12 +79,15 @@ export class BalanceService {
    *
    * @param accountId Desired account balance
    * @param userId Account owner. Used to verify ownership
-   * 
+   *
    * @throws ForbiddenException User has no ownership of the account or account does not exists
-   * 
+   *
    * @returns Account balance
    */
-  async getBalanceIgnoringCache(accountId: number, userId: string): Promise<number> {
+  async getBalanceIgnoringCache(
+    accountId: number,
+    userId: string,
+  ): Promise<number> {
     const hasAccess = await this.userService.hasAccessToAccount(
       userId,
       accountId,

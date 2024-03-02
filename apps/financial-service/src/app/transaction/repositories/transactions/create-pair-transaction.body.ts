@@ -2,7 +2,7 @@ import { TransactionTypeEnum } from '@shared/database/financial/enums/transactio
 
 /** Defines the information needed to create a pair transaction */
 export class CreatePairTransactionBody {
-  /** Transaction one */ 
+  /** Transaction one */
   from: {
     /** Account to be linked with this transaction */
     accountId: number;
@@ -12,7 +12,7 @@ export class CreatePairTransactionBody {
     amount: number;
   };
 
-  /** Transaction two */ 
+  /** Transaction two */
   to: {
     /** Account to be linked with this transaction */
     accountId: number;

@@ -23,13 +23,16 @@ async function bootstrap() {
   if (process.env.FINANCIAL_SERVICE_BUILD_OPENAPI === 'true') {
     const config = new DocumentBuilder()
       .setTitle('Financial Service')
-      .addBearerAuth({
-        description: 'accessToken provided by the auth service',
-        in: 'header',
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-      }, 'AccessToken')
+      .addBearerAuth(
+        {
+          description: 'accessToken provided by the auth service',
+          in: 'header',
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+        'AccessToken',
+      )
       .build();
     const document = SwaggerModule.createDocument(app, config);
 

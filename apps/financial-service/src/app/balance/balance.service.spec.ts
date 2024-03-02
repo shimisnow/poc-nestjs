@@ -114,7 +114,10 @@ describe('balance.service', () => {
     describe('account ownership and existence', () => {
       test('user does not have access rights to the account', async () => {
         try {
-          await service.getBalance(4242, '10f88251-d181-4255-92ed-d0d874e3a166');
+          await service.getBalance(
+            4242,
+            '10f88251-d181-4255-92ed-d0d874e3a166',
+          );
         } catch (error) {
           expect(error).toBeInstanceOf(ForbiddenException);
         }
@@ -124,7 +127,10 @@ describe('balance.service', () => {
       // the error will be the same
       test('account does not exists', async () => {
         try {
-          await service.getBalance(9876, '10f88251-d181-4255-92ed-d0d874e3a166');
+          await service.getBalance(
+            9876,
+            '10f88251-d181-4255-92ed-d0d874e3a166',
+          );
         } catch (error) {
           expect(error).toBeInstanceOf(ForbiddenException);
         }
@@ -133,12 +139,18 @@ describe('balance.service', () => {
 
     describe('balance retrieval', () => {
       test('get balance from cache', async () => {
-        const result = await service.getBalance(2345, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
+        const result = await service.getBalance(
+          2345,
+          '3caf49e3-a722-4fba-b9b9-cd576a887db6',
+        );
         expect(result.balance).toBe(950);
       });
-  
+
       test('get balance from database (no cache)', async () => {
-        const result = await service.getBalance(1234, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
+        const result = await service.getBalance(
+          1234,
+          '3caf49e3-a722-4fba-b9b9-cd576a887db6',
+        );
         // 1200 from the mocked balance and 50 from the mocked transactions
         expect(result.balance).toBe(1250);
       });
@@ -149,7 +161,10 @@ describe('balance.service', () => {
     describe('account ownership and existence', () => {
       test('user does not have access rights to the account', async () => {
         try {
-          await service.getBalanceIgnoringCache(4242, '10f88251-d181-4255-92ed-d0d874e3a166');
+          await service.getBalanceIgnoringCache(
+            4242,
+            '10f88251-d181-4255-92ed-d0d874e3a166',
+          );
         } catch (error) {
           expect(error).toBeInstanceOf(ForbiddenException);
         }
@@ -159,7 +174,10 @@ describe('balance.service', () => {
       // the error will be the same
       test('account does not exists', async () => {
         try {
-          await service.getBalanceIgnoringCache(9876, '10f88251-d181-4255-92ed-d0d874e3a166');
+          await service.getBalanceIgnoringCache(
+            9876,
+            '10f88251-d181-4255-92ed-d0d874e3a166',
+          );
         } catch (error) {
           expect(error).toBeInstanceOf(ForbiddenException);
         }
@@ -168,7 +186,10 @@ describe('balance.service', () => {
 
     describe('balance retrieval', () => {
       test('get balance ignoring cache', async () => {
-        const result = await service.getBalanceIgnoringCache(2345, '3caf49e3-a722-4fba-b9b9-cd576a887db6');
+        const result = await service.getBalanceIgnoringCache(
+          2345,
+          '3caf49e3-a722-4fba-b9b9-cd576a887db6',
+        );
         // 1200 from the mocked balance and 50 from the mocked transactions
         expect(result).toBe(550);
       });

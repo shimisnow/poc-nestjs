@@ -14,7 +14,7 @@ export class AccountsRepository {
 
   /**
    * Verifies if an account exists and is active
-   * 
+   *
    * @param accountId Account to be verified
    * @param isActive Defines if the account needs to be active to return true if exists
    * @returns If the account exists (and is active in some cases)
@@ -22,10 +22,10 @@ export class AccountsRepository {
   async accountExists(accountId: number, isActive = false): Promise<boolean> {
     const where = {
       accountId,
-    }
+    };
 
-    // verifies if the account is also active 
-    if(isActive) {
+    // verifies if the account is also active
+    if (isActive) {
       where['status'] = AccountStatusEnum.ACTIVE;
     }
 
@@ -34,6 +34,6 @@ export class AccountsRepository {
       where,
     });
 
-    return (result?.length > 0);
+    return result?.length > 0;
   }
 }

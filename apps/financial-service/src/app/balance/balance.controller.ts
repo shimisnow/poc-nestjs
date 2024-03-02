@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UseGuards,
-  Version,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseGuards, Version } from '@nestjs/common';
 import { BalanceService } from './balance.service';
 import { GetBalanceQueryDto } from './dtos/get-balance-query.dto';
 import { GetBalanceSerializer } from './serializers/get-balance.serializer';
@@ -33,9 +27,7 @@ import { GetBalanceError502Serializer } from './serializers/get-balance-error-50
 @ApiTags('balance')
 @ApiBearerAuth('AccessToken')
 export class BalanceController {
-  constructor(
-    private balanceService: BalanceService,
-  ) {}
+  constructor(private balanceService: BalanceService) {}
 
   @Version('1')
   @Get()
@@ -61,7 +53,8 @@ export class BalanceController {
     type: DefaultError401Serializer,
   })
   @ApiForbiddenResponse({
-    description: 'Error when the user has no access to the account or account/user does not exist',
+    description:
+      'Error when the user has no access to the account or account/user does not exist',
     type: GetBalanceError403Serializer,
   })
   @ApiInternalServerErrorResponse({

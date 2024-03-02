@@ -8,7 +8,10 @@ import { TransactionsRepository } from './repositories/transactions/transactions
 import { BalanceService } from '../balance/balance.service';
 import { AccountsRepository } from './repositories/accounts/accounts.repository';
 import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
-import { ForbiddenException, PreconditionFailedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  PreconditionFailedException,
+} from '@nestjs/common';
 import { CreatePairTransactionBody } from './repositories/transactions/create-pair-transaction.body';
 import { CreatePairTransactionResult } from './repositories/transactions/create-pair-transaction.result';
 
@@ -25,7 +28,7 @@ describe('transaction.service', () => {
             accountExists: (accountId: number, isActive = false): boolean => {
               let status = true;
 
-              switch(accountId) {
+              switch (accountId) {
                 case 1:
                   status = false;
                   break;
@@ -38,13 +41,16 @@ describe('transaction.service', () => {
               }
 
               return status;
-            }
+            },
           },
         },
         {
           provide: BalanceService,
           useValue: {
-            getBalanceIgnoringCache: (accountId: number, userId: string): number => {
+            getBalanceIgnoringCache: (
+              accountId: number,
+              userId: string,
+            ): number => {
               let balance = 0;
 
               switch (accountId) {
@@ -54,19 +60,21 @@ describe('transaction.service', () => {
               }
 
               return balance;
-            }
-          }
+            },
+          },
         },
         {
           provide: TransactionsRepository,
           useValue: {
-            createPairTransaction: (transaction: CreatePairTransactionBody): CreatePairTransactionResult => {
+            createPairTransaction: (
+              transaction: CreatePairTransactionBody,
+            ): CreatePairTransactionResult => {
               return {
                 fromTransactionId: 1234,
                 toTransactionId: 5678,
               };
-            }
-          }
+            },
+          },
         },
         {
           provide: CACHE_MANAGER,
@@ -97,7 +105,9 @@ describe('transaction.service', () => {
         } catch (error) {
           expect(error).toBeInstanceOf(PreconditionFailedException);
           expect(error.response.data.name).toBe('InvalidTransactionType');
-          expect(error.response.data.errors).toEqual(expect.arrayContaining(['only debit transaction type allowed']));
+          expect(error.response.data.errors).toEqual(
+            expect.arrayContaining(['only debit transaction type allowed']),
+          );
         }
       });
     });
@@ -114,8 +124,16 @@ describe('transaction.service', () => {
         } catch (error) {
           expect(error).toBeInstanceOf(ForbiddenException);
           expect(error.response.data.name).toBe('InexistentOrInactiveAccount');
-          expect(error.response.data.errors).toEqual(expect.arrayContaining(['accountId does not exists or it is inactive']));
-          expect(error.response.data.errors).toEqual(expect.not.arrayContaining(['pairAccountId does not exists or it is inactive']));
+          expect(error.response.data.errors).toEqual(
+            expect.arrayContaining([
+              'accountId does not exists or it is inactive',
+            ]),
+          );
+          expect(error.response.data.errors).toEqual(
+            expect.not.arrayContaining([
+              'pairAccountId does not exists or it is inactive',
+            ]),
+          );
         }
       });
 
@@ -130,8 +148,16 @@ describe('transaction.service', () => {
         } catch (error) {
           expect(error).toBeInstanceOf(ForbiddenException);
           expect(error.response.data.name).toBe('InexistentOrInactiveAccount');
-          expect(error.response.data.errors).toEqual(expect.not.arrayContaining(['accountId does not exists or it is inactive']));
-          expect(error.response.data.errors).toEqual(expect.arrayContaining(['pairAccountId does not exists or it is inactive']));
+          expect(error.response.data.errors).toEqual(
+            expect.not.arrayContaining([
+              'accountId does not exists or it is inactive',
+            ]),
+          );
+          expect(error.response.data.errors).toEqual(
+            expect.arrayContaining([
+              'pairAccountId does not exists or it is inactive',
+            ]),
+          );
         }
       });
 
@@ -146,8 +172,16 @@ describe('transaction.service', () => {
         } catch (error) {
           expect(error).toBeInstanceOf(ForbiddenException);
           expect(error.response.data.name).toBe('InexistentOrInactiveAccount');
-          expect(error.response.data.errors).toEqual(expect.arrayContaining(['accountId does not exists or it is inactive']));
-          expect(error.response.data.errors).toEqual(expect.arrayContaining(['pairAccountId does not exists or it is inactive']));
+          expect(error.response.data.errors).toEqual(
+            expect.arrayContaining([
+              'accountId does not exists or it is inactive',
+            ]),
+          );
+          expect(error.response.data.errors).toEqual(
+            expect.arrayContaining([
+              'pairAccountId does not exists or it is inactive',
+            ]),
+          );
         }
       });
     });

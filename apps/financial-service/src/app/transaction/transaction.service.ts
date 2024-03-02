@@ -28,7 +28,7 @@ export class TransactionService {
 
   /**
    * Create a pair debit/credit transaction
-   * 
+   *
    * @param userId User that must be the owner of the account from the debit transaction
    * @param body Transaction information
    * @returns Performed transactions id
@@ -47,15 +47,12 @@ export class TransactionService {
         data: {
           name: 'InvalidTransactionType',
           errors: ['only debit transaction type allowed'],
-        }
+        },
       });
     }
 
     // verify if both accounts exists AND is active
-    const [
-      accountIdExists,
-      pairAccountIdExists,
-    ] = await Promise.all([
+    const [accountIdExists, pairAccountIdExists] = await Promise.all([
       this.accountsRepository.accountExists(body.accountId, true),
       this.accountsRepository.accountExists(body.pairAccountId, true),
     ]);
@@ -63,23 +60,23 @@ export class TransactionService {
     const errorMessages = [];
 
     // verify the main account
-    if(accountIdExists === false) {
+    if (accountIdExists === false) {
       errorMessages.push('accountId does not exists or it is inactive');
     }
 
     // verify the destination account
-    if(pairAccountIdExists === false) {
+    if (pairAccountIdExists === false) {
       errorMessages.push('pairAccountId does not exists or it is inactive');
     }
 
-    if(errorMessages.length > 0) {
+    if (errorMessages.length > 0) {
       throw new ForbiddenException({
         statusCode: 403,
         message: 'Forbidden',
         data: {
           name: 'InexistentOrInactiveAccount',
           errors: errorMessages,
-        }
+        },
       });
     }
 
@@ -101,35 +98,34 @@ export class TransactionService {
         message: 'PreconditionFailed',
         data: {
           name: 'InsufficientAccountBalance',
-        }
+        },
       });
     }
 
     // create the transactions into database
-    const transactions: CreatePairTransactionResult = await this.transactionsRepository.createPairTransaction({
-      from: {
-        accountId: body.accountId,
-        type: TransactionTypeEnum.DEBIT,
-        amount: body.amount,
-      },
-      to: {
-        accountId: body.pairAccountId,
-        type: TransactionTypeEnum.CREDIT,
-        amount: (body.amount * -1),
-      },
-    });
+    const transactions: CreatePairTransactionResult =
+      await this.transactionsRepository.createPairTransaction({
+        from: {
+          accountId: body.accountId,
+          type: TransactionTypeEnum.DEBIT,
+          amount: body.amount,
+        },
+        to: {
+          accountId: body.pairAccountId,
+          type: TransactionTypeEnum.CREDIT,
+          amount: body.amount * -1,
+        },
+      });
 
     await Promise.all([
       // delete main account cache
-      this.cacheService.del([
-        CacheKeyPrefix.FINANCIAL_BALANCE,
-        body.accountId,
-      ].join(':')),
+      this.cacheService.del(
+        [CacheKeyPrefix.FINANCIAL_BALANCE, body.accountId].join(':'),
+      ),
       // delete pair account cache
-      this.cacheService.del([
-        CacheKeyPrefix.FINANCIAL_BALANCE,
-        body.pairAccountId,
-      ].join(':'))
+      this.cacheService.del(
+        [CacheKeyPrefix.FINANCIAL_BALANCE, body.pairAccountId].join(':'),
+      ),
     ]);
 
     return transactions as CreateTransactionSerializer;

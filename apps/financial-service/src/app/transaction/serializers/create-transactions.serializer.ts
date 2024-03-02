@@ -6,7 +6,7 @@ export class CreateTransactionSerializer {
     example: 123,
   })
   fromTransactionId: number;
-  
+
   @ApiProperty({
     description: 'Transaction id',
     example: 456,

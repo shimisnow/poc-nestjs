@@ -1,10 +1,4 @@
-import {
-  Body,
-  Controller,
-  Post,
-  UseGuards,
-  Version,
-} from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Version } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import {
   ApiBadGatewayResponse,
@@ -35,9 +29,7 @@ import { CreateTransactionError502Serializer } from './serializers/create-transa
 @ApiTags('transaction')
 @ApiBearerAuth('AccessToken')
 export class TransactionController {
-  constructor(
-    private transactionService: TransactionService,
-  ) {}
+  constructor(private transactionService: TransactionService) {}
 
   @Version('1')
   @Post()
@@ -65,7 +57,8 @@ export class TransactionController {
     type: DefaultError401Serializer,
   })
   @ApiForbiddenResponse({
-    description: 'Error when the user has no access to the account or the account does not exist',
+    description:
+      'Error when the user has no access to the account or the account does not exist',
     type: CreateTransactionError403Serializer,
   })
   @ApiPreconditionFailedResponse({
@@ -87,6 +80,9 @@ export class TransactionController {
     @User() user: UserPayload,
     @Body() body: CreateTransactionBodyDto,
   ): Promise<CreateTransactionSerializer> {
-    return await this.transactionService.createDebitTransaction(user.userId, body);
+    return await this.transactionService.createDebitTransaction(
+      user.userId,
+      body,
+    );
   }
 }

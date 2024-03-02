@@ -20,6 +20,6 @@ export class CreateTransactionError412Serializer {
     },
   })
   data: {
-    name: string,
-  }
+    name: string;
+  };
 }

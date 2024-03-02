@@ -16,18 +16,36 @@ describe('AccountsRepository', () => {
           useValue: {
             find: (options): Array<AccountEntity> => {
               // simulates when verifying if the user exists ignoring the status
-              if(options.where.status === undefined) {
-                switch(options.where.accountId) {
+              if (options.where.status === undefined) {
+                switch (options.where.accountId) {
                   case 1:
-                    return [{ accountId: 1, userId: '', status: AccountStatusEnum.ACTIVE }];
+                    return [
+                      {
+                        accountId: 1,
+                        userId: '',
+                        status: AccountStatusEnum.ACTIVE,
+                      },
+                    ];
                   case 2:
-                    return [{ accountId: 2, userId: '', status: AccountStatusEnum.INACTIVE }];
+                    return [
+                      {
+                        accountId: 2,
+                        userId: '',
+                        status: AccountStatusEnum.INACTIVE,
+                      },
+                    ];
                 }
               }
               // simulates when verifying if the user is active
-              switch(options.where.accountId) {
+              switch (options.where.accountId) {
                 case 3:
-                  return [{ accountId: 3, userId: '', status: AccountStatusEnum.ACTIVE }];
+                  return [
+                    {
+                      accountId: 3,
+                      userId: '',
+                      status: AccountStatusEnum.ACTIVE,
+                    },
+                  ];
                 case 4:
                   // simulates that is inactive
                   return [];

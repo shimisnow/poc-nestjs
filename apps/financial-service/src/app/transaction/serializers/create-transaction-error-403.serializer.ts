@@ -25,7 +25,7 @@ export class CreateTransactionError403Serializer {
     },
   })
   data: {
-    name: string,
-    errors: Array<string>,
+    name: string;
+    errors: Array<string>;
   };
 }
