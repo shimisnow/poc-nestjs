@@ -1,4 +1,9 @@
-import { GenericContainer, Network, StartedTestContainer, Wait } from 'testcontainers';
+import {
+  GenericContainer,
+  Network,
+  StartedTestContainer,
+  Wait,
+} from 'testcontainers';
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { RedisContainer } from '@testcontainers/redis';
 
@@ -6,7 +11,7 @@ module.exports = async function () {
   const DOCKER_IMAGE_BUILD_NAME = 'poc-nestjs-node';
   const DOCKER_POSTGRES_TAG = 'postgres:16.1';
   const DOCKER_REDIS_TAG = 'redis:7.2.4';
-  
+
   const dockerNetwork = await new Network().start();
 
   /** *** DATABASE *****/
@@ -18,11 +23,17 @@ module.exports = async function () {
     .withUsername(process.env.DATABASE_FINANCIAL_USERNAME)
     .withPassword(process.env.DATABASE_FINANCIAL_PASSWORD)
     // copy SQL files to populate the database
-    .withCopyDirectoriesToContainer([{
-      source: './apps/financial-service-e2e/dependencies/database',
-      target: '/docker-entrypoint-initdb.d',
-    }])
-    .withWaitStrategy(Wait.forLogMessage('PostgreSQL init process complete; ready for start up.'));
+    .withCopyDirectoriesToContainer([
+      {
+        source: './apps/financial-service-e2e/dependencies/database',
+        target: '/docker-entrypoint-initdb.d',
+      },
+    ])
+    .withWaitStrategy(
+      Wait.forLogMessage(
+        'PostgreSQL init process complete; ready for start up.',
+      ),
+    );
 
   /** *** CACHE *****/
 
@@ -34,18 +45,15 @@ module.exports = async function () {
 
   /** *** DEPENDENCIES START AND CODE BUILD *****/
 
-  const [
-    containerDatabase,
-    containerCache,
-    buildContainerCode,
-  ] = await Promise.all([
-    postgreSqlContainer.start(),
-    redisContainer.start(),
-    // build docker image with compiled code
-    GenericContainer
-      .fromDockerfile('./')
-      .build(DOCKER_IMAGE_BUILD_NAME, { deleteOnExit: false })
-  ]);
+  const [containerDatabase, containerCache, buildContainerCode] =
+    await Promise.all([
+      postgreSqlContainer.start(),
+      redisContainer.start(),
+      // build docker image with compiled code
+      GenericContainer.fromDockerfile('./').build(DOCKER_IMAGE_BUILD_NAME, {
+        deleteOnExit: false,
+      }),
+    ]);
 
   /** *** CODE *****/
 
@@ -54,14 +62,16 @@ module.exports = async function () {
     .withNetwork(dockerNetwork)
     .withNetworkAliases('financial-service')
     .withExposedPorts(parseInt(process.env.FINANCIAL_SERVICE_PORT))
-    .withCopyFilesToContainer([{
-      source: './dist/apps/financial-service/main.js',
-      target: '/home/node/app/main.js'
-    }])
+    .withCopyFilesToContainer([
+      {
+        source: './dist/apps/financial-service/main.js',
+        target: '/home/node/app/main.js',
+      },
+    ])
     .withCommand(['node', 'main.js'])
     .withEnvironment({
       DATABASE_FINANCIAL_HOST: 'database-financial',
-      DATABASE_FINANCIAL_PORT:  '5432',
+      DATABASE_FINANCIAL_PORT: '5432',
       DATABASE_FINANCIAL_USERNAME: process.env.DATABASE_FINANCIAL_USERNAME,
       DATABASE_FINANCIAL_PASSWORD: process.env.DATABASE_FINANCIAL_PASSWORD,
       DATABASE_FINANCIAL_DBNAME: process.env.DATABASE_FINANCIAL_DBNAME,
