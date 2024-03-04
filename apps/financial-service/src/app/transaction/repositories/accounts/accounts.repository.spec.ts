@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountsRepository } from './accounts.repository';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AccountEntity } from '@shared/database/financial/entities/account.entity';
-import { AccountStatusEnum } from '@shared/database/financial/enums/account-status.enum';
+import { AccountEntity } from '../../../database/entities/account.entity';
+import { AccountStatusEnum } from '../../../database/enums/account-status.enum';
 
 describe('AccountsRepository', () => {
   let repository: AccountsRepository;

@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BalanceEntity } from '@shared/database/financial/entities/balance.entity';
-import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
+import { BalanceEntity } from '../../database/entities/balance.entity';
+import { TransactionEntity } from '../../database/entities/transaction.entity';
 import { MoreThan, Repository } from 'typeorm';
 import { BalanceDifferenceSerializer } from '../serializers/balance-difference.serializer';
-import { AccountEntity } from '@shared/database/financial/entities/account.entity';
+import { AccountEntity } from '../../database/entities/account.entity';
 
 @Injectable()
 export class BalancesRepository {

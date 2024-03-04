@@ -11,7 +11,7 @@ import { AccountsRepository } from './repositories/accounts/accounts.repository'
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BalanceService } from '../balance/balance.service';
-import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
+import { TransactionTypeEnum } from '../database/enums/transaction-type.enum';
 import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 import { CreatePairTransactionResult } from './repositories/transactions/create-pair-transaction.result';
 

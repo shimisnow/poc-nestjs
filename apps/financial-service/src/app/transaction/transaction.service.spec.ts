@@ -7,7 +7,7 @@ import { TransactionService } from './transaction.service';
 import { TransactionsRepository } from './repositories/transactions/transactions.repository';
 import { BalanceService } from '../balance/balance.service';
 import { AccountsRepository } from './repositories/accounts/accounts.repository';
-import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
+import { TransactionTypeEnum } from '../database/enums/transaction-type.enum';
 import {
   ForbiddenException,
   PreconditionFailedException,

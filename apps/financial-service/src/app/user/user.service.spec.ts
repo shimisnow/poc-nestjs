@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { AccountEntity } from '@shared/database/financial/entities/account.entity';
+import { AccountEntity } from '../database//entities/account.entity';
 import { AccountsRepository } from './repositories/accounts/accounts.repository';
 
 describe('user.service', () => {

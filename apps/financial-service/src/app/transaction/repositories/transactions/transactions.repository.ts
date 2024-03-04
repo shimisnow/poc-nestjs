@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryRunner, Repository } from 'typeorm';
-import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
-import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
-import { AccountEntity } from '@shared/database/financial/entities/account.entity';
+import { TransactionEntity } from '../../../database/entities/transaction.entity';
+import { TransactionTypeEnum } from '../../../database/enums/transaction-type.enum';
+import { AccountEntity } from '../../../database/entities/account.entity';
 import { CreatePairTransactionBody } from './create-pair-transaction.body';
 import { CreatePairTransactionResult } from './create-pair-transaction.result';
 
