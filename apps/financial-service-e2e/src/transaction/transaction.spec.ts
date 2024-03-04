@@ -200,7 +200,8 @@ describe('POST /transaction', () => {
           JWT_SECRET_KEY,
         );
 
-        // request with a random balance to guarantee that is retrieved from cache and not from database
+        // request with a random balance to guarantee
+        // that it was retrieved from cache and not from database
         await request(host)
           .get('/balance')
           .query({
@@ -216,7 +217,8 @@ describe('POST /transaction', () => {
             expect(body.cached).toBeTruthy();
           });
 
-        // request with a random balance to guarantee that is retrieved from cache and not from database
+        // request with a random balance to guarantee
+        // that was retrieved from cache and not from database
         await request(host)
           .get('/balance')
           .query({

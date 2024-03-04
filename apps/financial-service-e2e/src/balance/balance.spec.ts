@@ -185,7 +185,8 @@ describe('GET /balance', () => {
         JWT_SECRET_KEY,
       );
 
-      // request with a random balance to guarantee that is retrieved from cache and not from database
+      // request with a random balance to guarantee
+      // that it was retrieved from cache and not from database
       await request(host)
         .get(endpoint)
         .query({
