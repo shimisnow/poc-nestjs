@@ -4,7 +4,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
-import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
+import { UserAuthEntity } from './database/entities/user-auth.entity';
 
 @Module({
   imports: [
