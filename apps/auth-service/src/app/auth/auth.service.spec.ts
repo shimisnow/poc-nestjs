@@ -13,7 +13,7 @@ import {
 import { getRepositoryToken } from '@nestjs/typeorm';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
+import { UserAuthEntity } from '../database/entities/user-auth.entity';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
 import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
