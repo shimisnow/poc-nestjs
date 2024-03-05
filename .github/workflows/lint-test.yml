@@ -122,13 +122,13 @@ jobs:
 
       - name: Rename report file
         if: github.event_name == 'pull_request'
-        run: mv code-coverage-results.md auth-service-code-coverage-results.md
+        run: mv code-coverage-results.md auth-service-coverage-results.md
 
       - name: Cache coverage report
         uses: actions/cache/save@v3
         if: github.event_name == 'pull_request'
         with:
-          path: auth-service-code-coverage-results.md
+          path: auth-service-coverage-results.md
           key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   financial-service:
@@ -175,13 +175,13 @@ jobs:
 
       - name: Rename report file
         if: github.event_name == 'pull_request'
-        run: mv code-coverage-results.md financial-service-code-coverage-results.md
+        run: mv code-coverage-results.md financial-service-coverage-results.md
 
       - name: Cache coverage report
         uses: actions/cache/save@v3
         if: github.event_name == 'pull_request'
         with:
-          path: financial-service-code-coverage-results.md
+          path: financial-service-coverage-results.md
           key: ${{ runner.os }}-financial-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   user-service:
@@ -228,13 +228,13 @@ jobs:
 
       - name: Rename report file
         if: github.event_name == 'pull_request'
-        run: mv code-coverage-results.md user-service-code-coverage-results.md
+        run: mv code-coverage-results.md user-service-coverage-results.md
 
       - name: Cache coverage report
         uses: actions/cache/save@v3
         if: github.event_name == 'pull_request'
         with:
-          path: user-service-code-coverage-results.md
+          path: user-service-coverage-results.md
           key: ${{ runner.os }}-user-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   report:
@@ -257,21 +257,21 @@ jobs:
       - name: Restore auth-service report
         uses: actions/cache/restore@v3
         with:
-          path: auth-service-code-coverage-results.md
+          path: auth-service-coverage-results.md
           key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
       - name: Restore financial-service report
         uses: actions/cache/restore@v3
         with:
-          path: financial-service-code-coverage-results.md
+          path: financial-service-coverage-results.md
           key: ${{ runner.os }}-financial-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
       - name: Restore user-service report
         uses: actions/cache/restore@v3
         with:
-          path: user-service-code-coverage-results.md
+          path: user-service-coverage-results.md
           key: ${{ runner.os }}-user-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
