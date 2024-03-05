@@ -72,7 +72,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           path: code-coverage-results.md
-          key: ${{ runner.os }}-shared-coverage-report-${{ hashFiles('**/coverage/shared/cobertura-coverage.xml') }}
+          key: ${{ runner.os }}-shared-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   auth-service:
     needs: setup
@@ -121,7 +121,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           path: code-coverage-results.md
-          key: ${{ runner.os }}-auth-service-coverage-report-${{ hashFiles('**/coverage/apps/auth-service/cobertura-coverage.xml') }}
+          key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   financial-service:
     needs: setup
@@ -170,7 +170,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           path: code-coverage-results.md
-          key: ${{ runner.os }}-financial-service-coverage-report-${{ hashFiles('**/coverage/apps/financial-service/cobertura-coverage.xml') }}
+          key: ${{ runner.os }}-financial-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   user-service:
     needs: setup
@@ -219,7 +219,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           path: code-coverage-results.md
-          key: ${{ runner.os }}-user-service-coverage-report-${{ hashFiles('**/coverage/apps/user-service/cobertura-coverage.xml') }}
+          key: ${{ runner.os }}-user-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   report:
     if: github.event_name == 'pull_request'
@@ -235,28 +235,28 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: shared-code-coverage-results.md
-          key: ${{ runner.os }}-shared-coverage-report-${{ hashFiles('**/coverage/shared/cobertura-coverage.xml') }}
+          key: ${{ runner.os }}-shared-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
       - name: Restore auth-service report
         uses: actions/cache/restore@v3
         with:
           path: auth-service-code-coverage-results.md
-          key: ${{ runner.os }}-auth-service-coverage-report-${{ hashFiles('**/coverage/apps/auth-service/cobertura-coverage.xml') }}
+          key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
       - name: Restore financial-service report
         uses: actions/cache/restore@v3
         with:
           path: financial-service-code-coverage-results.md
-          key: ${{ runner.os }}-financial-service-coverage-report-${{ hashFiles('**/coverage/apps/financial-service/cobertura-coverage.xml') }}
+          key: ${{ runner.os }}-financial-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
       - name: Restore user-service report
         uses: actions/cache/restore@v3
         with:
           path: user-service-code-coverage-results.md
-          key: ${{ runner.os }}-user-service-coverage-report-${{ hashFiles('**/coverage/apps/user-service/cobertura-coverage.xml') }}
+          key: ${{ runner.os }}-user-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
       - name: Set title for shared code
