@@ -53,6 +53,13 @@ jobs:
       - name: Unit and Integration tests
         run: npx nx test shared -- --coverage --coverageReporters=cobertura
 
+      - name: Cache coverage report
+        uses: actions/cache@v4
+        if: github.event_name == 'pull_request'
+        with:
+          path: code-coverage-results.md
+          key: ${{ runner.os }}-shared-coverage-report
+
       - name: Coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
@@ -66,13 +73,6 @@ jobs:
           indicators: true
           output: both
           thresholds: '80 90'
-
-      - name: Cache coverage report
-        uses: actions/cache@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: code-coverage-results.md
-          key: ${{ runner.os }}-shared-coverage-report
 
   auth-service:
     needs: setup
@@ -102,6 +102,13 @@ jobs:
       - name: Unit and Integration tests
         run: npx nx test auth-service -- --coverage --coverageReporters=cobertura
 
+      - name: Cache coverage report
+        uses: actions/cache@v4
+        if: github.event_name == 'pull_request'
+        with:
+          path: code-coverage-results.md
+          key: ${{ runner.os }}-auth-service-coverage-report
+
       - name: Coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
@@ -115,13 +122,6 @@ jobs:
           indicators: true
           output: both
           thresholds: '80 90'
-
-      - name: Cache coverage report
-        uses: actions/cache@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: code-coverage-results.md
-          key: ${{ runner.os }}-auth-service-coverage-report
 
   financial-service:
     needs: setup
@@ -151,6 +151,13 @@ jobs:
       - name: Unit and Integration tests
         run: npx nx test financial-service -- --coverage --coverageReporters=cobertura
 
+      - name: Cache coverage report
+        uses: actions/cache@v4
+        if: github.event_name == 'pull_request'
+        with:
+          path: code-coverage-results.md
+          key: ${{ runner.os }}-financial-service-coverage-report
+
       - name: Coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
@@ -164,13 +171,6 @@ jobs:
           indicators: true
           output: both
           thresholds: '80 90'
-
-      - name: Cache coverage report
-        uses: actions/cache@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: code-coverage-results.md
-          key: ${{ runner.os }}-financial-service-coverage-report
 
   user-service:
     needs: setup
@@ -200,6 +200,13 @@ jobs:
       - name: Unit and Integration tests
         run: npx nx test user-service -- --coverage --coverageReporters=cobertura
 
+      - name: Cache coverage report
+        uses: actions/cache@v4
+        if: github.event_name == 'pull_request'
+        with:
+          path: code-coverage-results.md
+          key: ${{ runner.os }}-user-service-coverage-report
+
       - name: Coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
@@ -213,13 +220,6 @@ jobs:
           indicators: true
           output: both
           thresholds: '80 90'
-
-      - name: Cache coverage report
-        uses: actions/cache@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: code-coverage-results.md
-          key: ${{ runner.os }}-user-service-coverage-report
 
   report:
     if: github.event_name == 'pull_request'
@@ -236,24 +236,28 @@ jobs:
         with:
           path: shared-code-coverage-results.md
           key: ${{ runner.os }}-shared-coverage-report
+          fail-on-cache-miss: true
 
       - name: Restore auth-service report
         uses: actions/cache@v4
         with:
           path: auth-service-code-coverage-results.md
           key: ${{ runner.os }}-auth-service-coverage-report
+          fail-on-cache-miss: true
 
       - name: Restore financial-service report
         uses: actions/cache@v4
         with:
           path: financial-service-code-coverage-results.md
           key: ${{ runner.os }}-financial-service-coverage-report
+          fail-on-cache-miss: true
 
       - name: Restore user-service report
         uses: actions/cache@v4
         with:
           path: user-service-code-coverage-results.md
           key: ${{ runner.os }}-user-service-coverage-report
+          fail-on-cache-miss: true
 
       - name: Set title for shared code
         run: |
