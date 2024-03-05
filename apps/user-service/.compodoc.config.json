@@ -1,0 +1,4 @@
+{
+  "tsconfig": "apps/user-service/tsconfig.doc.json",
+  "output": "apps/user-service/docs/compodoc"
+}

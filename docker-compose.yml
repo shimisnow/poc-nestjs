@@ -33,6 +33,27 @@ services:
     ports:
       - ${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}
 
+  user-service:
+    image: shimisnow/pocnestjs-user-service:latest
+    build:
+      context: .
+      dockerfile: apps/user-service/Dockerfile
+    container_name: poc-nestjs-user-service
+    environment:
+      USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      DATABASE_USER_HOST: ${DATABASE_USER_HOST}
+      DATABASE_USER_PORT: ${DATABASE_USER_PORT}
+      DATABASE_USER_USERNAME: ${DATABASE_USER_USERNAME}
+      DATABASE_USER_PASSWORD: ${DATABASE_USER_PASSWORD}
+      DATABASE_USER_DBNAME: ${DATABASE_USER_DBNAME}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_REFRESH_MAX_AGE: ${JWT_REFRESH_MAX_AGE}
+      USER_SERVICE_BUILD_OPENAPI: ${USER_SERVICE_BUILD_OPENAPI}
+    networks:
+      - poc-nestjs
+    ports:
+      - ${USER_SERVICE_PORT}:${USER_SERVICE_PORT}
+
   financial-service:
     image: shimisnow/pocnestjs-financial-service:latest
     build:

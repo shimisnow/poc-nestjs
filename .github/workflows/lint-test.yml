@@ -1,0 +1,333 @@
+name: Lint and Test
+
+on:
+  pull_request:
+    branches:
+      - 'milestone-**'
+      - development
+      - main
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.6.1
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Cache node_modules
+        uses: actions/cache/save@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+  shared-code:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.6.1
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
+
+      - name: Lint
+        run: npx nx lint shared
+
+      - name: Unit and Integration tests
+        run: npx nx test shared -- --coverage --coverageReporters=cobertura
+
+      - name: Coverage report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: github.event_name == 'pull_request'
+        with:
+          filename: coverage/shared/cobertura-coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '80 90'
+
+      - name: Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md shared-code-coverage-results.md
+
+      - name: Cache coverage report
+        uses: actions/cache/save@v3
+        if: github.event_name == 'pull_request'
+        with:
+          path: shared-code-coverage-results.md
+          key: ${{ runner.os }}-shared-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
+
+  auth-service:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.6.1
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
+
+      - name: Lint
+        run: npx nx lint auth-service
+
+      - name: Lint E2E
+        run: npx nx lint auth-service-e2e
+
+      - name: Unit and Integration tests
+        run: npx nx test auth-service -- --coverage --coverageReporters=cobertura
+
+      - name: Coverage report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: github.event_name == 'pull_request'
+        with:
+          filename: coverage/apps/auth-service/cobertura-coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '80 90'
+
+      - name: Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md auth-service-coverage-results.md
+
+      - name: Cache coverage report
+        uses: actions/cache/save@v3
+        if: github.event_name == 'pull_request'
+        with:
+          path: auth-service-coverage-results.md
+          key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
+
+  financial-service:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.6.1
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
+
+      - name: Lint
+        run: npx nx lint financial-service
+
+      - name: Lint E2E
+        run: npx nx lint financial-service-e2e
+
+      - name: Unit and Integration tests
+        run: npx nx test financial-service -- --coverage --coverageReporters=cobertura
+
+      - name: Coverage report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: github.event_name == 'pull_request'
+        with:
+          filename: coverage/apps/financial-service/cobertura-coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '80 90'
+
+      - name: Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md financial-service-coverage-results.md
+
+      - name: Cache coverage report
+        uses: actions/cache/save@v3
+        if: github.event_name == 'pull_request'
+        with:
+          path: financial-service-coverage-results.md
+          key: ${{ runner.os }}-financial-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
+
+  user-service:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.6.1
+
+      - name: Restore node_modules
+        uses: actions/cache/restore@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
+
+      - name: Lint
+        run: npx nx lint user-service
+
+      - name: Lint E2E
+        run: npx nx lint user-service-e2e
+
+      - name: Unit and Integration tests
+        run: npx nx test user-service -- --coverage --coverageReporters=cobertura
+
+      - name: Coverage report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: github.event_name == 'pull_request'
+        with:
+          filename: coverage/apps/user-service/cobertura-coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '80 90'
+
+      - name: Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md user-service-coverage-results.md
+
+      - name: Cache coverage report
+        uses: actions/cache/save@v3
+        if: github.event_name == 'pull_request'
+        with:
+          path: user-service-coverage-results.md
+          key: ${{ runner.os }}-user-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
+
+  report:
+    if: github.event_name == 'pull_request'
+    needs:
+      - shared-code
+      - auth-service
+      - financial-service
+      - user-service
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restore shared code report
+        uses: actions/cache/restore@v3
+        with:
+          path: shared-code-coverage-results.md
+          key: ${{ runner.os }}-shared-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
+          fail-on-cache-miss: true
+
+      - name: Restore auth-service report
+        uses: actions/cache/restore@v3
+        with:
+          path: auth-service-coverage-results.md
+          key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
+          fail-on-cache-miss: true
+
+      - name: Restore financial-service report
+        uses: actions/cache/restore@v3
+        with:
+          path: financial-service-coverage-results.md
+          key: ${{ runner.os }}-financial-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
+          fail-on-cache-miss: true
+
+      - name: Restore user-service report
+        uses: actions/cache/restore@v3
+        with:
+          path: user-service-coverage-results.md
+          key: ${{ runner.os }}-user-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
+          fail-on-cache-miss: true
+
+      - name: Set title for shared code
+        run: |
+          cat <<EOF >> code-coverage-output.md
+          ## 📦 Shared
+
+          EOF
+
+      - name: Merge shared report file
+        run: cat shared-code-coverage-results.md >> code-coverage-output.md
+
+      - name: Set title for auth-service
+        run: |
+          cat <<EOF >> code-coverage-output.md
+
+          ## 📦 Auth Service
+
+          EOF
+
+      - name: Merge auth-service report file
+        run: cat auth-service-coverage-results.md >> code-coverage-output.md
+
+      - name: Set title for financial-service
+        run: |
+          cat <<EOF >> code-coverage-output.md
+
+          ## 📦 Financial Service
+
+          EOF
+
+      - name: Merge financial-service report file
+        run: cat financial-service-coverage-results.md >> code-coverage-output.md
+
+      - name: Set title for user-service
+        run: |
+          cat <<EOF >> code-coverage-output.md
+
+          ## 📦 User Service
+
+          EOF
+
+      - name: Merge user-service report file
+        run: cat user-service-coverage-results.md >> code-coverage-output.md
+
+      - name: Set final PR message
+        run: |
+          cat <<EOF >> code-coverage-output.md
+
+          ⛔️ This comment can be replaced by Github Actions. Do not quote or react to it.
+          EOF
+
+      - name: Add coverage PR comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: code-coverage
+          recreate: true
+          path: code-coverage-output.md
