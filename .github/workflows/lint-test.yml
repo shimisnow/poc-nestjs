@@ -23,14 +23,14 @@ jobs:
           node-version: 21.6.1
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm install
-
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm install
 
   shared-code:
     needs: setup
@@ -49,6 +49,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
 
       - name: Lint
         run: npx nx lint shared
@@ -94,6 +95,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
 
       - name: Lint
         run: npx nx lint auth-service
@@ -142,6 +144,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
 
       - name: Lint
         run: npx nx lint financial-service
@@ -190,6 +193,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
 
       - name: Lint
         run: npx nx lint user-service

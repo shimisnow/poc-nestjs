@@ -9,8 +9,8 @@ on:
 jobs:
   node_modules:
     runs-on: ubuntu-latest
-  
-    steps: 
+
+    steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -32,7 +32,7 @@ jobs:
     needs: node_modules
     runs-on: ubuntu-latest
 
-    steps: 
+    steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -69,9 +69,9 @@ jobs:
     needs: node_modules
     runs-on: ubuntu-latest
 
-    steps: 
+    steps:
       - uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -101,5 +101,3 @@ jobs:
           DATABASE_FINANCIAL_DBNAME: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_DBNAME }}
           JWT_SECRET_KEY: ${{ steps.dotenv.outputs.JWT_SECRET_KEY }}
           JWT_MAX_AGE: ${{ steps.dotenv.outputs.JWT_MAX_AGE }}
-        
-    
