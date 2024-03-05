@@ -66,6 +66,9 @@
       "options": {
         "jestConfig": "apps/user-service/jest.config.ts"
       }
+    },
+    "compodoc": {
+      "command": "npx @compodoc/compodoc --config apps/user-service/.compodoc.config.json"
     }
   },
   "tags": []
