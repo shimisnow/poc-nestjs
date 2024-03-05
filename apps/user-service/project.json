@@ -4,6 +4,21 @@
   "sourceRoot": "apps/user-service/src",
   "projectType": "application",
   "targets": {
+    "build-repl": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/apps/user-service-repl",
+        "main": "apps/user-service/src/repl.ts",
+        "tsConfig": "apps/user-service/tsconfig.app.json",
+        "assets": ["apps/user-service/src/assets"],
+        "isolatedConfig": true,
+        "webpackConfig": "apps/user-service/webpack.config.js"
+      }
+    },
     "serve": {
       "executor": "@nx/js:node",
       "defaultConfiguration": "development",
@@ -17,6 +32,13 @@
         "production": {
           "buildTarget": "user-service:build:production"
         }
+      }
+    },
+    "serve-repl": {
+      "executor": "@nrwl/js:node",
+      "defaultConfiguration": "development",
+      "options": {
+        "buildTarget": "user-service:build-repl"
       }
     },
     "test": {
