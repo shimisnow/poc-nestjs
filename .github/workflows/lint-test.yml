@@ -20,7 +20,7 @@ jobs:
           cache: 'npm'
 
       - name: Cache node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/save@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -41,7 +41,7 @@ jobs:
           node-version: 21.6.1
 
       - name: Restore node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -52,13 +52,6 @@ jobs:
 
       - name: Unit and Integration tests
         run: npx nx test shared -- --coverage --coverageReporters=cobertura
-
-      - name: Cache coverage report
-        uses: actions/cache@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: code-coverage-results.md
-          key: ${{ runner.os }}-shared-coverage-report
 
       - name: Coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
@@ -74,6 +67,13 @@ jobs:
           output: both
           thresholds: '80 90'
 
+      - name: Cache coverage report
+        uses: actions/cache/save@v3
+        if: github.event_name == 'pull_request'
+        with:
+          path: code-coverage-results.md
+          key: ${{ runner.os }}-shared-coverage-report
+
   auth-service:
     needs: setup
     runs-on: ubuntu-latest
@@ -87,7 +87,7 @@ jobs:
           node-version: 21.6.1
 
       - name: Restore node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -101,13 +101,6 @@ jobs:
 
       - name: Unit and Integration tests
         run: npx nx test auth-service -- --coverage --coverageReporters=cobertura
-
-      - name: Cache coverage report
-        uses: actions/cache@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: code-coverage-results.md
-          key: ${{ runner.os }}-auth-service-coverage-report
 
       - name: Coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
@@ -123,6 +116,13 @@ jobs:
           output: both
           thresholds: '80 90'
 
+      - name: Cache coverage report
+        uses: actions/cache/save@v3
+        if: github.event_name == 'pull_request'
+        with:
+          path: code-coverage-results.md
+          key: ${{ runner.os }}-auth-service-coverage-report
+
   financial-service:
     needs: setup
     runs-on: ubuntu-latest
@@ -136,7 +136,7 @@ jobs:
           node-version: 21.6.1
 
       - name: Restore node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -150,13 +150,6 @@ jobs:
 
       - name: Unit and Integration tests
         run: npx nx test financial-service -- --coverage --coverageReporters=cobertura
-
-      - name: Cache coverage report
-        uses: actions/cache@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: code-coverage-results.md
-          key: ${{ runner.os }}-financial-service-coverage-report
 
       - name: Coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
@@ -172,6 +165,13 @@ jobs:
           output: both
           thresholds: '80 90'
 
+      - name: Cache coverage report
+        uses: actions/cache/save@v3
+        if: github.event_name == 'pull_request'
+        with:
+          path: code-coverage-results.md
+          key: ${{ runner.os }}-financial-service-coverage-report
+
   user-service:
     needs: setup
     runs-on: ubuntu-latest
@@ -185,7 +185,7 @@ jobs:
           node-version: 21.6.1
 
       - name: Restore node_modules
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v3
         with:
           path: node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -199,13 +199,6 @@ jobs:
 
       - name: Unit and Integration tests
         run: npx nx test user-service -- --coverage --coverageReporters=cobertura
-
-      - name: Cache coverage report
-        uses: actions/cache@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: code-coverage-results.md
-          key: ${{ runner.os }}-user-service-coverage-report
 
       - name: Coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
@@ -221,6 +214,13 @@ jobs:
           output: both
           thresholds: '80 90'
 
+      - name: Cache coverage report
+        uses: actions/cache/save@v3
+        if: github.event_name == 'pull_request'
+        with:
+          path: code-coverage-results.md
+          key: ${{ runner.os }}-user-service-coverage-report
+
   report:
     if: github.event_name == 'pull_request'
     needs:
@@ -232,28 +232,28 @@ jobs:
 
     steps:
       - name: Restore shared code report
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v3
         with:
           path: shared-code-coverage-results.md
           key: ${{ runner.os }}-shared-coverage-report
           fail-on-cache-miss: true
 
       - name: Restore auth-service report
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v3
         with:
           path: auth-service-code-coverage-results.md
           key: ${{ runner.os }}-auth-service-coverage-report
           fail-on-cache-miss: true
 
       - name: Restore financial-service report
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v3
         with:
           path: financial-service-code-coverage-results.md
           key: ${{ runner.os }}-financial-service-coverage-report
           fail-on-cache-miss: true
 
       - name: Restore user-service report
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v3
         with:
           path: user-service-code-coverage-results.md
           key: ${{ runner.os }}-user-service-coverage-report
