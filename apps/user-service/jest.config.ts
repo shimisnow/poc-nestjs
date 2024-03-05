@@ -8,4 +8,16 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/user-service',
+  collectCoverageFrom: ['<rootDir>/src/**'],
+  coveragePathIgnorePatterns: [
+    'main.ts',
+    'repl.ts',
+    '(module|dto|serializer|body|result|mock|output|payload).ts$',
+  ],
+  coverageReporters: ['clover', 'html'],
+  coverageThreshold: {
+    global: {
+      lines: 60,
+    },
+  },
 };
