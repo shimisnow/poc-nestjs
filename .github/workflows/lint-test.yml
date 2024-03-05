@@ -67,11 +67,15 @@ jobs:
           output: both
           thresholds: '80 90'
 
+      - name: Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md shared-code-coverage-results.md
+
       - name: Cache coverage report
         uses: actions/cache/save@v3
         if: github.event_name == 'pull_request'
         with:
-          path: code-coverage-results.md
+          path: shared-code-coverage-results.md
           key: ${{ runner.os }}-shared-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   auth-service:
@@ -116,11 +120,15 @@ jobs:
           output: both
           thresholds: '80 90'
 
+      - name: Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md auth-service-code-coverage-results.md
+
       - name: Cache coverage report
         uses: actions/cache/save@v3
         if: github.event_name == 'pull_request'
         with:
-          path: code-coverage-results.md
+          path: auth-service-code-coverage-results.md
           key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   financial-service:
@@ -165,11 +173,15 @@ jobs:
           output: both
           thresholds: '80 90'
 
+      - name: Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md financial-service-code-coverage-results.md
+
       - name: Cache coverage report
         uses: actions/cache/save@v3
         if: github.event_name == 'pull_request'
         with:
-          path: code-coverage-results.md
+          path: financial-service-code-coverage-results.md
           key: ${{ runner.os }}-financial-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   user-service:
@@ -214,11 +226,15 @@ jobs:
           output: both
           thresholds: '80 90'
 
+      - name: Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md user-service-code-coverage-results.md
+
       - name: Cache coverage report
         uses: actions/cache/save@v3
         if: github.event_name == 'pull_request'
         with:
-          path: code-coverage-results.md
+          path: user-service-code-coverage-results.md
           key: ${{ runner.os }}-user-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
   report:
