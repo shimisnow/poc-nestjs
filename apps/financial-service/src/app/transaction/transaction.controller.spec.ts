@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TransactionController } from './transaction.controller';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
+import { TransactionEntity } from '../database/entities/transaction.entity';
 import { TransactionsRepository } from './repositories/transactions/transactions.repository';
 import { TransactionService } from './transaction.service';
 import { BalanceService } from '../balance/balance.service';

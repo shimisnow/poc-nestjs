@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { AccountEntity } from '@shared/database/financial/entities/account.entity';
-import { AccountStatusEnum } from '@shared/database/financial/enums/account-status.enum';
+import { AccountEntity } from '../../../database/entities/account.entity';
+import { AccountStatusEnum } from '../../../database/enums/account-status.enum';
 
 @Injectable()
 export class AccountsRepository {

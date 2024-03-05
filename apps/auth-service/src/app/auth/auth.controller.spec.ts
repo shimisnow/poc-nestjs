@@ -6,7 +6,7 @@ import { UserAuthsRepository } from './repositories/user-auths/user-auths.reposi
 import { UserAuthsRepositoryMock } from './mocks/user-auths-repository.mock';
 import { JwtService } from '@nestjs/jwt';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { UserAuthEntity } from '@shared/database/authentication/entities/user-auth.entity';
+import { UserAuthEntity } from '../database/entities/user-auth.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Logger } from '@nestjs/common';
 

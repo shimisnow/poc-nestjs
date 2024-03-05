@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TransactionTypeEnum } from '@shared/database/financial/enums/transaction-type.enum';
+import { TransactionTypeEnum } from '../../database/enums/transaction-type.enum';
 import { IsEnum, IsNotEmpty, IsNumber, Min } from 'class-validator';
 
 export class CreateTransactionBodyDto {

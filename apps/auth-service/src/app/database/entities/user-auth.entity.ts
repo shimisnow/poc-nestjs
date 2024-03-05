@@ -13,8 +13,6 @@ import * as bcrypt from 'bcrypt';
 
 /**
  * TypeORM Entity with the user authentication information.
- * WARNING: this entity is to be used only at the auth-service.
- * It is located at the @shared just to centralize the entities code.
  */
 @Entity({
   name: 'user_auths',

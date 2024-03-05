@@ -6,8 +6,8 @@ import { BalanceService } from './balance.service';
 import { BalancesRepository } from './repositories/balances.repository';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { BalanceEntity } from '@shared/database/financial/entities/balance.entity';
-import { TransactionEntity } from '@shared/database/financial/entities/transaction.entity';
+import { BalanceEntity } from '../database/entities/balance.entity';
+import { TransactionEntity } from '../database/entities/transaction.entity';
 import { ForbiddenException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 
