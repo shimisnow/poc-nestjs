@@ -7,9 +7,9 @@ registerEnumType(CountryCodeEnum, { name: 'CountryCodeEnum' });
   description: '',
 })
 export class CountryModel {
-  @Field(() => CountryCodeEnum, { nullable: false })
+  @Field(() => CountryCodeEnum)
   countryCode: CountryCodeEnum;
 
-  @Field((type) => Int, { nullable: false })
+  @Field((type) => Int)
   countryCallingCode: number;
 }

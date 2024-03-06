@@ -62,7 +62,6 @@ export class PhoneEntity {
 
   @Column({
     name: 'user_id',
-    type: 'uuid',
     nullable: false,
   })
   @ManyToOne(() => UserEntity, (user) => user.userId)

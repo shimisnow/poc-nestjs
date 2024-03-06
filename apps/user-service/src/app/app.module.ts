@@ -20,6 +20,7 @@ import { AddressesModule } from './addresses/addresses.module';
       database: process.env.DATABASE_USER_DBNAME,
       entities,
       synchronize: true,
+      logging: true,
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,

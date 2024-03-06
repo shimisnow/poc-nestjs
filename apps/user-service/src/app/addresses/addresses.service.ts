@@ -8,4 +8,8 @@ export class AddressesService {
   async findOneById(addressId: number) {
     return await this.addressesRepository.findOneById(addressId);
   }
+
+  async findByUserId(userId: string) {
+    return await this.addressesRepository.findByUserId(userId);
+  }
 }

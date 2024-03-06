@@ -11,18 +11,18 @@ registerEnumType(CountryCodeEnum, { name: 'CountryCodeEnum' });
   description: '',
 })
 export class AddressModel {
-  @Field((type) => Int, { nullable: false })
+  @Field((type) => Int)
   addressId: number;
 
-  @Field((type) => String, { nullable: false })
+  @Field((type) => String)
   postalcode: string;
 
-  @Field((type) => AddressTypeEnum, { nullable: false })
+  @Field((type) => AddressTypeEnum)
   type: AddressTypeEnum;
 
-  @Field((type) => CountryModel, { nullable: false })
+  @Field((type) => CountryModel)
   country: CountryModel;
 
-  @Field((type) => UserModel, { nullable: false })
+  @Field((type) => UserModel)
   user: UserModel;
 }

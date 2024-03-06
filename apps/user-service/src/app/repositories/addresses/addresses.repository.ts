@@ -15,4 +15,12 @@ export class AddressesRepository {
       addressId,
     });
   }
+
+  async findByUserId(userId: string): Promise<AddressEntity[]> {
+    return await this.repository
+      .createQueryBuilder()
+      .select()
+      .where('user_id = :userId', { userId })
+      .getMany();
+  }
 }
