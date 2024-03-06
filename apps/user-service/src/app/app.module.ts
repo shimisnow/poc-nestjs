@@ -23,6 +23,7 @@ import { PhonesModule } from './phones/phones.module';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
+      path: 'api',
       autoSchemaFile: true,
     }),
     CountriesModule,
