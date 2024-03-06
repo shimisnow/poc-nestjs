@@ -11,11 +11,9 @@ export class CountriesRepository {
     private repository: Repository<CountryEntity>,
   ) {}
 
-  async findOneByCountryCode(
-    countryCode: CountryCodeEnum,
-  ): Promise<CountryEntity | null> {
+  async findOneByCode(code: CountryCodeEnum): Promise<CountryEntity | null> {
     return await this.repository.findOneBy({
-      countryCode,
+      code,
     });
   }
 }

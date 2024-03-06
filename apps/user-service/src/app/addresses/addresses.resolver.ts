@@ -24,9 +24,7 @@ export class AddressesResolver {
 
   @ResolveField('country', (returns) => CountryModel)
   async getCountry(@Parent() address: AddressModel) {
-    return this.countriesService.findOneByCountryCode(
-      address.country.countryCode,
-    );
+    return this.countriesService.findOneByCode(address.country.code);
   }
 
   @ResolveField('user', (returns) => UserModel)

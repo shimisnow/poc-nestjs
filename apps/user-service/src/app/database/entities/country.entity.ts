@@ -19,21 +19,21 @@ export class CountryEntity {
    * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
    */
   @PrimaryColumn({
-    name: 'country_code',
+    name: 'code',
     type: 'enum',
     enum: CountryCodeEnum,
     enumName: 'country_code_enum',
     primaryKeyConstraintName: 'pk_countries',
     nullable: false,
   })
-  countryCode: CountryCodeEnum;
+  code: CountryCodeEnum;
 
   @Column({
-    name: 'country_calling_code',
+    name: 'calling_code',
     type: 'integer',
     nullable: false,
   })
-  countryCallingCode: number;
+  callingCode: number;
 
   /**
    * Timestamp of insert operation.

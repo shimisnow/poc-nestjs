@@ -9,9 +9,9 @@ export class CountriesResolver {
 
   @Query((returns) => CountryModel, { name: 'country' })
   async getCountry(
-    @Args('countryCode', { type: () => CountryCodeEnum })
-    countryCode: CountryCodeEnum,
+    @Args('code', { type: () => CountryCodeEnum })
+    code: CountryCodeEnum,
   ) {
-    return await this.countriesService.findOneByCountryCode(countryCode);
+    return await this.countriesService.findOneByCode(code);
   }
 }

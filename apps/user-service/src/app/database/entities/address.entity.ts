@@ -53,10 +53,10 @@ export class AddressEntity {
     enumName: 'country_code_enum',
     nullable: false,
   })
-  @ManyToOne(() => CountryEntity, (country) => country.countryCode)
+  @ManyToOne(() => CountryEntity, (country) => country.code)
   @JoinColumn({
     name: 'country_code',
-    referencedColumnName: 'countryCode',
+    referencedColumnName: 'code',
     foreignKeyConstraintName: 'fk_addresses_countries',
   })
   country: CountryEntity;

@@ -10,8 +10,8 @@ export class CountryModel {
   @Field(() => CountryCodeEnum, {
     description: 'Country code as ISO 3166-1 Alfa 3',
   })
-  countryCode: CountryCodeEnum;
+  code: CountryCodeEnum;
 
   @Field(() => Int, { description: 'Country calling code' })
-  countryCallingCode: number;
+  callingCode: number;
 }

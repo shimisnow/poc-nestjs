@@ -6,7 +6,7 @@ import { CountriesRepository } from '../repositories/countries/countries.reposit
 export class CountriesService {
   constructor(private countriesRepository: CountriesRepository) {}
 
-  async findOneByCountryCode(countryCode: CountryCodeEnum) {
-    return await this.countriesRepository.findOneByCountryCode(countryCode);
+  async findOneByCode(code: CountryCodeEnum) {
+    return await this.countriesRepository.findOneByCode(code);
   }
 }
