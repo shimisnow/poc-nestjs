@@ -6,7 +6,7 @@ import { UsersService } from '../users/users.service';
 import { CountryModel } from '../countries/models/country.model';
 import { UserModel } from '../users/models/user.model';
 
-@Resolver((of) => AddressModel)
+@Resolver(() => AddressModel)
 export class AddressesResolver {
   constructor(
     private addressesService: AddressesService,
@@ -14,7 +14,7 @@ export class AddressesResolver {
     private usersService: UsersService,
   ) {}
 
-  @Query((returns) => AddressModel, { name: 'address' })
+  @Query(() => AddressModel, { name: 'address' })
   async getAddress(
     @Args('addressId', { type: () => Number })
     addressId: number,
@@ -22,12 +22,12 @@ export class AddressesResolver {
     return await this.addressesService.findOneById(addressId);
   }
 
-  @ResolveField('country', (returns) => CountryModel)
+  @ResolveField('country', () => CountryModel)
   async getCountry(@Parent() address: AddressModel) {
     return this.countriesService.findOneByCode(address.country.code);
   }
 
-  @ResolveField('user', (returns) => UserModel)
+  @ResolveField('user', () => UserModel)
   async getUser(@Parent() address: AddressModel) {
     return this.usersService.findOneById(address.user.userId);
   }

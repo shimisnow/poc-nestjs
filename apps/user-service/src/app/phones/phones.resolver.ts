@@ -6,7 +6,7 @@ import { PhonesService } from './phones.service';
 import { CountryModel } from '../countries/models/country.model';
 import { UserModel } from '../users/models/user.model';
 
-@Resolver((of) => PhoneModel)
+@Resolver(() => PhoneModel)
 export class PhonesResolver {
   constructor(
     private phonesService: PhonesService,
@@ -14,7 +14,7 @@ export class PhonesResolver {
     private usersService: UsersService,
   ) {}
 
-  @Query((returns) => PhoneModel, { name: 'phone' })
+  @Query(() => PhoneModel, { name: 'phone' })
   async getPhone(
     @Args('phoneId', { type: () => Number })
     phoneId: number,
@@ -22,12 +22,12 @@ export class PhonesResolver {
     return await this.phonesService.findOneById(phoneId);
   }
 
-  @ResolveField('country', (returns) => CountryModel)
+  @ResolveField('country', () => CountryModel)
   async getCountry(@Parent() phone: PhoneModel) {
     return this.countriesService.findOneByCode(phone.country.code);
   }
 
-  @ResolveField('user', (returns) => UserModel)
+  @ResolveField('user', () => UserModel)
   async getUser(@Parent() phone: PhoneModel) {
     return this.usersService.findOneById(phone.user.userId);
   }
