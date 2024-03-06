@@ -12,5 +12,6 @@ import { UsersModule } from '../users/users.module';
     forwardRef(() => UsersModule),
   ],
   providers: [PhonesService, PhonesResolver],
+  exports: [PhonesService],
 })
 export class PhonesModule {}

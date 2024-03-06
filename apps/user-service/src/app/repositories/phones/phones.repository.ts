@@ -15,4 +15,12 @@ export class PhonesRepository {
       phoneId,
     });
   }
+
+  async findByUserId(userId: string): Promise<PhoneEntity[]> {
+    return await this.repository
+      .createQueryBuilder()
+      .select()
+      .where('user_id = :userId', { userId })
+      .getMany();
+  }
 }

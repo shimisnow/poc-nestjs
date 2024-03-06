@@ -8,4 +8,8 @@ export class PhonesService {
   async findOneById(phoneId: number) {
     return await this.phonesRepository.findOneById(phoneId);
   }
+
+  async findByUserId(userId: string) {
+    return await this.phonesRepository.findByUserId(userId);
+  }
 }
