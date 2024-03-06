@@ -2,21 +2,23 @@ import { Field, ObjectType } from '@nestjs/graphql';
 import { AddressModel } from '../../addresses/models/address.model';
 
 @ObjectType({
-  description: '',
+  description: 'Person information',
 })
 export class UserModel {
-  @Field((type) => String)
+  @Field(() => String, { description: 'Unique identifier as UUID' })
   userId: string;
 
-  @Field((type) => String)
+  @Field(() => String, { description: 'A person name' })
   name: string;
 
-  @Field((type) => String)
+  @Field(() => String, { description: 'A person surname' })
   surname: string;
 
-  @Field((type) => String)
+  @Field(() => String, { description: 'A person email' })
   email: string;
 
-  @Field((type) => [AddressModel])
+  @Field(() => [AddressModel], {
+    description: 'Addresses associated with the person',
+  })
   addresses: AddressModel[];
 }

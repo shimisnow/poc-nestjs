@@ -9,21 +9,25 @@ registerEnumType(PhoneTypeEnum, { name: 'PhoneTypeEnum' });
 registerEnumType(CountryCodeEnum, { name: 'CountryCodeEnum' });
 
 @ObjectType({
-  description: '',
+  description: 'Phone information',
 })
 export class PhoneModel {
-  @Field((type) => Int)
+  @Field(() => Int, { description: 'Unique identifier' })
   phoneId: number;
 
-  @Field((type) => PhoneTypeEnum)
+  @Field(() => PhoneTypeEnum, {
+    description: 'Phone type as in main, home, work',
+  })
   type: AddressTypeEnum;
 
-  @Field((type) => Number)
+  @Field(() => Number, { description: 'Phone number' })
   number: number;
 
-  @Field((type) => CountryModel)
+  @Field(() => CountryModel, {
+    description: 'Country associated with the phone',
+  })
   country: CountryModel;
 
-  @Field((type) => UserModel)
+  @Field(() => UserModel, { description: 'User associated with the phone' })
   user: UserModel;
 }
