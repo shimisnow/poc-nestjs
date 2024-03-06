@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@compodoc/compodoc": "^1.1.23",
-    "@nestjs/schematics": "^10.1.0",
+    "@nestjs/schematics": "^10.1.1",
     "@nestjs/testing": "^10.3.1",
     "@nrwl/eslint-plugin-nx": "18.0.0",
     "@nrwl/jest": "18.0.0",
