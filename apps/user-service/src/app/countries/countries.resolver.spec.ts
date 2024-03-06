@@ -1,14 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CountriesService } from './countries.service';
+import { CountriesResolver } from './countries.resolver';
+import { CountriesService } from '../countries/countries.service';
 import { CountriesRepository } from '../repositories/countries/countries.repository';
 import { CountriesRepositoryMock } from './mocks/countries-repository.mock';
 
-describe('countries.service', () => {
-  let service: CountriesService;
+describe('countries.resolver', () => {
+  let resolver: CountriesResolver;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        CountriesResolver,
         CountriesService,
         {
           provide: CountriesRepository,
@@ -17,10 +19,10 @@ describe('countries.service', () => {
       ],
     }).compile();
 
-    service = module.get<CountriesService>(CountriesService);
+    resolver = module.get<CountriesResolver>(CountriesResolver);
   });
 
   it('should be defined', () => {
-    expect(service).toBeDefined();
+    expect(resolver).toBeDefined();
   });
 });

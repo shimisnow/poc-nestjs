@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { AddressesRepository } from '../repositories/addresses/addresses.repository';
-import { AddressModel } from './models/address.model';
 import { AddressEntity } from '../database/entities/address.entity';
 
 @Injectable()
