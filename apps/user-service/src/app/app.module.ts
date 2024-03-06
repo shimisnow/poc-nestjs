@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { entities } from './database/entities';
 import { CountriesModule } from './countries/countries.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CountriesModule } from './countries/countries.module';
       autoSchemaFile: true,
     }),
     CountriesModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

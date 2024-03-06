@@ -6,7 +6,7 @@ registerEnumType(CountryCodeEnum, { name: 'CountryCodeEnum' });
 @ObjectType({
   description: '',
 })
-export class Country {
+export class CountryModel {
   @Field(() => CountryCodeEnum, { nullable: false })
   countryCode: CountryCodeEnum;
 
