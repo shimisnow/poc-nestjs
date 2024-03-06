@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { entities } from './database/entities';
 import { CountriesModule } from './countries/countries.module';
 import { UsersModule } from './users/users.module';
+import { AddressesModule } from './addresses/addresses.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UsersModule } from './users/users.module';
     }),
     CountriesModule,
     UsersModule,
+    AddressesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
