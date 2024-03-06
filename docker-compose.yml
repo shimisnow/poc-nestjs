@@ -123,6 +123,20 @@ services:
     volumes:
       - ./deployment/database/financial:/docker-entrypoint-initdb.d:ro
 
+  database-info:
+    image: postgres:16.1
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_USER_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_USER_PASSWORD}
+      POSTGRES_DB: ${DATABASE_USER_DBNAME}
+    networks:
+      - poc-nestjs
+    ports:
+      - ${DATABASE_USER_PORT}:5432
+    #volumes:
+    #  - ./deployment/database/info:/docker-entrypoint-initdb.d:ro
+
   auth-service-openapi:
     image: nginx:1.25.3-alpine3.18
     restart: always
