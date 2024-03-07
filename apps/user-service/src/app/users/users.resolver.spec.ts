@@ -9,6 +9,7 @@ import { UsersRepository } from '../repositories/users/users.repository';
 import { AddressesRepositoryMock } from './mocks/addresses-repository.mock';
 import { PhonesRepositoryMock } from './mocks/phones-repository.mock';
 import { UsersRepositoryMock } from './mocks/users-repository.mock';
+import { UserEntity } from '../database/entities/user.entity';
 
 describe('users.resolver', () => {
   let resolver: UsersResolver;
@@ -41,4 +42,26 @@ describe('users.resolver', () => {
   it('should be defined', () => {
     expect(resolver).toBeDefined();
   });
+
+  describe('getUser()', () => {
+    test('user does exists', async () => {
+      const result = await resolver.getUser(
+        'b0b6065a-dbbf-46a5-8db5-4c089aa17ec1',
+      );
+
+      expect(result).toBeInstanceOf(UserEntity);
+    });
+
+    test('user does not exists', async () => {
+      const result = await resolver.getUser(
+        'b0b6065a-dbbf-46a5-8db5-4c089aa17ed2',
+      );
+
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('getAddresses()', () => {});
+
+  describe('getPhones()', () => {});
 });

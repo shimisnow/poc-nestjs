@@ -6,7 +6,7 @@ import { UserEntity } from '../database/entities/user.entity';
 export class UsersService {
   constructor(private usersRepository: UsersRepository) {}
 
-  async findOneById(userId: string): Promise<UserEntity> {
+  async findOneById(userId: string): Promise<UserEntity | null> {
     return await this.usersRepository.findOneById(userId);
   }
 }
