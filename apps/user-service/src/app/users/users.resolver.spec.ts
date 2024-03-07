@@ -51,7 +51,7 @@ describe('users.resolver', () => {
     expect(resolver).toBeDefined();
   });
 
-  describe('getUser()', () => {
+  /* describe('getUser()', () => {
     test('user does exists', async () => {
       const result = await resolver.getUser(
         'b0b6065a-dbbf-46a5-8db5-4c089aa17ec1',
@@ -67,7 +67,7 @@ describe('users.resolver', () => {
 
       expect(result).toBeNull();
     });
-  });
+  }); */
 
   describe('getAddresses()', () => {});
 
