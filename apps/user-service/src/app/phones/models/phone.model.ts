@@ -8,26 +8,44 @@ import { PhoneTypeEnum } from '../../database/enums/phone-type.enum';
 registerEnumType(PhoneTypeEnum, { name: 'PhoneTypeEnum' });
 registerEnumType(CountryCodeEnum, { name: 'CountryCodeEnum' });
 
+/**
+ * Phone information
+ */
 @ObjectType({
   description: 'Phone information',
 })
 export class PhoneModel {
+  /**
+   * Unique identifier
+   */
   @Field(() => Int, { description: 'Unique identifier' })
   phoneId: number;
 
+  /**
+   * Phone type as in main, home, work
+   */
   @Field(() => PhoneTypeEnum, {
     description: 'Phone type as in main, home, work',
   })
   type: AddressTypeEnum;
 
+  /**
+   * Phone number
+   */
   @Field(() => Number, { description: 'Phone number' })
   number: number;
 
+  /**
+   * Country associated with the phone
+   */
   @Field(() => CountryModel, {
     description: 'Country associated with the phone',
   })
   country: CountryModel;
 
+  /**
+   * User associated with the phone
+   */
   @Field(() => UserModel, { description: 'User associated with the phone' })
   user: UserModel;
 }
