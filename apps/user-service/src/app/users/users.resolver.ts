@@ -7,6 +7,8 @@ import { PhoneModel } from '../phones/models/phone.model';
 import { PhonesService } from '../phones/phones.service';
 import { LegalDocModel } from '../legal-docs/models/legal-doc.model';
 import { LegalDocsService } from '../legal-docs/legal-docs.service';
+import { SocialMediaModel } from '../social-medias/models/social-media.model';
+import { SocialMediasService } from '../social-medias/social-medias.service';
 
 @Resolver(() => UserModel)
 export class UsersResolver {
@@ -15,6 +17,7 @@ export class UsersResolver {
     private addressesService: AddressesService,
     private phonesService: PhonesService,
     private legalDocsService: LegalDocsService,
+    private socialMediasService: SocialMediasService,
   ) {}
 
   @Query(() => UserModel, { name: 'user' })
@@ -35,8 +38,13 @@ export class UsersResolver {
     return await this.phonesService.findByUserId(user.userId);
   }
 
-  @ResolveField('legaldocs', () => [LegalDocModel])
+  @ResolveField('legalDocs', () => [LegalDocModel])
   async getLegalDocs(@Parent() user: UserModel) {
     return await this.legalDocsService.findByUserId(user.userId);
+  }
+
+  @ResolveField('socialMedias', () => [SocialMediaModel])
+  async getSocialMedias(@Parent() user: UserModel) {
+    return await this.socialMediasService.findByUserId(user.userId);
   }
 }

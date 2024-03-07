@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AddressesModule } from './addresses/addresses.module';
 import { PhonesModule } from './phones/phones.module';
 import { LegalDocsModule } from './legal-docs/legal-docs.module';
+import { SocialMediasModule } from './social-medias/social-medias.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { LegalDocsModule } from './legal-docs/legal-docs.module';
     AddressesModule,
     PhonesModule,
     LegalDocsModule,
+    SocialMediasModule,
   ],
 })
 export class AppModule {}

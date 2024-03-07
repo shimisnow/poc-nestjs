@@ -5,6 +5,7 @@ import { UsersRepositoryModule } from '../repositories/users/users-repository.mo
 import { AddressesModule } from '../addresses/addresses.module';
 import { PhonesModule } from '../phones/phones.module';
 import { LegalDocsModule } from '../legal-docs/legal-docs.module';
+import { SocialMediasModule } from '../social-medias/social-medias.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { LegalDocsModule } from '../legal-docs/legal-docs.module';
     forwardRef(() => AddressesModule),
     PhonesModule,
     LegalDocsModule,
+    SocialMediasModule,
   ],
   providers: [UsersService, UsersResolver],
   exports: [UsersService],
