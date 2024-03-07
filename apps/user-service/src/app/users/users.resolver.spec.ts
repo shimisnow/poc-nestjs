@@ -10,6 +10,9 @@ import { AddressesRepositoryMock } from './mocks/addresses-repository.mock';
 import { PhonesRepositoryMock } from './mocks/phones-repository.mock';
 import { UsersRepositoryMock } from './mocks/users-repository.mock';
 import { UserEntity } from '../database/entities/user.entity';
+import { LegalDocsService } from '../legal-docs/legal-docs.service';
+import { LegalDocsRepository } from '../repositories/legal-docs/legal-docs.repository';
+import { LegalDocsRepositoryMock } from './mocks/legal-docs-repository.mock';
 
 describe('users.resolver', () => {
   let resolver: UsersResolver;
@@ -21,6 +24,7 @@ describe('users.resolver', () => {
         UsersService,
         AddressesService,
         PhonesService,
+        LegalDocsService,
         {
           provide: AddressesRepository,
           useClass: AddressesRepositoryMock,
@@ -32,6 +36,10 @@ describe('users.resolver', () => {
         {
           provide: UsersRepository,
           useClass: UsersRepositoryMock,
+        },
+        {
+          provide: LegalDocsRepository,
+          useClass: LegalDocsRepositoryMock,
         },
       ],
     }).compile();

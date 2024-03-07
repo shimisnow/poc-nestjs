@@ -1,11 +1,9 @@
 import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
-import { CountryCodeEnum } from '../../database/enums/country-code.enum';
 import { AddressTypeEnum } from '../../database/enums/address-type.enum';
 import { CountryModel } from '../../countries/models/country.model';
 import { UserModel } from '../../users/models/user.model';
 
 registerEnumType(AddressTypeEnum, { name: 'AddressTypeEnum' });
-registerEnumType(CountryCodeEnum, { name: 'CountryCodeEnum' });
 
 @ObjectType({
   description: 'Address information',

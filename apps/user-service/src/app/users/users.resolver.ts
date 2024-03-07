@@ -5,6 +5,8 @@ import { AddressesService } from '../addresses/addresses.service';
 import { AddressModel } from '../addresses/models/address.model';
 import { PhoneModel } from '../phones/models/phone.model';
 import { PhonesService } from '../phones/phones.service';
+import { LegalDocModel } from '../legal-docs/models/legal-doc.model';
+import { LegalDocsService } from '../legal-docs/legal-docs.service';
 
 @Resolver(() => UserModel)
 export class UsersResolver {
@@ -12,6 +14,7 @@ export class UsersResolver {
     private usersService: UsersService,
     private addressesService: AddressesService,
     private phonesService: PhonesService,
+    private legalDocsService: LegalDocsService,
   ) {}
 
   @Query(() => UserModel, { name: 'user' })
@@ -30,5 +33,10 @@ export class UsersResolver {
   @ResolveField('phones', () => [PhoneModel])
   async getPhones(@Parent() user: UserModel) {
     return await this.phonesService.findByUserId(user.userId);
+  }
+
+  @ResolveField('legaldocs', () => [LegalDocModel])
+  async getLegalDocs(@Parent() user: UserModel) {
+    return await this.legalDocsService.findByUserId(user.userId);
   }
 }
