@@ -76,7 +76,11 @@ describe('users.resolver', () => {
     });
   }); */
 
-  describe('getAddresses()', () => {});
+  describe('getAddresses()', () => {
+    return;
+  });
 
-  describe('getPhones()', () => {});
+  describe('getPhones()', () => {
+    return;
+  });
 });
