@@ -10,8 +10,8 @@ import { LegalDocModel } from '../legal-docs/models/legal-doc.model';
 import { LegalDocsService } from '../legal-docs/legal-docs.service';
 import { SocialMediaModel } from '../social-medias/models/social-media.model';
 import { SocialMediasService } from '../social-medias/social-medias.service';
-import { User } from '../decorators/user.decorator';
-import { AuthGuard } from '../guards/auth.guard';
+import { GraphQLUser } from '@shared/authentication/decorators/graphql-user.decorator';
+import { GraphQLAuthGuard } from '@shared/authentication/guards/graphql-auth.guard';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 @Resolver(() => UserModel)
@@ -24,10 +24,16 @@ export class UsersResolver {
     private socialMediasService: SocialMediasService,
   ) {}
 
+  @Query(() => UserModel, { name: 'me' })
+  @UseGuards(GraphQLAuthGuard)
+  async getAuthenticatedUser(@GraphQLUser() user: UserPayload) {
+    return await this.usersService.findOneById(user.userId);
+  }
+
   @Query(() => UserModel, { name: 'user' })
-  @UseGuards(AuthGuard)
+  @UseGuards(GraphQLAuthGuard)
   async getUser(
-    @User() user: UserPayload,
+    @GraphQLUser() user: UserPayload,
     @Args('userId', { type: () => String })
     userId: string,
   ) {
