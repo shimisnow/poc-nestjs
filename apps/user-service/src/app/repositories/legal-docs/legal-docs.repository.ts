@@ -18,12 +18,31 @@ export class LegalDocsRepository {
    * Finds a legal doc by its unique id
    *
    * @param {number} legalDocId Unique identifier
+   * @param {[keyof LegalDocEntity]} queryFields Entity fields to be retrieved
    * @returns {LegalDocEntity | null} Found entity or null
    */
-  async findOneById(legalDocId: number): Promise<LegalDocEntity | null> {
-    return await this.repository.findOneBy({
-      legalDocId,
-    });
+  async findOneById(
+    legalDocId: number,
+    queryFields: [keyof LegalDocEntity] = null,
+  ): Promise<LegalDocEntity | null> {
+    if (queryFields === null) {
+      return await this.repository.findOneBy({
+        legalDocId,
+      });
+    } else {
+      const result = await this.repository.find({
+        select: queryFields,
+        where: {
+          legalDocId,
+        },
+      });
+
+      if (result.length > 0) {
+        return result[0];
+      }
+
+      return null;
+    }
   }
 
   /**
