@@ -18,6 +18,7 @@ export class UsersRepository {
    * Finds a user by its unique id
    *
    * @param {string} userId Unique identifier
+   * @param {[keyof UserEntity]} queryFields Entity fields to be retrieved
    * @returns {UserEntity | null} Found entity or null
    */
   async findOneById(

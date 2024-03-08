@@ -18,12 +18,31 @@ export class AddressesRepository {
    * Finds an address by its unique id
    *
    * @param {number} addressId Unique identifier
+   * @param {[keyof AddressEntity]} queryFields Entity fields to be retrieved
    * @returns {AddressEntity | null} Found entity or null
    */
-  async findOneById(addressId: number): Promise<AddressEntity | null> {
-    return await this.repository.findOneBy({
-      addressId,
-    });
+  async findOneById(
+    addressId: number,
+    queryFields: [keyof AddressEntity] = null,
+  ): Promise<AddressEntity | null> {
+    if (queryFields === null) {
+      return await this.repository.findOneBy({
+        addressId,
+      });
+    } else {
+      const result = await this.repository.find({
+        select: queryFields,
+        where: {
+          addressId,
+        },
+      });
+
+      if (result.length > 0) {
+        return result[0];
+      }
+
+      return null;
+    }
   }
 
   /**
