@@ -1,4 +1,5 @@
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserModel } from './models/user.model';
 import { AddressesService } from '../addresses/addresses.service';
@@ -9,6 +10,9 @@ import { LegalDocModel } from '../legal-docs/models/legal-doc.model';
 import { LegalDocsService } from '../legal-docs/legal-docs.service';
 import { SocialMediaModel } from '../social-medias/models/social-media.model';
 import { SocialMediasService } from '../social-medias/social-medias.service';
+import { User } from '../decorators/user.decorator';
+import { AuthGuard } from '../guards/auth.guard';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 @Resolver(() => UserModel)
 export class UsersResolver {
@@ -21,7 +25,9 @@ export class UsersResolver {
   ) {}
 
   @Query(() => UserModel, { name: 'user' })
+  @UseGuards(AuthGuard)
   async getUser(
+    @User() user: UserPayload,
     @Args('userId', { type: () => String })
     userId: string,
   ) {
