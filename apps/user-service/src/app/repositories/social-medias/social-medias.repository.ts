@@ -18,12 +18,31 @@ export class SocialMediasRepository {
    * Finds a social media by its unique id
    *
    * @param {number} socialMediaId Unique identifier
+   * @param {[keyof SocialMediaEntity]} queryFields Entity fields to be retrieved
    * @returns {SocialMediaEntity | null} Found entity or null
    */
-  async findOneById(socialMediaId: number): Promise<SocialMediaEntity | null> {
-    return await this.repository.findOneBy({
-      socialMediaId,
-    });
+  async findOneById(
+    socialMediaId: number,
+    queryFields: [keyof SocialMediaEntity] = null,
+  ): Promise<SocialMediaEntity | null> {
+    if (queryFields === null) {
+      return await this.repository.findOneBy({
+        socialMediaId,
+      });
+    } else {
+      const result = await this.repository.find({
+        select: queryFields,
+        where: {
+          socialMediaId,
+        },
+      });
+
+      if (result.length > 0) {
+        return result[0];
+      }
+
+      return null;
+    }
   }
 
   /**

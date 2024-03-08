@@ -6,8 +6,14 @@ import { SocialMediaEntity } from '../database/entities/social-media.entity';
 export class SocialMediasService {
   constructor(private socialMediasRepository: SocialMediasRepository) {}
 
-  async findOneById(socialMediaId: number): Promise<SocialMediaEntity | null> {
-    return await this.socialMediasRepository.findOneById(socialMediaId);
+  async findOneById(
+    socialMediaId: number,
+    queryFields: string[] = null,
+  ): Promise<SocialMediaEntity | null> {
+    return await this.socialMediasRepository.findOneById(
+      socialMediaId,
+      queryFields as [keyof SocialMediaEntity],
+    );
   }
 
   async findByUserId(
