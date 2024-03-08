@@ -18,12 +18,31 @@ export class PhonesRepository {
    * Finds a phone by its unique id
    *
    * @param {number} phoneId Unique identifier
+   * @param {[keyof PhoneEntity]} queryFields Entity fields to be retrieved
    * @returns {PhoneEntity | null} Found entity or null
    */
-  async findOneById(phoneId: number): Promise<PhoneEntity | null> {
-    return await this.repository.findOneBy({
-      phoneId,
-    });
+  async findOneById(
+    phoneId: number,
+    queryFields: [keyof PhoneEntity] = null,
+  ): Promise<PhoneEntity | null> {
+    if (queryFields === null) {
+      return await this.repository.findOneBy({
+        phoneId,
+      });
+    } else {
+      const result = await this.repository.find({
+        select: queryFields,
+        where: {
+          phoneId,
+        },
+      });
+
+      if (result.length > 0) {
+        return result[0];
+      }
+
+      return null;
+    }
   }
 
   /**
