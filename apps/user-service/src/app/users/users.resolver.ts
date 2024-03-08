@@ -1,4 +1,11 @@
-import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Info,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+} from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserModel } from './models/user.model';
@@ -13,6 +20,8 @@ import { SocialMediasService } from '../social-medias/social-medias.service';
 import { GraphQLUser } from '@shared/authentication/decorators/graphql-user.decorator';
 import { GraphQLAuthGuard } from '@shared/authentication/guards/graphql-auth.guard';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
+import { GraphQLUtils } from '../utils/graphql-utils';
+import { GraphQLResolveInfo } from 'graphql';
 
 @Resolver(() => UserModel)
 export class UsersResolver {
@@ -31,13 +40,16 @@ export class UsersResolver {
   }
 
   @Query(() => UserModel, { name: 'user' })
-  @UseGuards(GraphQLAuthGuard)
+  // @UseGuards(GraphQLAuthGuard)
   async getUser(
-    @GraphQLUser() user: UserPayload,
+    // @GraphQLUser() user: UserPayload,
     @Args('userId', { type: () => String })
     userId: string,
+    @Info() info: GraphQLResolveInfo,
   ) {
-    return await this.usersService.findOneById(userId);
+    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
+
+    return await this.usersService.findOneById(userId, queryFields);
   }
 
   @ResolveField('addresses', () => [AddressModel])
