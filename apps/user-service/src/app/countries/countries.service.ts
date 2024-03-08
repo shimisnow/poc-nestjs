@@ -7,7 +7,13 @@ import { CountryEntity } from '../database/entities/country.entity';
 export class CountriesService {
   constructor(private countriesRepository: CountriesRepository) {}
 
-  async findOneByCode(code: CountryCodeEnum): Promise<CountryEntity | null> {
-    return await this.countriesRepository.findOneByCode(code);
+  async findOneByCode(
+    code: CountryCodeEnum,
+    queryFields: string[] = null,
+  ): Promise<CountryEntity | null> {
+    return await this.countriesRepository.findOneByCode(
+      code,
+      queryFields as [keyof CountryEntity],
+    );
   }
 }

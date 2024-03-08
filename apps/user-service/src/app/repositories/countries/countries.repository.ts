@@ -19,11 +19,30 @@ export class CountriesRepository {
    * Finds a country by its unique code
    *
    * @param {CountryCodeEnum} code Unique identifier
+   * @param {[keyof CountryEntity]} queryFields Entity fields to be retrieved
    * @returns {CountryEntity | null} Found entity or null
    */
-  async findOneByCode(code: CountryCodeEnum): Promise<CountryEntity | null> {
-    return await this.repository.findOneBy({
-      code,
-    });
+  async findOneByCode(
+    code: CountryCodeEnum,
+    queryFields: [keyof CountryEntity] = null,
+  ): Promise<CountryEntity | null> {
+    if (queryFields === null) {
+      return await this.repository.findOneBy({
+        code,
+      });
+    } else {
+      const result = await this.repository.find({
+        select: queryFields,
+        where: {
+          code,
+        },
+      });
+
+      if (result.length > 0) {
+        return result[0];
+      }
+
+      return null;
+    }
   }
 }
