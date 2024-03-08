@@ -10,7 +10,13 @@ export class PhonesService {
     return await this.phonesRepository.findOneById(phoneId);
   }
 
-  async findByUserId(userId: string): Promise<PhoneEntity[]> {
-    return await this.phonesRepository.findByUserId(userId);
+  async findByUserId(
+    userId: string,
+    queryFields: string[] = null,
+  ): Promise<PhoneEntity[]> {
+    return await this.phonesRepository.findByUserId(
+      userId,
+      queryFields as [keyof PhoneEntity],
+    );
   }
 }

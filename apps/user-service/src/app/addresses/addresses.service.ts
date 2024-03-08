@@ -16,7 +16,13 @@ export class AddressesService {
     );
   }
 
-  async findByUserId(userId: string): Promise<AddressEntity[]> {
-    return await this.addressesRepository.findByUserId(userId);
+  async findByUserId(
+    userId: string,
+    queryFields: string[] = null,
+  ): Promise<AddressEntity[]> {
+    return await this.addressesRepository.findByUserId(
+      userId,
+      queryFields as [keyof AddressEntity],
+    );
   }
 }

@@ -10,7 +10,13 @@ export class LegalDocsService {
     return await this.legalDocsRepository.findOneById(legalDocId);
   }
 
-  async findByUserId(userId: string): Promise<LegalDocEntity[]> {
-    return await this.legalDocsRepository.findByUserId(userId);
+  async findByUserId(
+    userId: string,
+    queryFields: string[] = null,
+  ): Promise<LegalDocEntity[]> {
+    return await this.legalDocsRepository.findByUserId(
+      userId,
+      queryFields as [keyof LegalDocEntity],
+    );
   }
 }

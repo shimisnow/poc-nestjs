@@ -10,7 +10,13 @@ export class SocialMediasService {
     return await this.socialMediasRepository.findOneById(socialMediaId);
   }
 
-  async findByUserId(userId: string): Promise<SocialMediaEntity[]> {
-    return await this.socialMediasRepository.findByUserId(userId);
+  async findByUserId(
+    userId: string,
+    queryFields: string[] = null,
+  ): Promise<SocialMediaEntity[]> {
+    return await this.socialMediasRepository.findByUserId(
+      userId,
+      queryFields as [keyof SocialMediaEntity],
+    );
   }
 }

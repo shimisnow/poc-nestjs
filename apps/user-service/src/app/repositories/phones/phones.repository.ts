@@ -30,12 +30,16 @@ export class PhonesRepository {
    * Finds all phones associated with the given user
    *
    * @param {string} userId Phone owner id
+   * @param {[keyof PhoneEntity]} queryFields Entity fields to be retrieved
    * @returns {PhoneEntity[]} List with the found phones
    */
-  async findByUserId(userId: string): Promise<PhoneEntity[]> {
+  async findByUserId(
+    userId: string,
+    queryFields: [keyof PhoneEntity] = null,
+  ): Promise<PhoneEntity[]> {
     return await this.repository
-      .createQueryBuilder()
-      .select()
+      .createQueryBuilder('PhoneEntity')
+      .select(queryFields.map((field) => `PhoneEntity.${field}`))
       .where('user_id = :userId', { userId })
       .getMany();
   }

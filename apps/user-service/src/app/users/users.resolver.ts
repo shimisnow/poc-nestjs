@@ -53,22 +53,42 @@ export class UsersResolver {
   }
 
   @ResolveField('addresses', () => [AddressModel])
-  async getAddresses(@Parent() user: UserModel) {
-    return await this.addressesService.findByUserId(user.userId);
+  async getAddresses(
+    @Parent() user: UserModel,
+    @Info() info: GraphQLResolveInfo,
+  ) {
+    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
+
+    return await this.addressesService.findByUserId(user.userId, queryFields);
   }
 
   @ResolveField('phones', () => [PhoneModel])
-  async getPhones(@Parent() user: UserModel) {
-    return await this.phonesService.findByUserId(user.userId);
+  async getPhones(@Parent() user: UserModel, @Info() info: GraphQLResolveInfo) {
+    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
+
+    return await this.phonesService.findByUserId(user.userId, queryFields);
   }
 
   @ResolveField('legalDocs', () => [LegalDocModel])
-  async getLegalDocs(@Parent() user: UserModel) {
-    return await this.legalDocsService.findByUserId(user.userId);
+  async getLegalDocs(
+    @Parent() user: UserModel,
+    @Info() info: GraphQLResolveInfo,
+  ) {
+    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
+
+    return await this.legalDocsService.findByUserId(user.userId, queryFields);
   }
 
   @ResolveField('socialMedias', () => [SocialMediaModel])
-  async getSocialMedias(@Parent() user: UserModel) {
-    return await this.socialMediasService.findByUserId(user.userId);
+  async getSocialMedias(
+    @Parent() user: UserModel,
+    @Info() info: GraphQLResolveInfo,
+  ) {
+    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
+
+    return await this.socialMediasService.findByUserId(
+      user.userId,
+      queryFields,
+    );
   }
 }

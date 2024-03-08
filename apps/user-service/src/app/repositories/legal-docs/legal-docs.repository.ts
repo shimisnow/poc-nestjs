@@ -30,12 +30,16 @@ export class LegalDocsRepository {
    * Finds all legal docs associated with the given user
    *
    * @param {string} userId Legal doc owner id
+   * @param {[keyof LegalDocEntity]} queryFields Entity fields to be retrieved
    * @returns {LegalDocEntity[]} List with the found legal docs
    */
-  async findByUserId(userId: string): Promise<LegalDocEntity[]> {
+  async findByUserId(
+    userId: string,
+    queryFields: [keyof LegalDocEntity] = null,
+  ): Promise<LegalDocEntity[]> {
     return await this.repository
-      .createQueryBuilder()
-      .select()
+      .createQueryBuilder('LegalDocEntity')
+      .select(queryFields.map((field) => `LegalDocEntity.${field}`))
       .where('user_id = :userId', { userId })
       .getMany();
   }

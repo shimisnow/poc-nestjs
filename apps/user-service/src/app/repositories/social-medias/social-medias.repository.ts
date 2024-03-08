@@ -30,12 +30,16 @@ export class SocialMediasRepository {
    * Finds all social medias associated with the given user
    *
    * @param {string} userId Social media owner id
+   * @param {[keyof SocialMediaEntity]} queryFields Entity fields to be retrieved
    * @returns {SocialMediaEntity[]} List with the found social medias
    */
-  async findByUserId(userId: string): Promise<SocialMediaEntity[]> {
+  async findByUserId(
+    userId: string,
+    queryFields: [keyof SocialMediaEntity] = null,
+  ): Promise<SocialMediaEntity[]> {
     return await this.repository
-      .createQueryBuilder()
-      .select()
+      .createQueryBuilder('SocialMediaEntity')
+      .select(queryFields.map((field) => `SocialMediaEntity.${field}`))
       .where('user_id = :userId', { userId })
       .getMany();
   }

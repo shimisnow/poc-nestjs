@@ -49,12 +49,16 @@ export class AddressesRepository {
    * Finds all addresses associated with the given user
    *
    * @param {string} userId Address owner id
+   * @param {[keyof AddressEntity]} queryFields Entity fields to be retrieved
    * @returns {AddressEntity[]} List with the found addresses
    */
-  async findByUserId(userId: string): Promise<AddressEntity[]> {
+  async findByUserId(
+    userId: string,
+    queryFields: [keyof AddressEntity] = null,
+  ): Promise<AddressEntity[]> {
     return await this.repository
-      .createQueryBuilder()
-      .select()
+      .createQueryBuilder('AddressEntity')
+      .select(queryFields.map((field) => `AddressEntity.${field}`))
       .where('user_id = :userId', { userId })
       .getMany();
   }
