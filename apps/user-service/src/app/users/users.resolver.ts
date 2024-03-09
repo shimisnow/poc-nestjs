@@ -1,11 +1,4 @@
-import {
-  Args,
-  Info,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserModel } from './models/user.model';
@@ -20,8 +13,7 @@ import { SocialMediasService } from '../social-medias/social-medias.service';
 import { GraphQLUser } from '@shared/authentication/decorators/graphql-user.decorator';
 import { GraphQLAuthGuard } from '@shared/authentication/guards/graphql-auth.guard';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
-import { GraphQLUtils } from '../utils/graphql-utils';
-import { GraphQLResolveInfo } from 'graphql';
+import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
 
 @Resolver(() => UserModel)
 export class UsersResolver {
@@ -45,47 +37,40 @@ export class UsersResolver {
     // @GraphQLUser() user: UserPayload,
     @Args('userId', { type: () => String })
     userId: string,
-    @Info() info: GraphQLResolveInfo,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
     return await this.usersService.findOneById(userId, queryFields);
   }
 
   @ResolveField('addresses', () => [AddressModel])
   async getAddresses(
     @Parent() user: UserModel,
-    @Info() info: GraphQLResolveInfo,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
     return await this.addressesService.findByUserId(user.userId, queryFields);
   }
 
   @ResolveField('phones', () => [PhoneModel])
-  async getPhones(@Parent() user: UserModel, @Info() info: GraphQLResolveInfo) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
+  async getPhones(
+    @Parent() user: UserModel,
+    @GraphQLQueryFields() queryFields: string[],
+  ) {
     return await this.phonesService.findByUserId(user.userId, queryFields);
   }
 
   @ResolveField('legalDocs', () => [LegalDocModel])
   async getLegalDocs(
     @Parent() user: UserModel,
-    @Info() info: GraphQLResolveInfo,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
     return await this.legalDocsService.findByUserId(user.userId, queryFields);
   }
 
   @ResolveField('socialMedias', () => [SocialMediaModel])
   async getSocialMedias(
     @Parent() user: UserModel,
-    @Info() info: GraphQLResolveInfo,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
     return await this.socialMediasService.findByUserId(
       user.userId,
       queryFields,

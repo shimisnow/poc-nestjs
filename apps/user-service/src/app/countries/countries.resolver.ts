@@ -1,9 +1,8 @@
-import { Args, Info, Query, Resolver } from '@nestjs/graphql';
+import { Args, Query, Resolver } from '@nestjs/graphql';
 import { CountryModel } from './models/country.model';
 import { CountriesService } from './countries.service';
 import { CountryCodeEnum } from '../database/enums/country-code.enum';
-import { GraphQLResolveInfo } from 'graphql';
-import { GraphQLUtils } from '../utils/graphql-utils';
+import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
 
 @Resolver(() => CountryModel)
 export class CountriesResolver {
@@ -13,10 +12,8 @@ export class CountriesResolver {
   async getCountry(
     @Args('code', { type: () => CountryCodeEnum })
     code: CountryCodeEnum,
-    @Info() info: GraphQLResolveInfo,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
     return await this.countriesService.findOneByCode(code, queryFields);
   }
 }

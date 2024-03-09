@@ -1,17 +1,9 @@
-import {
-  Args,
-  Info,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { SocialMediaModel } from './models/social-media.model';
 import { SocialMediasService } from './social-medias.service';
 import { UsersService } from '../users/users.service';
 import { UserModel } from '../users/models/user.model';
-import { GraphQLResolveInfo } from 'graphql';
-import { GraphQLUtils } from '../utils/graphql-utils';
+import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
 
 @Resolver(() => SocialMediaModel)
 export class SocialMediasResolver {
@@ -24,10 +16,8 @@ export class SocialMediasResolver {
   async getSocialMedia(
     @Args('socialMediaId', { type: () => Number })
     socialMediaId: number,
-    @Info() info: GraphQLResolveInfo,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
     return await this.socialMediasService.findOneById(
       socialMediaId,
       queryFields,
@@ -35,7 +25,10 @@ export class SocialMediasResolver {
   }
 
   @ResolveField('user', () => UserModel)
-  async getUser(@Parent() socialMedia: SocialMediaModel) {
-    return this.usersService.findOneById(socialMedia.user.userId);
+  async getUser(
+    @Parent() socialMedia: SocialMediaModel,
+    @GraphQLQueryFields() queryFields: string[],
+  ) {
+    return this.usersService.findOneById(socialMedia.user.userId, queryFields);
   }
 }

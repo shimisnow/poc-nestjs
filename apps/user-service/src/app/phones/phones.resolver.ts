@@ -1,19 +1,11 @@
-import {
-  Args,
-  Info,
-  Parent,
-  Query,
-  ResolveField,
-  Resolver,
-} from '@nestjs/graphql';
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { PhoneModel } from './models/phone.model';
 import { CountriesService } from '../countries/countries.service';
 import { UsersService } from '../users/users.service';
 import { PhonesService } from './phones.service';
 import { CountryModel } from '../countries/models/country.model';
 import { UserModel } from '../users/models/user.model';
-import { GraphQLResolveInfo } from 'graphql';
-import { GraphQLUtils } from '../utils/graphql-utils';
+import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
 
 @Resolver(() => PhoneModel)
 export class PhonesResolver {
@@ -27,27 +19,24 @@ export class PhonesResolver {
   async getPhone(
     @Args('phoneId', { type: () => Number })
     phoneId: number,
-    @Info() info: GraphQLResolveInfo,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
     return await this.phonesService.findOneById(phoneId, queryFields);
   }
 
   @ResolveField('country', () => CountryModel)
   async getCountry(
     @Parent() phone: PhoneModel,
-    @Info() info: GraphQLResolveInfo,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
     return this.countriesService.findOneByCode(phone.country.code, queryFields);
   }
 
   @ResolveField('user', () => UserModel)
-  async getUser(@Parent() phone: PhoneModel, @Info() info: GraphQLResolveInfo) {
-    const queryFields: string[] = GraphQLUtils.extractQueryFields(info);
-
+  async getUser(
+    @Parent() phone: PhoneModel,
+    @GraphQLQueryFields() queryFields: string[],
+  ) {
     return this.usersService.findOneById(phone.user.userId, queryFields);
   }
 }
