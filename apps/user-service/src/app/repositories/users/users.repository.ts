@@ -18,12 +18,12 @@ export class UsersRepository {
    * Finds a user by its unique id
    *
    * @param {string} userId Unique identifier
-   * @param {[keyof UserEntity]} queryFields Entity fields to be retrieved
+   * @param {string[]} queryFields Entity fields to be retrieved
    * @returns {UserEntity | null} Found entity or null
    */
   async findOneById(
     userId: string,
-    queryFields: [keyof UserEntity] = null,
+    queryFields: string[] = null,
   ): Promise<UserEntity | null> {
     if (queryFields === null) {
       return await this.repository.findOneBy({
@@ -31,8 +31,12 @@ export class UsersRepository {
       });
     }
 
+    // removes all elements from queryFields that does not exists at the entity
+    // adds the primary key
+    const select = this.filterEntityProperties(queryFields).concat(['userId']);
+
     const result = await this.repository.find({
-      select: queryFields,
+      select,
       where: {
         userId,
       },
@@ -43,5 +47,25 @@ export class UsersRepository {
     }
 
     return null;
+  }
+
+  /**
+   * Remove all elements from an array that does not exists at the entity
+   * properties list
+   *
+   * @param {string[]} fields Elements to be analized
+   * @returns {[keyof UserEntity]} Filtered list
+   */
+  private filterEntityProperties(fields: string[]): [keyof UserEntity] {
+    // get the entity properties name
+    const entityProperties = this.repository.metadata.ownColumns.map(
+      (column) => column.propertyName,
+    );
+
+    const filteredFields = fields.filter((field) =>
+      entityProperties.includes(field),
+    );
+
+    return filteredFields as [keyof UserEntity];
   }
 }

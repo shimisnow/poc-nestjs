@@ -31,8 +31,12 @@ export class PhonesRepository {
       });
     }
 
+    // removes all elements from queryFields that does not exists at the entity
+    // adds the primary key
+    const select = this.filterEntityProperties(queryFields).concat(['phoneId']);
+
     const result = await this.repository.find({
-      select: queryFields,
+      select,
       where: {
         phoneId,
       },
@@ -68,5 +72,25 @@ export class PhonesRepository {
       .select(queryFields.map((field) => `PhoneEntity.${field}`))
       .where('user_id = :userId', { userId })
       .getMany();
+  }
+
+  /**
+   * Remove all elements from an array that does not exists at the entity
+   * properties list
+   *
+   * @param {string[]} fields Elements to be analized
+   * @returns {[keyof PhoneEntity]} Filtered list
+   */
+  private filterEntityProperties(fields: string[]): [keyof PhoneEntity] {
+    // get the entity properties name
+    const entityProperties = this.repository.metadata.ownColumns.map(
+      (column) => column.propertyName,
+    );
+
+    const filteredFields = fields.filter((field) =>
+      entityProperties.includes(field),
+    );
+
+    return filteredFields as [keyof PhoneEntity];
   }
 }
