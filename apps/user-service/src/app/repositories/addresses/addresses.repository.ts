@@ -31,8 +31,14 @@ export class AddressesRepository {
       });
     }
 
+    // removes all elements from queryFields that does not exists at the entity
+    // adds the primary key
+    const select = this.filterEntityProperties(queryFields).concat([
+      'addressId',
+    ]);
+
     const result = await this.repository.find({
-      select: queryFields,
+      select,
       where: {
         addressId,
       },
@@ -68,5 +74,25 @@ export class AddressesRepository {
       .select(queryFields.map((field) => `AddressEntity.${field}`))
       .where('user_id = :userId', { userId })
       .getMany();
+  }
+
+  /**
+   * Remove all elements from an array that does not exists at the entity
+   * properties list
+   *
+   * @param {string[]} fields Elements to be analized
+   * @returns {[keyof AddressEntity]} Filtered list
+   */
+  private filterEntityProperties(fields: string[]): [keyof AddressEntity] {
+    // get the entity properties name
+    const entityProperties = this.repository.metadata.ownColumns.map(
+      (column) => column.propertyName,
+    );
+
+    const filteredFields = fields.filter((field) =>
+      entityProperties.includes(field),
+    );
+
+    return filteredFields as [keyof AddressEntity];
   }
 }

@@ -31,8 +31,14 @@ export class SocialMediasRepository {
       });
     }
 
+    // removes all elements from queryFields that does not exists at the entity
+    // adds the primary key
+    const select = this.filterEntityProperties(queryFields).concat([
+      'socialMediaId',
+    ]);
+
     const result = await this.repository.find({
-      select: queryFields,
+      select,
       where: {
         socialMediaId,
       },
@@ -68,5 +74,25 @@ export class SocialMediasRepository {
       .select(queryFields.map((field) => `SocialMediaEntity.${field}`))
       .where('user_id = :userId', { userId })
       .getMany();
+  }
+
+  /**
+   * Remove all elements from an array that does not exists at the entity
+   * properties list
+   *
+   * @param {string[]} fields Elements to be analized
+   * @returns {[keyof SocialMediaEntity]} Filtered list
+   */
+  private filterEntityProperties(fields: string[]): [keyof SocialMediaEntity] {
+    // get the entity properties name
+    const entityProperties = this.repository.metadata.ownColumns.map(
+      (column) => column.propertyName,
+    );
+
+    const filteredFields = fields.filter((field) =>
+      entityProperties.includes(field),
+    );
+
+    return filteredFields as [keyof SocialMediaEntity];
   }
 }
