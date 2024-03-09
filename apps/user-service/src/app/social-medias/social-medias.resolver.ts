@@ -3,6 +3,7 @@ import { SocialMediaModel } from './models/social-media.model';
 import { SocialMediasService } from './social-medias.service';
 import { UsersService } from '../users/users.service';
 import { UserModel } from '../users/models/user.model';
+import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
 
 @Resolver(() => SocialMediaModel)
 export class SocialMediasResolver {
@@ -15,12 +16,19 @@ export class SocialMediasResolver {
   async getSocialMedia(
     @Args('socialMediaId', { type: () => Number })
     socialMediaId: number,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    return await this.socialMediasService.findOneById(socialMediaId);
+    return await this.socialMediasService.findOneById(
+      socialMediaId,
+      queryFields,
+    );
   }
 
   @ResolveField('user', () => UserModel)
-  async getUser(@Parent() socialMedia: SocialMediaModel) {
-    return this.usersService.findOneById(socialMedia.user.userId);
+  async getUser(
+    @Parent() socialMedia: SocialMediaModel,
+    @GraphQLQueryFields() queryFields: string[],
+  ) {
+    return this.usersService.findOneById(socialMedia.user.userId, queryFields);
   }
 }

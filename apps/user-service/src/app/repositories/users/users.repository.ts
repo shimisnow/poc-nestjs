@@ -18,11 +18,30 @@ export class UsersRepository {
    * Finds a user by its unique id
    *
    * @param {string} userId Unique identifier
+   * @param {[keyof UserEntity]} queryFields Entity fields to be retrieved
    * @returns {UserEntity | null} Found entity or null
    */
-  async findOneById(userId: string): Promise<UserEntity | null> {
-    return await this.repository.findOneBy({
-      userId,
+  async findOneById(
+    userId: string,
+    queryFields: [keyof UserEntity] = null,
+  ): Promise<UserEntity | null> {
+    if (queryFields === null) {
+      return await this.repository.findOneBy({
+        userId,
+      });
+    }
+
+    const result = await this.repository.find({
+      select: queryFields,
+      where: {
+        userId,
+      },
     });
+
+    if (result.length > 0) {
+      return result[0];
+    }
+
+    return null;
   }
 }

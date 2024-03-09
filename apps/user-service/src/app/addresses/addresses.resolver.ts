@@ -5,6 +5,7 @@ import { CountriesService } from '../countries/countries.service';
 import { UsersService } from '../users/users.service';
 import { CountryModel } from '../countries/models/country.model';
 import { UserModel } from '../users/models/user.model';
+import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
 
 @Resolver(() => AddressModel)
 export class AddressesResolver {
@@ -18,17 +19,27 @@ export class AddressesResolver {
   async getAddress(
     @Args('addressId', { type: () => Number })
     addressId: number,
+    @GraphQLQueryFields() queryFields: string[],
   ) {
-    return await this.addressesService.findOneById(addressId);
+    return await this.addressesService.findOneById(addressId, queryFields);
   }
 
   @ResolveField('country', () => CountryModel)
-  async getCountry(@Parent() address: AddressModel) {
-    return this.countriesService.findOneByCode(address.country.code);
+  async getCountry(
+    @Parent() address: AddressModel,
+    @GraphQLQueryFields() queryFields: string[],
+  ) {
+    return this.countriesService.findOneByCode(
+      address.country.code,
+      queryFields,
+    );
   }
 
   @ResolveField('user', () => UserModel)
-  async getUser(@Parent() address: AddressModel) {
-    return this.usersService.findOneById(address.user.userId);
+  async getUser(
+    @Parent() address: AddressModel,
+    @GraphQLQueryFields() queryFields: string[],
+  ) {
+    return this.usersService.findOneById(address.user.userId, queryFields);
   }
 }

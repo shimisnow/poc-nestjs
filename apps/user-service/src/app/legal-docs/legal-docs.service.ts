@@ -6,11 +6,23 @@ import { LegalDocEntity } from '../database/entities/legaldoc.entity';
 export class LegalDocsService {
   constructor(private legalDocsRepository: LegalDocsRepository) {}
 
-  async findOneById(legalDocId: number): Promise<LegalDocEntity | null> {
-    return await this.legalDocsRepository.findOneById(legalDocId);
+  async findOneById(
+    legalDocId: number,
+    queryFields: string[] = null,
+  ): Promise<LegalDocEntity | null> {
+    return await this.legalDocsRepository.findOneById(
+      legalDocId,
+      queryFields as [keyof LegalDocEntity],
+    );
   }
 
-  async findByUserId(userId: string): Promise<LegalDocEntity[]> {
-    return await this.legalDocsRepository.findByUserId(userId);
+  async findByUserId(
+    userId: string,
+    queryFields: string[] = null,
+  ): Promise<LegalDocEntity[]> {
+    return await this.legalDocsRepository.findByUserId(
+      userId,
+      queryFields as [keyof LegalDocEntity],
+    );
   }
 }
