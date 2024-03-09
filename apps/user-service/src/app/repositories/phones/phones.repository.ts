@@ -29,20 +29,20 @@ export class PhonesRepository {
       return await this.repository.findOneBy({
         phoneId,
       });
-    } else {
-      const result = await this.repository.find({
-        select: queryFields,
-        where: {
-          phoneId,
-        },
-      });
-
-      if (result.length > 0) {
-        return result[0];
-      }
-
-      return null;
     }
+
+    const result = await this.repository.find({
+      select: queryFields,
+      where: {
+        phoneId,
+      },
+    });
+
+    if (result.length > 0) {
+      return result[0];
+    }
+
+    return null;
   }
 
   /**
@@ -56,6 +56,13 @@ export class PhonesRepository {
     userId: string,
     queryFields: [keyof PhoneEntity] = null,
   ): Promise<PhoneEntity[]> {
+    if (queryFields === null) {
+      return await this.repository
+        .createQueryBuilder()
+        .where('user_id = :userId', { userId })
+        .getMany();
+    }
+
     return await this.repository
       .createQueryBuilder('PhoneEntity')
       .select(queryFields.map((field) => `PhoneEntity.${field}`))

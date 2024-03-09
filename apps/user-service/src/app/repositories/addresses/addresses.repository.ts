@@ -29,20 +29,20 @@ export class AddressesRepository {
       return await this.repository.findOneBy({
         addressId,
       });
-    } else {
-      const result = await this.repository.find({
-        select: queryFields,
-        where: {
-          addressId,
-        },
-      });
-
-      if (result.length > 0) {
-        return result[0];
-      }
-
-      return null;
     }
+
+    const result = await this.repository.find({
+      select: queryFields,
+      where: {
+        addressId,
+      },
+    });
+
+    if (result.length > 0) {
+      return result[0];
+    }
+
+    return null;
   }
 
   /**
@@ -56,6 +56,13 @@ export class AddressesRepository {
     userId: string,
     queryFields: [keyof AddressEntity] = null,
   ): Promise<AddressEntity[]> {
+    if (queryFields === null) {
+      return await this.repository
+        .createQueryBuilder()
+        .where('user_id = :userId', { userId })
+        .getMany();
+    }
+
     return await this.repository
       .createQueryBuilder('AddressEntity')
       .select(queryFields.map((field) => `AddressEntity.${field}`))

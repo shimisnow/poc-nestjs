@@ -29,20 +29,20 @@ export class SocialMediasRepository {
       return await this.repository.findOneBy({
         socialMediaId,
       });
-    } else {
-      const result = await this.repository.find({
-        select: queryFields,
-        where: {
-          socialMediaId,
-        },
-      });
-
-      if (result.length > 0) {
-        return result[0];
-      }
-
-      return null;
     }
+
+    const result = await this.repository.find({
+      select: queryFields,
+      where: {
+        socialMediaId,
+      },
+    });
+
+    if (result.length > 0) {
+      return result[0];
+    }
+
+    return null;
   }
 
   /**
@@ -56,6 +56,13 @@ export class SocialMediasRepository {
     userId: string,
     queryFields: [keyof SocialMediaEntity] = null,
   ): Promise<SocialMediaEntity[]> {
+    if (queryFields === null) {
+      return await this.repository
+        .createQueryBuilder()
+        .where('user_id = :userId', { userId })
+        .getMany();
+    }
+
     return await this.repository
       .createQueryBuilder('SocialMediaEntity')
       .select(queryFields.map((field) => `SocialMediaEntity.${field}`))

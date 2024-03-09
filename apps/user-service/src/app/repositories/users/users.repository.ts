@@ -29,19 +29,19 @@ export class UsersRepository {
       return await this.repository.findOneBy({
         userId,
       });
-    } else {
-      const result = await this.repository.find({
-        select: queryFields,
-        where: {
-          userId,
-        },
-      });
-
-      if (result.length > 0) {
-        return result[0];
-      }
-
-      return null;
     }
+
+    const result = await this.repository.find({
+      select: queryFields,
+      where: {
+        userId,
+      },
+    });
+
+    if (result.length > 0) {
+      return result[0];
+    }
+
+    return null;
   }
 }
