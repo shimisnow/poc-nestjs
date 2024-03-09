@@ -3,6 +3,8 @@ import { UsersService } from './users.service';
 import { UsersRepository } from '../repositories/users/users.repository';
 import { UsersRepositoryMock } from './mocks/users-repository.mock';
 import { UserEntity } from '../database/entities/user.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { JwtService } from '@nestjs/jwt';
 
 describe('users.service', () => {
   let service: UsersService;
@@ -11,6 +13,14 @@ describe('users.service', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
+        {
+          provide: CACHE_MANAGER,
+          useValue: {},
+        },
+        {
+          provide: JwtService,
+          useValue: {},
+        },
         {
           provide: UsersRepository,
           useClass: UsersRepositoryMock,
