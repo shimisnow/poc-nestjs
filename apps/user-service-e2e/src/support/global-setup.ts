@@ -81,8 +81,8 @@ module.exports = async function () {
       REDIS_PORT: process.env.REDIS_PORT,
       JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
       JWT_REFRESH_MAX_AGE: process.env.JWT_REFRESH_MAX_AGE,
-      AUTH_SERVICE_PORT: process.env.AUTH_SERVICE_PORT,
-      AUTH_SERVICE_LOG_DIR: './logs',
+      USER_SERVICE_PORT: process.env.USER_SERVICE_PORT,
+      USER_SERVICE_LOG_DIR: './logs',
     })
     .start();
 
