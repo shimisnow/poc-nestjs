@@ -1,7 +1,20 @@
-/* eslint-disable */
+import * as fs from 'fs';
+import { ensureFile } from 'fs-extra';
 
 module.exports = async function () {
-  // Put clean up logic here (e.g. stopping services, docker-compose, etc.).
-  // Hint: `globalThis` is shared between setup and teardown.
-  console.log(globalThis.__TEARDOWN_MESSAGE__);
+  const archivePath = './apps/users-service-e2e/logs/user-service-logs.tar';
+  await ensureFile(archivePath);
+  const outputFileStream = fs.createWriteStream(archivePath);
+
+  const homeNodeAppArquive: NodeJS.ReadableStream =
+    await globalThis.containerCode.copyArchiveFromContainer(
+      '/home/node/app/logs',
+    );
+  homeNodeAppArquive.pipe(outputFileStream);
+
+  await Promise.all([
+    globalThis.containerDatabase.stop(),
+    globalThis.containerCache.stop(),
+    globalThis.containerCode.stop(),
+  ]);
 };
