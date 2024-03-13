@@ -1,4 +1,5 @@
-import { IsUUID, IsNumber, IsNumberString } from 'class-validator';
+import { IsUUID, IsNumber, IsNumberString, IsEnum } from 'class-validator';
+import { AuthRoleEnum } from '../enums/auth-role.enum';
 
 export class UserPayload {
   @IsUUID()
@@ -6,6 +7,9 @@ export class UserPayload {
 
   @IsNumberString()
   loginId: string;
+
+  @IsEnum(AuthRoleEnum)
+  role: AuthRoleEnum;
 
   @IsNumber()
   iat: number;

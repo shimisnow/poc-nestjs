@@ -45,6 +45,7 @@ describe('GET /balance', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now - 120,
           exp: now - 60,
         } as UserPayload,
@@ -76,6 +77,7 @@ describe('GET /balance', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now - 4000,
           exp: now + 60,
         } as UserPayload,
@@ -109,6 +111,7 @@ describe('GET /balance', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -134,6 +137,7 @@ describe('GET /balance', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -179,6 +183,7 @@ describe('GET /balance', () => {
         {
           userId: '6d162827-98a1-4d20-8aa0-0a9c3e8fc76f',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -209,6 +214,7 @@ describe('GET /balance', () => {
         {
           userId: '17e31ebd-7728-4fa1-9942-0971b176f342',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
