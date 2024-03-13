@@ -33,6 +33,7 @@ describe('POST /auth/password', () => {
         {
           userId: '4799cc31-7692-40b3-afff-cc562baf5667',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -64,6 +65,7 @@ describe('POST /auth/password', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -95,6 +97,7 @@ describe('POST /auth/password', () => {
         {
           userId: '07389621-d2da-468a-a692-05824dd46aab',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -131,6 +134,7 @@ describe('POST /auth/password', () => {
         {
           userId,
           loginId,
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,

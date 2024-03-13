@@ -126,7 +126,7 @@ describe('POST /auth/login', () => {
   });
 
   describe('request without errors', () => {
-    test('User is active (correct password)(with refresh)', async () => {
+    test('User is active (user)(with refresh)', async () => {
       const response = await request(host)
         .post(endpoint)
         .send({
@@ -150,6 +150,8 @@ describe('POST /auth/login', () => {
       expect(accessToken).toHaveProperty('userId');
       expect(accessToken.userId).toBe('4799cc31-7692-40b3-afff-cc562baf5374');
       expect(accessToken).toHaveProperty('loginId');
+      expect(accessToken).toHaveProperty('role');
+      expect(accessToken.role).toBe('user');
 
       const refreshToken = jsonwebtoken.verify(
         body.refreshToken,
@@ -158,9 +160,49 @@ describe('POST /auth/login', () => {
       expect(refreshToken).toHaveProperty('userId');
       expect(refreshToken.userId).toBe('4799cc31-7692-40b3-afff-cc562baf5374');
       expect(refreshToken).toHaveProperty('loginId');
+      expect(refreshToken).toHaveProperty('role');
+      expect(refreshToken.role).toBe('user');
     });
 
-    test('User is active (correct password)(without refresh)', async () => {
+    test('User is active (admin)(with refresh)', async () => {
+      const response = await request(host)
+        .post(endpoint)
+        .send({
+          username: 'paul',
+          password: 'test@1234',
+          requestRefreshToken: true,
+        })
+        .set('X-Api-Version', '1')
+        .expect('Content-Type', /json/)
+        .expect(200);
+
+      const body = response.body;
+
+      expect(body).toHaveProperty('accessToken');
+      expect(body).toHaveProperty('refreshToken');
+
+      const accessToken = jsonwebtoken.verify(
+        body.accessToken,
+        JWT_SECRET_KEY,
+      ) as JwtPayload;
+      expect(accessToken).toHaveProperty('userId');
+      expect(accessToken.userId).toBe('26ea2bb9-d5e3-40ca-b144-a863ffb98fbc');
+      expect(accessToken).toHaveProperty('loginId');
+      expect(accessToken).toHaveProperty('role');
+      expect(accessToken.role).toBe('admin');
+
+      const refreshToken = jsonwebtoken.verify(
+        body.refreshToken,
+        JWT_REFRESH_SECRET_KEY,
+      ) as JwtPayload;
+      expect(refreshToken).toHaveProperty('userId');
+      expect(refreshToken.userId).toBe('26ea2bb9-d5e3-40ca-b144-a863ffb98fbc');
+      expect(refreshToken).toHaveProperty('loginId');
+      expect(refreshToken).toHaveProperty('role');
+      expect(refreshToken.role).toBe('admin');
+    });
+
+    test('User is active (user)(without refresh)', async () => {
       const response = await request(host)
         .post(endpoint)
         .send({
@@ -183,6 +225,8 @@ describe('POST /auth/login', () => {
       expect(accessToken).toHaveProperty('userId');
       expect(accessToken.userId).toBe('4799cc31-7692-40b3-afff-cc562baf5374');
       expect(accessToken).toHaveProperty('loginId');
+      expect(accessToken).toHaveProperty('role');
+      expect(accessToken.role).toBe('user');
     });
   });
 });
