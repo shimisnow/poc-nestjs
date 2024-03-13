@@ -25,6 +25,7 @@ import { LogoutSerializer } from './serializers/logout.serializer';
 import { PasswordChangeSerializer } from './serializers/password-change.serializer';
 import { PasswordChangeCachePayload } from '@shared/cache/payloads/password-change-cache.payload';
 import { GenerateLog } from '../utils/logging/generate-log';
+import { AuthRoleEnum } from '@shared/authentication/enums/auth-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -41,13 +42,19 @@ export class AuthService {
    *
    * @param userId User id as UUID.
    * @param loginId Defined by each login request.
+   * @param role User role.
    * @returns Signed JWT token.
    */
-  async generateAccessToken(userId: string, loginId: string): Promise<string> {
+  async generateAccessToken(
+    userId: string,
+    loginId: string,
+    role: AuthRoleEnum,
+  ): Promise<string> {
     return await this.jwtService.signAsync(
       {
         userId,
         loginId,
+        role,
       },
       {
         secret: process.env.JWT_SECRET_KEY,
@@ -61,17 +68,26 @@ export class AuthService {
    *
    * @param userId User id as UUID.
    * @param loginId Defined by each login request.
+   * @param role User role.
    * @returns Signed JWT token.
    */
-  async generateRefreshToken(userId: string, loginId: string): Promise<string> {
+  async generateRefreshToken(
+    userId: string,
+    loginId: string,
+    role: AuthRoleEnum,
+  ): Promise<string> {
     return await this.jwtService.signAsync(
       {
         userId,
         loginId,
+        role,
       },
       {
         secret: process.env.JWT_REFRESH_SECRET_KEY,
-        expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+        expiresIn:
+          role == AuthRoleEnum.ADMIN
+            ? process.env.JWT_REFRESH_EXPIRES_IN_ADMIN
+            : process.env.JWT_REFRESH_EXPIRES_IN,
       },
     );
   }
@@ -171,8 +187,8 @@ export class AuthService {
 
     if (requestRefreshToken) {
       const [accessToken, refreshToken] = await Promise.all([
-        this.generateAccessToken(user.userId, loginId),
-        this.generateRefreshToken(user.userId, loginId),
+        this.generateAccessToken(user.userId, loginId, user.role),
+        this.generateRefreshToken(user.userId, loginId, user.role),
       ]);
 
       this.logger.log(
@@ -201,7 +217,11 @@ export class AuthService {
       );
 
       return {
-        accessToken: await this.generateAccessToken(user.userId, loginId),
+        accessToken: await this.generateAccessToken(
+          user.userId,
+          loginId,
+          user.role,
+        ),
       };
     }
   }
@@ -283,7 +303,11 @@ export class AuthService {
     }
 
     return {
-      accessToken: await this.generateAccessToken(user.userId, user.loginId),
+      accessToken: await this.generateAccessToken(
+        user.userId,
+        user.loginId,
+        user.role,
+      ),
     };
   }
 
@@ -448,8 +472,8 @@ export class AuthService {
 
     if (requestRefreshToken) {
       const [accessToken, refreshToken] = await Promise.all([
-        this.generateAccessToken(userEntity.userId, loginId),
-        this.generateRefreshToken(userEntity.userId, loginId),
+        this.generateAccessToken(userEntity.userId, loginId, userEntity.role),
+        this.generateRefreshToken(userEntity.userId, loginId, userEntity.role),
       ]);
 
       this.logger.log(
@@ -471,6 +495,7 @@ export class AuthService {
       const accessToken = await this.generateAccessToken(
         userEntity.userId,
         loginId,
+        userEntity.role,
       );
 
       this.logger.log(
