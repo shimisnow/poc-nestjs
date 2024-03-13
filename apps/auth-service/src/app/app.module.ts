@@ -4,7 +4,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
-import { UserAuthEntity } from './database/entities/user-auth.entity';
+import { entities } from './database/entities';
 
 @Module({
   imports: [
@@ -16,7 +16,8 @@ import { UserAuthEntity } from './database/entities/user-auth.entity';
       username: process.env.DATABASE_AUTH_USERNAME,
       password: process.env.DATABASE_AUTH_PASSWORD,
       database: process.env.DATABASE_AUTH_DBNAME,
-      entities: [UserAuthEntity],
+      entities,
+      synchronize: true,
     }),
     CacheModule.register({
       isGlobal: true,

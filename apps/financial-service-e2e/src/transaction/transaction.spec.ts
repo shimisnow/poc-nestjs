@@ -43,6 +43,7 @@ describe('POST /transaction', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now - 120,
           exp: now - 60,
         } as UserPayload,
@@ -68,6 +69,7 @@ describe('POST /transaction', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now - 3660, // 1h and 1m before now
           exp: now,
         } as UserPayload,
@@ -95,6 +97,7 @@ describe('POST /transaction', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -123,6 +126,7 @@ describe('POST /transaction', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -183,6 +187,7 @@ describe('POST /transaction', () => {
           {
             userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e3d1',
             loginId: new Date().getTime().toString(),
+            role: 'user',
             iat: now,
             exp: now + 60,
           } as UserPayload,
@@ -194,6 +199,7 @@ describe('POST /transaction', () => {
           {
             userId: 'bc760244-ca8a-42b1-9cf6-70ceedc2e221',
             loginId: new Date().getTime().toString(),
+            role: 'user',
             iat: now,
             exp: now + 60,
           } as UserPayload,

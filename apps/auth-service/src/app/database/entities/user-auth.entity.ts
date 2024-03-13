@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { UserAuthStatusEnum } from '../enums/user-auth-status.enum';
+import { AuthRoleEnum } from '@shared/authentication/enums/auth-role.enum';
 import * as bcrypt from 'bcrypt';
 
 /**
@@ -28,6 +29,19 @@ export class UserAuthEntity {
     primaryKeyConstraintName: 'pk_user_auths',
   })
   userId: string;
+
+  /**
+   * Informs the user access type.
+   */
+  @Column({
+    name: 'role',
+    type: 'enum',
+    enum: AuthRoleEnum,
+    enumName: 'user_auth_role_enum',
+    default: AuthRoleEnum.USER,
+    nullable: true,
+  })
+  role?: AuthRoleEnum;
 
   /**
    * Username to generate access tokens.

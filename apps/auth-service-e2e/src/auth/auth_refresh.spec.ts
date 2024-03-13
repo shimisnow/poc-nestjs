@@ -32,6 +32,7 @@ describe('POST /auth/refresh', () => {
         {
           userId: '10f88251-d181-4255-92ed-d0d874e3a166',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -61,6 +62,7 @@ describe('POST /auth/refresh', () => {
         {
           userId: '4799cc31-7692-40b3-afff-cc562baf5374',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
