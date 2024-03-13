@@ -86,7 +86,7 @@ export class AuthService {
         secret: process.env.JWT_REFRESH_SECRET_KEY,
         expiresIn:
           role == AuthRoleEnum.ADMIN
-            ? process.env.JWT_REFRESH_EXPIRES_IN_ADMIN
+            ? process.env.JWT_REFRESH_EXPIRES_IN_ADMIN || '1d'
             : process.env.JWT_REFRESH_EXPIRES_IN,
       },
     );
