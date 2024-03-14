@@ -16,6 +16,18 @@ export class PhonesService {
     );
   }
 
+  async findOneByIdWithUserId(
+    phoneId: number,
+    userId: string,
+    queryFields: string[] = null,
+  ): Promise<PhoneEntity | null> {
+    return await this.phonesRepository.findOneByIdWithUserId(
+      phoneId,
+      userId,
+      queryFields as [keyof PhoneEntity],
+    );
+  }
+
   async findByUserId(
     userId: string,
     queryFields: string[] = null,
