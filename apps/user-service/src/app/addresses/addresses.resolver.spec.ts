@@ -9,6 +9,8 @@ import { UsersRepository } from '../repositories/users/users.repository';
 import { AddressesRepositoryMock } from './mocks/addresses-repository.mock';
 import { CountriesRepositoryMock } from './mocks/countries-repository.mock';
 import { UsersRepositoryMock } from './mocks/users-repository.mock';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { JwtService } from '@nestjs/jwt';
 
 describe('addresses.resolver', () => {
   let resolver: AddressesResolver;
@@ -20,6 +22,14 @@ describe('addresses.resolver', () => {
         AddressesService,
         CountriesService,
         UsersService,
+        {
+          provide: CACHE_MANAGER,
+          useValue: {},
+        },
+        {
+          provide: JwtService,
+          useValue: {},
+        },
         {
           provide: AddressesRepository,
           useClass: AddressesRepositoryMock,

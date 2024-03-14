@@ -6,6 +6,13 @@ import { PhonesService } from './phones.service';
 import { CountryModel } from '../countries/models/country.model';
 import { UserModel } from '../users/models/user.model';
 import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
+import { UseGuards } from '@nestjs/common';
+import {
+  AuthRoleEnum,
+  GraphQLAuthGuard,
+  GraphQLUser,
+  UserPayload,
+} from '@shared/authentication/graphql';
 
 @Resolver(() => PhoneModel)
 export class PhonesResolver {
@@ -15,12 +22,22 @@ export class PhonesResolver {
     private usersService: UsersService,
   ) {}
 
-  @Query(() => PhoneModel, { name: 'phone' })
+  @Query(() => PhoneModel, { name: 'phone', nullable: true })
+  @UseGuards(GraphQLAuthGuard)
   async getPhone(
+    @GraphQLUser() user: UserPayload,
     @Args('phoneId', { type: () => Number })
     phoneId: number,
     @GraphQLQueryFields() queryFields: string[],
   ) {
+    if (user.role == AuthRoleEnum.USER) {
+      return await this.phonesService.findOneByIdWithUserId(
+        phoneId,
+        user.userId,
+        queryFields,
+      );
+    }
+
     return await this.phonesService.findOneById(phoneId, queryFields);
   }
 

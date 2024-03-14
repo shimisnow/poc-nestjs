@@ -1,5 +1,4 @@
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserModel } from './models/user.model';
 import { AddressesService } from '../addresses/addresses.service';
@@ -10,10 +9,14 @@ import { LegalDocModel } from '../legal-docs/models/legal-doc.model';
 import { LegalDocsService } from '../legal-docs/legal-docs.service';
 import { SocialMediaModel } from '../social-medias/models/social-media.model';
 import { SocialMediasService } from '../social-medias/social-medias.service';
-import { GraphQLUser } from '@shared/authentication/decorators/graphql-user.decorator';
-import { GraphQLAuthGuard } from '@shared/authentication/guards/graphql-auth.guard';
-import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
+import { UseGuards } from '@nestjs/common';
+import {
+  AuthRoleEnum,
+  GraphQLAuthGuard,
+  GraphQLUser,
+  UserPayload,
+} from '@shared/authentication/graphql';
 
 @Resolver(() => UserModel)
 export class UsersResolver {
@@ -27,18 +30,27 @@ export class UsersResolver {
 
   @Query(() => UserModel, { name: 'me' })
   @UseGuards(GraphQLAuthGuard)
-  async getAuthenticatedUser(@GraphQLUser() user: UserPayload) {
-    return await this.usersService.findOneById(user.userId);
+  async getAuthenticatedUser(
+    @GraphQLUser() user: UserPayload,
+    @GraphQLQueryFields() queryFields: string[],
+  ) {
+    return await this.usersService.findOneById(user.userId, queryFields);
   }
 
-  @Query(() => UserModel, { name: 'user' })
-  // @UseGuards(GraphQLAuthGuard)
+  @Query(() => UserModel, { name: 'user', nullable: true })
+  @UseGuards(GraphQLAuthGuard)
   async getUser(
-    // @GraphQLUser() user: UserPayload,
+    @GraphQLUser() user: UserPayload,
     @Args('userId', { type: () => String })
     userId: string,
     @GraphQLQueryFields() queryFields: string[],
   ) {
+    if (user.role == AuthRoleEnum.USER) {
+      if (userId != user.userId) {
+        return null;
+      }
+    }
+
     return await this.usersService.findOneById(userId, queryFields);
   }
 

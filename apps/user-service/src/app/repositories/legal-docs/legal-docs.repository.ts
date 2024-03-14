@@ -52,6 +52,35 @@ export class LegalDocsRepository {
   }
 
   /**
+   * Finds a legal doc by its unique id and verifies the addresses owner
+   *
+   * @param {number} legalDocId Unique identifier
+   * @param {number} userId Resource owner id
+   * @param {[keyof LegalDocEntity]} queryFields Entity fields to be retrieved
+   * @returns {LegalDocEntity | null} Found entity or null
+   */
+  async findOneByIdWithUserId(
+    legalDocId: number,
+    userId: string,
+    queryFields: [keyof LegalDocEntity] = null,
+  ): Promise<LegalDocEntity | null> {
+    if (queryFields === null) {
+      return await this.repository
+        .createQueryBuilder()
+        .where('legal_doc_id = :legalDocId', { legalDocId })
+        .andWhere('user_id = :userId', { userId })
+        .getOne();
+    }
+
+    return await this.repository
+      .createQueryBuilder('LegalDocEntity')
+      .select(queryFields.map((field) => `LegalDocEntity.${field}`))
+      .where('legal_doc_id = :legalDocId', { legalDocId })
+      .andWhere('user_id = :userId', { userId })
+      .getOne();
+  }
+
+  /**
    * Finds all legal docs associated with the given user
    *
    * @param {string} userId Legal doc owner id

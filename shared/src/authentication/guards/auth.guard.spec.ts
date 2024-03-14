@@ -81,6 +81,7 @@ describe('auth.guard', () => {
         {
           userId: '4799cc31-7692-40b3-afff-cc562baf5374',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -133,6 +134,7 @@ describe('auth.guard', () => {
           // user in cache for logout
           userId: '01e57c05-45d6-4d6f-8f30-2bddce37df5f',
           loginId: '1708003432088',
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -161,6 +163,7 @@ describe('auth.guard', () => {
           // user in cache for password change
           userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -191,6 +194,7 @@ describe('auth.guard', () => {
           // user in cache for password change
           userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
@@ -208,6 +212,7 @@ describe('auth.guard', () => {
           // user not in cache
           userId: '68ec369c-30f3-4e56-b286-290cde1efd7c',
           loginId: new Date().getTime().toString(),
+          role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,

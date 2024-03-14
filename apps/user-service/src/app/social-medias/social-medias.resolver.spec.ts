@@ -6,6 +6,8 @@ import { SocialMediasRepository } from '../repositories/social-medias/social-med
 import { SocialMediasRepositoryMock } from './mocks/social-medias-repository.mock';
 import { UsersRepository } from '../repositories/users/users.repository';
 import { UsersRepositoryMock } from './mocks/users-repository.mock';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { JwtService } from '@nestjs/jwt';
 
 describe('SocialMediasResolver', () => {
   let resolver: SocialMediasResolver;
@@ -16,6 +18,14 @@ describe('SocialMediasResolver', () => {
         SocialMediasResolver,
         SocialMediasService,
         UsersService,
+        {
+          provide: CACHE_MANAGER,
+          useValue: {},
+        },
+        {
+          provide: JwtService,
+          useValue: {},
+        },
         {
           provide: SocialMediasRepository,
           useClass: SocialMediasRepositoryMock,

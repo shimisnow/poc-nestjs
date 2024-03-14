@@ -4,6 +4,13 @@ import { SocialMediasService } from './social-medias.service';
 import { UsersService } from '../users/users.service';
 import { UserModel } from '../users/models/user.model';
 import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
+import { UseGuards } from '@nestjs/common';
+import {
+  AuthRoleEnum,
+  GraphQLAuthGuard,
+  GraphQLUser,
+  UserPayload,
+} from '@shared/authentication/graphql';
 
 @Resolver(() => SocialMediaModel)
 export class SocialMediasResolver {
@@ -12,12 +19,22 @@ export class SocialMediasResolver {
     private usersService: UsersService,
   ) {}
 
-  @Query(() => SocialMediaModel, { name: 'socialmedias' })
+  @Query(() => SocialMediaModel, { name: 'socialmedias', nullable: true })
+  @UseGuards(GraphQLAuthGuard)
   async getSocialMedia(
+    @GraphQLUser() user: UserPayload,
     @Args('socialMediaId', { type: () => Number })
     socialMediaId: number,
     @GraphQLQueryFields() queryFields: string[],
   ) {
+    if (user.role == AuthRoleEnum.USER) {
+      return await this.socialMediasService.findOneByIdWithUserId(
+        socialMediaId,
+        user.userId,
+        queryFields,
+      );
+    }
+
     return await this.socialMediasService.findOneById(
       socialMediaId,
       queryFields,

@@ -52,6 +52,35 @@ export class SocialMediasRepository {
   }
 
   /**
+   * Finds a social media by its unique id and verifies the addresses owner
+   *
+   * @param {number} phoneId Unique identifier
+   * @param {string} socialMediaId Resource owner id
+   * @param {[keyof SocialMediaEntity]} queryFields Entity fields to be retrieved
+   * @returns {SocialMediaEntity | null} Found entity or null
+   */
+  async findOneByIdWithUserId(
+    socialMediaId: number,
+    userId: string,
+    queryFields: [keyof SocialMediaEntity] = null,
+  ): Promise<SocialMediaEntity | null> {
+    if (queryFields === null) {
+      return await this.repository
+        .createQueryBuilder()
+        .where('social_media_id = :socialMediaId', { socialMediaId })
+        .andWhere('user_id = :userId', { userId })
+        .getOne();
+    }
+
+    return await this.repository
+      .createQueryBuilder('SocialMediaEntity')
+      .select(queryFields.map((field) => `SocialMediaEntity.${field}`))
+      .where('social_media_id = :socialMediaId', { socialMediaId })
+      .andWhere('user_id = :userId', { userId })
+      .getOne();
+  }
+
+  /**
    * Finds all social medias associated with the given user
    *
    * @param {string} userId Social media owner id

@@ -52,6 +52,35 @@ export class AddressesRepository {
   }
 
   /**
+   * Finds an address by its unique id and verifies the addresses owner
+   *
+   * @param {number} addressId Unique identifier
+   * @param {string} userId Resource owner id
+   * @param {[keyof AddressEntity]} queryFields Entity fields to be retrieved
+   * @returns {AddressEntity | null} Found entity or null
+   */
+  async findOneByIdWithUserId(
+    addressId: number,
+    userId: string,
+    queryFields: [keyof AddressEntity] = null,
+  ): Promise<AddressEntity | null> {
+    if (queryFields === null) {
+      return await this.repository
+        .createQueryBuilder()
+        .where('address_id = :addressId', { addressId })
+        .andWhere('user_id = :userId', { userId })
+        .getOne();
+    }
+
+    return await this.repository
+      .createQueryBuilder('AddressEntity')
+      .select(queryFields.map((field) => `AddressEntity.${field}`))
+      .where('address_id = :addressId', { addressId })
+      .andWhere('user_id = :userId', { userId })
+      .getOne();
+  }
+
+  /**
    * Finds all addresses associated with the given user
    *
    * @param {string} userId Address owner id

@@ -30,6 +30,7 @@ describe('POST /auth/logout', () => {
       {
         userId: '4799cc31-7692-40b3-afff-cc562baf5374',
         loginId: new Date().getTime().toString(),
+        role: 'user',
         iat: now,
         exp: now + 60,
       } as UserPayload,
@@ -56,6 +57,7 @@ describe('POST /auth/logout', () => {
       {
         userId: '4b9cf2b7-1601-47a5-9668-6cb423b0d7ac',
         loginId: '1707755084516',
+        role: 'user',
         iat: now,
         exp: now + 60,
       } as UserPayload,
