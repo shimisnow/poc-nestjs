@@ -1,10 +1,13 @@
 import request from 'supertest';
 import { getContainerRuntimeClient } from 'testcontainers';
 import jsonwebtoken from 'jsonwebtoken';
-import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
-import { AuthRoleEnum, UserPayload } from '@shared/authentication/graphql';
+import {
+  AuthErrorNames,
+  AuthRoleEnum,
+  UserPayload,
+} from '@shared/authentication/graphql';
 
-describe('Legal Docs Resolver', () => {
+describe('Legal Doc Resolver', () => {
   let host: string;
   const endpoint = '/api';
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;

@@ -1,8 +1,11 @@
 import request from 'supertest';
 import { getContainerRuntimeClient } from 'testcontainers';
 import jsonwebtoken from 'jsonwebtoken';
-import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
-import { AuthRoleEnum, UserPayload } from '@shared/authentication/graphql';
+import {
+  AuthErrorNames,
+  AuthRoleEnum,
+  UserPayload,
+} from '@shared/authentication/graphql';
 
 describe('Address Resolver', () => {
   let host: string;
