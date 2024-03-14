@@ -1,4 +1,4 @@
-![POC NestJS](docs/markdown//images/poc-nestjs-bar//export/poc-nestjs-bar.png)
+![POC NestJS](docs/markdown/images/poc-nestjs-bar//export/poc-nestjs-bar.png)
 
 # Financial API with NestJS
 
@@ -12,9 +12,9 @@ This project implements a financial backend with NestJS and serves as a demonstr
 
 The project has three individual services:
 
-- Auth Service (REST API): process authentication
+- Auth Service (REST API): implements the authentication process with JWT tokens
 - Financial Service (REST API): process and store financial data
-- User Service (GraphQL): process and store usar data
+- User Service (GraphQL): process and store usar data (profile)
 
 ![General Diagram](/docs/markdown/diagrams/general-flow.svg)
 
