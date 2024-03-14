@@ -1,5 +1,5 @@
 import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
+import { ForbiddenException, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserModel } from './models/user.model';
 import { AddressesService } from '../addresses/addresses.service';
@@ -14,6 +14,7 @@ import { GraphQLUser } from '@shared/authentication/decorators/graphql-user.deco
 import { GraphQLAuthGuard } from '@shared/authentication/guards/graphql-auth.guard';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
+import { AuthRoleEnum } from '@shared/authentication/enums/auth-role.enum';
 
 @Resolver(() => UserModel)
 export class UsersResolver {
@@ -31,14 +32,20 @@ export class UsersResolver {
     return await this.usersService.findOneById(user.userId);
   }
 
-  @Query(() => UserModel, { name: 'user' })
-  // @UseGuards(GraphQLAuthGuard)
+  @Query(() => UserModel, { name: 'user', nullable: true })
+  @UseGuards(GraphQLAuthGuard)
   async getUser(
-    // @GraphQLUser() user: UserPayload,
+    @GraphQLUser() user: UserPayload,
     @Args('userId', { type: () => String })
     userId: string,
     @GraphQLQueryFields() queryFields: string[],
   ) {
+    if (user.role == AuthRoleEnum.USER) {
+      if (userId != user.userId) {
+        return null;
+      }
+    }
+
     return await this.usersService.findOneById(userId, queryFields);
   }
 

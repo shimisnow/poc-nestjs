@@ -7,4 +7,5 @@
 export enum LegalDocTypeEnum {
   BRA_RG = 'BRA-RG',
   BRA_CNH = 'BRA-CNH',
+  USA_SSN = 'USA-SSN',
 }
