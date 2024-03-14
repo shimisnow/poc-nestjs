@@ -58,7 +58,7 @@ export class AuthGuard implements CanActivate {
     try {
       payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET_KEY,
-        maxAge: process.env.JWT_MAX_AGE,
+        maxAge: process.env.JWT_MAX_AGE ?? '1h',
       });
     } catch (error) {
       const exceptionBody = {
