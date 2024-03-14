@@ -80,7 +80,7 @@ module.exports = async function () {
       REDIS_HOST: 'redis',
       REDIS_PORT: process.env.REDIS_PORT,
       JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-      JWT_REFRESH_MAX_AGE: process.env.JWT_REFRESH_MAX_AGE,
+      JWT_MAX_AGE: process.env.JWT_MAX_AGE,
       USER_SERVICE_PORT: process.env.USER_SERVICE_PORT,
       USER_SERVICE_LOG_DIR: './logs',
     })

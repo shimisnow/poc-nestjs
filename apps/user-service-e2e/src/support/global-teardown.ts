@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { ensureFile } from 'fs-extra';
 
 module.exports = async function () {
-  const archivePath = './apps/users-service-e2e/logs/user-service-logs.tar';
+  const archivePath = './apps/user-service-e2e/logs/user-service-logs.tar';
   await ensureFile(archivePath);
   const outputFileStream = fs.createWriteStream(archivePath);
 
