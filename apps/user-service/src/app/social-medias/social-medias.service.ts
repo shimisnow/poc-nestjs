@@ -16,6 +16,18 @@ export class SocialMediasService {
     );
   }
 
+  async findOneByIdWithUserId(
+    socialMediaId: number,
+    userId: string,
+    queryFields: string[] = null,
+  ): Promise<SocialMediaEntity | null> {
+    return await this.socialMediasRepository.findOneByIdWithUserId(
+      socialMediaId,
+      userId,
+      queryFields as [keyof SocialMediaEntity],
+    );
+  }
+
   async findByUserId(
     userId: string,
     queryFields: string[] = null,

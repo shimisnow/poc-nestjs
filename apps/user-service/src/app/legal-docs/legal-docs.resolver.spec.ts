@@ -9,6 +9,8 @@ import { UsersRepository } from '../repositories/users/users.repository';
 import { CountriesRepositoryMock } from './mocks/countries-repository.mock';
 import { UsersRepositoryMock } from './mocks/users-repository.mock';
 import { LegalDocsRepositoryMock } from './mocks/legal-docs-repository.mock';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { JwtService } from '@nestjs/jwt';
 
 describe('legal-docs.resolver', () => {
   let resolver: LegalDocsResolver;
@@ -20,6 +22,14 @@ describe('legal-docs.resolver', () => {
         LegalDocsService,
         CountriesService,
         UsersService,
+        {
+          provide: CACHE_MANAGER,
+          useValue: {},
+        },
+        {
+          provide: JwtService,
+          useValue: {},
+        },
         {
           provide: CountriesRepository,
           useClass: CountriesRepositoryMock,

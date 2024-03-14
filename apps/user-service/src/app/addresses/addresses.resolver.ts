@@ -6,6 +6,13 @@ import { UsersService } from '../users/users.service';
 import { CountryModel } from '../countries/models/country.model';
 import { UserModel } from '../users/models/user.model';
 import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
+import { UseGuards } from '@nestjs/common';
+import {
+  AuthRoleEnum,
+  GraphQLAuthGuard,
+  GraphQLUser,
+  UserPayload,
+} from '@shared/authentication/graphql';
 
 @Resolver(() => AddressModel)
 export class AddressesResolver {
@@ -15,12 +22,22 @@ export class AddressesResolver {
     private usersService: UsersService,
   ) {}
 
-  @Query(() => AddressModel, { name: 'address' })
+  @Query(() => AddressModel, { name: 'address', nullable: true })
+  @UseGuards(GraphQLAuthGuard)
   async getAddress(
+    @GraphQLUser() user: UserPayload,
     @Args('addressId', { type: () => Number })
     addressId: number,
     @GraphQLQueryFields() queryFields: string[],
   ) {
+    if (user.role == AuthRoleEnum.USER) {
+      return await this.addressesService.findOneByIdWithUserId(
+        addressId,
+        user.userId,
+        queryFields,
+      );
+    }
+
     return await this.addressesService.findOneById(addressId, queryFields);
   }
 

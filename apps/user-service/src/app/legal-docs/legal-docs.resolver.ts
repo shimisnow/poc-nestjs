@@ -6,6 +6,13 @@ import { UserModel } from '../users/models/user.model';
 import { LegalDocModel } from './models/legal-doc.model';
 import { LegalDocsService } from './legal-docs.service';
 import { GraphQLQueryFields } from '../utils/decorators/graphql-query-fields.decorator';
+import { UseGuards } from '@nestjs/common';
+import {
+  AuthRoleEnum,
+  GraphQLAuthGuard,
+  GraphQLUser,
+  UserPayload,
+} from '@shared/authentication/graphql';
 
 @Resolver(() => LegalDocModel)
 export class LegalDocsResolver {
@@ -15,12 +22,22 @@ export class LegalDocsResolver {
     private usersService: UsersService,
   ) {}
 
-  @Query(() => LegalDocModel, { name: 'legaldocs' })
+  @Query(() => LegalDocModel, { name: 'legaldocs', nullable: true })
+  @UseGuards(GraphQLAuthGuard)
   async getLegalDoc(
+    @GraphQLUser() user: UserPayload,
     @Args('legalDocId', { type: () => Number })
     legalDocId: number,
     @GraphQLQueryFields() queryFields: string[],
   ) {
+    if (user.role == AuthRoleEnum.USER) {
+      return await this.legalDocsService.findOneByIdWithUserId(
+        legalDocId,
+        user.userId,
+        queryFields,
+      );
+    }
+
     return await this.legalDocsService.findOneById(legalDocId, queryFields);
   }
 

@@ -16,6 +16,18 @@ export class LegalDocsService {
     );
   }
 
+  async findOneByIdWithUserId(
+    legalDocId: number,
+    userId: string,
+    queryFields: string[] = null,
+  ): Promise<LegalDocEntity | null> {
+    return await this.legalDocsRepository.findOneByIdWithUserId(
+      legalDocId,
+      userId,
+      queryFields as [keyof LegalDocEntity],
+    );
+  }
+
   async findByUserId(
     userId: string,
     queryFields: string[] = null,

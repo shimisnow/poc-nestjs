@@ -3,6 +3,8 @@ import { CountriesResolver } from './countries.resolver';
 import { CountriesService } from '../countries/countries.service';
 import { CountriesRepository } from '../repositories/countries/countries.repository';
 import { CountriesRepositoryMock } from './mocks/countries-repository.mock';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { JwtService } from '@nestjs/jwt';
 
 describe('countries.resolver', () => {
   let resolver: CountriesResolver;
@@ -12,6 +14,14 @@ describe('countries.resolver', () => {
       providers: [
         CountriesResolver,
         CountriesService,
+        {
+          provide: CACHE_MANAGER,
+          useValue: {},
+        },
+        {
+          provide: JwtService,
+          useValue: {},
+        },
         {
           provide: CountriesRepository,
           useClass: CountriesRepositoryMock,

@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AddressesService } from './addresses.service';
 import { AddressesRepository } from '../repositories/addresses/addresses.repository';
 import { AddressesRepositoryMock } from './mocks/addresses-repository.mock';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { JwtService } from '@nestjs/jwt';
 
 describe('addresses.service', () => {
   let service: AddressesService;
@@ -10,6 +12,14 @@ describe('addresses.service', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AddressesService,
+        {
+          provide: CACHE_MANAGER,
+          useValue: {},
+        },
+        {
+          provide: JwtService,
+          useValue: {},
+        },
         {
           provide: AddressesRepository,
           useClass: AddressesRepositoryMock,
