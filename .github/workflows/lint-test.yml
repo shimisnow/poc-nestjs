@@ -1,4 +1,4 @@
-name: Lint and Test
+name: Lint • Test
 
 on:
   pull_request:
@@ -6,6 +6,9 @@ on:
       - 'milestone-**'
       - development
       - main
+
+env:
+  NODE_VERSION: 21.6.1
 
 jobs:
   setup:
@@ -16,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 21.6.1
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Cache node_modules
@@ -38,9 +41,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 21.6.1
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Restore  npm cache
+      - name: Restore npm cache
         uses: actions/cache/restore@v3
         with:
           path: ~/.npm
@@ -91,9 +94,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 21.6.1
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Restore  npm cache
+      - name: Restore npm cache
         uses: actions/cache/restore@v3
         with:
           path: ~/.npm
@@ -147,9 +150,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 21.6.1
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Restore  npm cache
+      - name: Restore npm cache
         uses: actions/cache/restore@v3
         with:
           path: ~/.npm
@@ -203,9 +206,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 21.6.1
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Restore  npm cache
+      - name: Restore npm cache
         uses: actions/cache/restore@v3
         with:
           path: ~/.npm
@@ -249,7 +252,7 @@ jobs:
           path: user-service-coverage-results.md
           key: ${{ runner.os }}-user-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
-  report:
+  coverage-report:
     if: github.event_name == 'pull_request'
     needs:
       - shared-code
