@@ -19,7 +19,7 @@ export class SocialMediasResolver {
     private usersService: UsersService,
   ) {}
 
-  @Query(() => SocialMediaModel, { name: 'socialmedias', nullable: true })
+  @Query(() => SocialMediaModel, { name: 'socialmedia', nullable: true })
   @UseGuards(GraphQLAuthGuard)
   async getSocialMedia(
     @GraphQLUser() user: UserPayload,

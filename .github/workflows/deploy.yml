@@ -1,33 +1,60 @@
-name: Deploy to Docker Hub
+name: Deploy • Docker Hub
 
 on:
   pull_request:
-    branches: 
+    branches:
       - main
     types: [closed]
 
 # see: https://github.com/docker/build-push-action
 jobs:
-  deploy:
+  build-base-image:
     if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      - name: Build Docker base image with shared node_modules
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image and export
         uses: docker/build-push-action@v5
         with:
           context: .
           push: false
           tags: pocnestjs-base:latest
-      
-      - name: Build and push image for Auth Service
+          outputs: type=docker,dest=/tmp/pocnestjs-base.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: pocnestjs-base
+          path: /tmp/pocnestjs-base.tar
+
+  auth-service:
+    needs: build-base-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: pocnestjs-base
+          path: /tmp
+
+      - name: Load image
+        run: |
+          docker load --input /tmp/pocnestjs-base.tar
+          docker image ls -a
+
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -35,11 +62,64 @@ jobs:
           push: true
           tags: shimisnow/pocnestjs-auth-service:latest
 
-      - name: Build and push image for Financial Service
+  financial-service:
+    needs: build-base-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: pocnestjs-base
+          path: /tmp
+
+      - name: Load image
+        run: |
+          docker load --input /tmp/pocnestjs-base.tar
+          docker image ls -a
+
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./apps/financial-service/Dockerfile
           push: true
           tags: shimisnow/pocnestjs-financial-service:latest
-        
+
+  user-service:
+    needs: build-base-image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: pocnestjs-base
+          path: /tmp
+
+      - name: Load image
+        run: |
+          docker load --input /tmp/pocnestjs-base.tar
+          docker image ls -a
+
+      - name: Docker Hub login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/user-service/Dockerfile
+          push: true
+          tags: shimisnow/pocnestjs-user-service:latest
