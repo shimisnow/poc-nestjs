@@ -29,6 +29,19 @@ export class AuthRefreshGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
+    request['user'] = await this.extractPayloadFromJwtToken(token);
+
+    return true;
+  }
+
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
+
+  private async extractPayloadFromJwtToken(
+    token: string,
+  ): Promise<UserPayload> {
     if (!token) {
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
@@ -45,7 +58,7 @@ export class AuthRefreshGuard implements CanActivate {
     try {
       payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_REFRESH_SECRET_KEY,
-        maxAge: process.env.JWT_REFRESH_MAX_AGE,
+        maxAge: process.env.JWT_REFRESH_MAX_AGE ?? '1h',
       });
     } catch (error) {
       const exceptionBody = {
@@ -130,13 +143,6 @@ export class AuthRefreshGuard implements CanActivate {
       }
     }
 
-    request['user'] = payload;
-
-    return true;
-  }
-
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    return payload;
   }
 }

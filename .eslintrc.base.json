@@ -57,6 +57,7 @@
       "rules": {
         "quotes": ["error", "single"],
         "eol-last": ["error", "always"],
+        "@typescript-eslint/no-empty-function": "off",
         "max-len": [
           "error",
           {

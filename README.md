@@ -1,13 +1,20 @@
-![POC NestJS](docs/markdown//images/poc-nestjs-bar.png)
+![POC NestJS](docs/markdown/images/poc-nestjs-bar//export/poc-nestjs-bar.png)
 
-# Financial REST API with NestJS
-[![Unit/Integration Tests](https://github.com/shimisnow/poc-nestjs/actions/workflows/unit-testing.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/unit-testing.yml)
+# Financial API with NestJS
+
+[![Unit/Integration Tests](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml)
 [![E2E Tests](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-testing.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-testing.yml)
 [![Build and publish Docker Images](https://github.com/shimisnow/poc-nestjs/actions/workflows/deploy.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/deploy.yml)
 [![Auth Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-auth-service/latest?logo=docker&label=Auth%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-auth-service)
 [![Financial Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-financial-service/latest?logo=docker&label=Financial%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-financial-service)
 
-This project implements a REST API for a financial backend with NestJS and serves as a demonstration of how to architect and develop a scalable backend API application. The project has two individual services, one to process authentication and one to process and store financial data.
+This project implements a financial backend with NestJS and serves as a demonstration of how to architect and develop a scalable backend API application.
+
+The project has three individual services:
+
+- Auth Service (REST API): implements the authentication process with JWT tokens
+- Financial Service (REST API): process and store financial data
+- User Service (GraphQL): process and store usar data (profile)
 
 ![General Diagram](/docs/markdown/diagrams/general-flow.svg)
 
@@ -16,6 +23,7 @@ This project implements a REST API for a financial backend with NestJS and serve
 - Showcases [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Showcases [how to authenticate, issue and invalidate tokens](docs/markdown//resolved-problems/authentication-flow.md)
 - Demonstrates [NestJS](https://docs.nestjs.com/) architecture and patterns.
+- Demonstrates how to build a REST API and a [GraphQL API](https://graphql.org/)
 - Shows how to make a secure authentication with [JWT](https://jwt.io/).
 - Shows how to work with monorepo using [Nx](https://nx.dev/).
 - Integrates with PostgreSQL (using [TypeORM](https://typeorm.io/)) and Redis.
@@ -29,7 +37,7 @@ This project implements a REST API for a financial backend with NestJS and serve
 ## Technologies
 
 - Code organization: monorepo with [Nx](https://nx.dev/)
-- Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
+- Backend: REST API, GraphQL, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
 - Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
 - Security: [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt)
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
