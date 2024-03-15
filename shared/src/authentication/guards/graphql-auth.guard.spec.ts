@@ -74,7 +74,6 @@ describe('graphql-auth.guard', () => {
           generateContext('abcdefghijklmnopqrstuvwxyz') as any,
         );
       } catch (error) {
-        console.log(error);
         expect(error).toBeInstanceOf(UnauthorizedException);
         const response = error.response;
         expect(response).toHaveProperty('data');

@@ -12,6 +12,7 @@ import { PhonesModule } from './phones/phones.module';
 import { LegalDocsModule } from './legal-docs/legal-docs.module';
 import { SocialMediasModule } from './social-medias/social-medias.module';
 import { JwtModule } from '@nestjs/jwt';
+import { GraphQLError, GraphQLFormattedError } from 'graphql';
 
 @Module({
   imports: [
@@ -40,6 +41,14 @@ import { JwtModule } from '@nestjs/jwt';
       driver: ApolloDriver,
       path: 'api',
       autoSchemaFile: true,
+      formatError: (error: GraphQLError) => {
+        return {
+          message: error.message,
+          extensions: error.extensions.originalError as {
+            [key: string]: unknown;
+          },
+        } as GraphQLFormattedError;
+      },
     }),
     CountriesModule,
     UsersModule,

@@ -103,3 +103,41 @@ jobs:
           DATABASE_FINANCIAL_DBNAME: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_DBNAME }}
           JWT_SECRET_KEY: ${{ steps.dotenv.outputs.JWT_SECRET_KEY }}
           JWT_MAX_AGE: ${{ steps.dotenv.outputs.JWT_MAX_AGE }}
+
+  user-service:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21.6.1
+
+      - name: Restore node_modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
+
+      - name: Build
+        run: npx nx build user-service
+
+      - name: Load .env variables
+        id: dotenv
+        uses: falti/dotenv-action@v1.0.4
+
+      - name: Testing
+        run: npx nx e2e user-service-e2e
+        env:
+          USER_SERVICE_PORT: ${{ steps.dotenv.outputs.USER_SERVICE_PORT }}
+          DATABASE_USER_HOST: ${{ steps.dotenv.outputs.DATABASE_USER_HOST }}
+          DATABASE_USER_PORT: ${{ steps.dotenv.outputs.DATABASE_USER_PORT }}
+          DATABASE_USER_USERNAME: ${{ steps.dotenv.outputs.DATABASE_USER_USERNAME }}
+          DATABASE_USER_PASSWORD: ${{ steps.dotenv.outputs.DATABASE_USER_PASSWORD }}
+          DATABASE_USER_DBNAME: ${{ steps.dotenv.outputs.DATABASE_USER_DBNAME }}
+          JWT_SECRET_KEY: ${{ steps.dotenv.outputs.JWT_SECRET_KEY }}
+          JWT_MAX_AGE: ${{ steps.dotenv.outputs.JWT_MAX_AGE }}

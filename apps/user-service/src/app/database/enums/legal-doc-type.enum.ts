@@ -1,6 +1,7 @@
 /**
  * Legal doc type at the format [COUNTRY CODE]-[DOC TYPE].
  * Example: BRA_RG to a Brazil doc.
+ * Example: USA_SSN to an United States of America doc.
  * Country code should follow ISO_3166-1_alpha-3.
  * https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3
  */

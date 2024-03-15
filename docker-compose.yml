@@ -134,8 +134,8 @@ services:
       - poc-nestjs
     ports:
       - ${DATABASE_USER_PORT}:5432
-    #volumes:
-    #  - ./deployment/database/info:/docker-entrypoint-initdb.d:ro
+    volumes:
+      - ./deployment/database/info:/docker-entrypoint-initdb.d:ro
 
   auth-service-openapi:
     image: nginx:1.25.3-alpine3.18
