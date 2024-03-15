@@ -35,6 +35,8 @@ jobs:
     needs: build-base-image
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -64,6 +66,8 @@ jobs:
     needs: build-base-image
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
@@ -93,6 +97,8 @@ jobs:
     needs: build-base-image
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
