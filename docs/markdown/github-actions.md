@@ -9,6 +9,6 @@ This project does some cool things with Github Actions:
 
 See the GitHub Actions here:
 
-- [Unit and Integration testing (Jest)](../../.github/workflows/lint-test.yml): Executes when push or pull request to development branches.
-- [E2E Testing (Supertest and Testcontainers)](../../.github/workflows/e2e-testing.yml): Executes E2E testing when push or pull request to staging or main.
+- [Unit and Integration testing (Jest)](../../.github/workflows/lint-test.yml): Executes when pull request to development branches.
+- [E2E Testing (Supertest and Testcontainers)](../../.github/workflows/lint-test-e2e.yml): Executes E2E testing when pull request to staging or main.
 - [Build Docker images and publish to Docker Hub](../../.github/workflows/deploy.yml): Publish the compiled code to Docker Hub.
