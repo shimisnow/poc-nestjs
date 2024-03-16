@@ -21,7 +21,7 @@ export class LegalDocsRepositoryMock {
     legalDocId: number,
     queryFields: [keyof LegalDocEntity] = null,
   ): Promise<LegalDocEntity | null> {
-    return this.legalDocs.find((value) => (value.legalDocId = legalDocId));
+    return this.legalDocs.find((value) => value.legalDocId == legalDocId);
   }
 
   async findOneByIdWithUserId(
