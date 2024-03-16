@@ -3,9 +3,10 @@ import { SocialMediasResolver } from './social-medias.resolver';
 import { SocialMediasService } from './social-medias.service';
 import { UsersService } from '../users/users.service';
 import { SocialMediasRepository } from '../repositories/social-medias/social-medias.repository';
-import { SocialMediasRepositoryMock } from './mocks/social-medias-repository.mock';
 import { UsersRepository } from '../repositories/users/users.repository';
-import { UsersRepositoryMock } from './mocks/users-repository.mock';
+import { UsersRepositoryMock } from '../repositories/users/mocks/';
+import { SocialMediasRepositoryMock } from '../repositories/social-medias/mocks/';
+
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 

@@ -6,9 +6,9 @@ import { UsersService } from '../users/users.service';
 import { AddressesRepository } from '../repositories/addresses/addresses.repository';
 import { CountriesRepository } from '../repositories/countries/countries.repository';
 import { UsersRepository } from '../repositories/users/users.repository';
-import { AddressesRepositoryMock } from './mocks/addresses-repository.mock';
-import { CountriesRepositoryMock } from './mocks/countries-repository.mock';
-import { UsersRepositoryMock } from './mocks/users-repository.mock';
+import { AddressesRepositoryMock } from '../repositories/addresses/mocks/';
+import { CountriesRepositoryMock } from '../repositories/countries/mocks/';
+import { UsersRepositoryMock } from '../repositories/users/mocks/';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 

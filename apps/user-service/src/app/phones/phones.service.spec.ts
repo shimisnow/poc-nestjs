@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { PhonesService } from './phones.service';
 import { PhonesRepository } from '../repositories/phones/phones.repository';
-import { PhonesRepositoryMock } from './mocks/phones-repository.mock';
+import { PhonesRepositoryMock } from '../repositories/phones/mocks/';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 
