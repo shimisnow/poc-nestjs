@@ -10,7 +10,7 @@ export default {
   coverageDirectory: '../coverage/shared',
   collectCoverageFrom: ['<rootDir>/src/**'],
   coveragePathIgnorePatterns: [
-    '.*.(serializer|enum|entity|decorator|payload|graphql).ts$',
+    '.*.(serializer|enum|entity|decorator|payload|graphql|index).ts$',
   ],
   coverageReporters: ['clover', 'html'],
   coverageThreshold: {
