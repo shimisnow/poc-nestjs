@@ -11,6 +11,6 @@ export class UsersRepositoryMock {
     userId: string,
     queryFields: string[] = null,
   ): Promise<UserEntity | null> {
-    return this.users.find((value) => value.userId == userId);
+    return this.users.find((value) => value.userId == userId) ?? null;
   }
 }

@@ -19,7 +19,7 @@ export class AddressesRepositoryMock {
     addressId: number,
     queryFields: [keyof AddressEntity] = null,
   ): Promise<AddressEntity | null> {
-    return this.addresses.find((value) => value.addressId == addressId);
+    return this.addresses.find((value) => value.addressId == addressId) ?? null;
   }
 
   async findOneByIdWithUserId(
@@ -27,9 +27,11 @@ export class AddressesRepositoryMock {
     userId: string,
     queryFields: [keyof AddressEntity] = null,
   ): Promise<AddressEntity | null> {
-    return this.addresses.find((value) => {
-      return value.addressId == addressId && value.user.userId == userId;
-    });
+    return (
+      this.addresses.find((value) => {
+        return value.addressId == addressId && value.user.userId == userId;
+      }) ?? null
+    );
   }
 
   async findByUserId(

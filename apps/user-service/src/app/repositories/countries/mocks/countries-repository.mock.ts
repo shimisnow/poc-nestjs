@@ -12,6 +12,6 @@ export class CountriesRepositoryMock {
     code: CountryCodeEnum,
     queryFields: [keyof CountryEntity] = null,
   ): Promise<CountryEntity | null> {
-    return this.countries.find((value) => value.code == code);
+    return this.countries.find((value) => value.code == code) ?? null;
   }
 }

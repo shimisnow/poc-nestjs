@@ -21,7 +21,7 @@ export class PhonesRepositoryMock {
     phoneId: number,
     queryFields: [keyof PhoneEntity] = null,
   ): Promise<PhoneEntity | null> {
-    return this.phones.find((value) => value.phoneId == phoneId);
+    return this.phones.find((value) => value.phoneId == phoneId) ?? null;
   }
 
   async findOneByIdWithUserId(
@@ -29,9 +29,11 @@ export class PhonesRepositoryMock {
     userId: string,
     queryFields: [keyof PhoneEntity] = null,
   ): Promise<PhoneEntity | null> {
-    return this.phones.find((value) => {
-      return value.phoneId == phoneId && value.user.userId == userId;
-    });
+    return (
+      this.phones.find((value) => {
+        return value.phoneId == phoneId && value.user.userId == userId;
+      }) ?? null
+    );
   }
 
   async findByUserId(

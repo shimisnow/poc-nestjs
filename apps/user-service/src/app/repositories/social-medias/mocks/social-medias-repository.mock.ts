@@ -23,8 +23,9 @@ export class SocialMediasRepositoryMock {
     socialMediaId: number,
     queryFields: [keyof SocialMediaEntity] = null,
   ): Promise<SocialMediaEntity | null> {
-    return this.socialMedias.find(
-      (value) => value.socialMediaId == socialMediaId,
+    return (
+      this.socialMedias.find((value) => value.socialMediaId == socialMediaId) ??
+      null
     );
   }
 
@@ -33,11 +34,13 @@ export class SocialMediasRepositoryMock {
     userId: string,
     queryFields: [keyof SocialMediaEntity] = null,
   ): Promise<SocialMediaEntity | null> {
-    return this.socialMedias.find((value) => {
-      return (
-        value.socialMediaId == socialMediaId && value.user.userId == userId
-      );
-    });
+    return (
+      this.socialMedias.find((value) => {
+        return (
+          value.socialMediaId == socialMediaId && value.user.userId == userId
+        );
+      }) ?? null
+    );
   }
 
   async findByUserId(
