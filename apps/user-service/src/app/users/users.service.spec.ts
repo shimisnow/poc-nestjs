@@ -1,8 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { UsersRepository } from '../repositories/users/users.repository';
-import { UsersRepositoryMock } from './mocks/users-repository.mock';
-import { UserEntity } from '../database/entities/user.entity';
+import { UsersRepositoryMock } from '../repositories/users/mocks/';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 

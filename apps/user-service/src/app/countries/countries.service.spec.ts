@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CountriesService } from './countries.service';
 import { CountriesRepository } from '../repositories/countries/countries.repository';
-import { CountriesRepositoryMock } from './mocks/countries-repository.mock';
+import { CountriesRepositoryMock } from '../repositories/countries/mocks/';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 

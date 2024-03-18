@@ -57,7 +57,6 @@ export class AddressesResolver {
     @Parent() address: AddressModel,
     @GraphQLQueryFields() queryFields: string[],
   ) {
-    console.log(address);
     return this.usersService.findOneById(address.user.userId, queryFields);
   }
 }

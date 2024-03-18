@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SocialMediasService } from './social-medias.service';
 import { SocialMediasRepository } from '../repositories/social-medias/social-medias.repository';
-import { SocialMediasRepositoryMock } from './mocks/social-medias-repository.mock';
+import { SocialMediasRepositoryMock } from '../repositories/social-medias/mocks/';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 
