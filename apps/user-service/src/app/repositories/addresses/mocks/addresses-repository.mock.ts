@@ -38,8 +38,6 @@ export class AddressesRepositoryMock {
     userId: string,
     queryFields: [keyof AddressEntity] = null,
   ): Promise<AddressEntity[]> {
-    return this.addresses.filter((value) => {
-      value.user.userId == userId;
-    });
+    return this.addresses.filter((value) => value.user.userId == userId);
   }
 }
