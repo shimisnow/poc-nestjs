@@ -17,7 +17,7 @@ export default {
   coverageReporters: ['clover', 'html'],
   coverageThreshold: {
     global: {
-      lines: 50,
+      lines: 85,
     },
   },
 };
