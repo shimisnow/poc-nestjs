@@ -12,7 +12,7 @@ export default {
   coveragePathIgnorePatterns: [
     'main.ts',
     'repl.ts',
-    '(module|dto|serializer|body|result|mock|output|payload|model|decorator).ts$',
+    '(module|dto|serializer|entity|repository|body|result|output|payload|model|decorator|mock|index).ts$',
   ],
   coverageReporters: ['clover', 'html'],
   coverageThreshold: {
