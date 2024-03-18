@@ -68,23 +68,19 @@ describe('users.resolver', () => {
     expect(resolver).toBeDefined();
   });
 
-  /* describe('getUser()', () => {
-    test('user does exists', async () => {
-      const result = await resolver.getUser(
-        'b0b6065a-dbbf-46a5-8db5-4c089aa17ec1',
-      );
+  describe('getUser()', () => {
+    describe('role user', () => {
+      test('exists', async () => {});
 
-      expect(result).toBeInstanceOf(UserEntity);
+      test('does not exists', async () => {});
     });
 
-    test('user does not exists', async () => {
-      const result = await resolver.getUser(
-        'b0b6065a-dbbf-46a5-8db5-4c089aa17ed2',
-      );
+    describe('role admin', () => {
+      test('exists', async () => {});
 
-      expect(result).toBeNull();
+      test('user is not the owner', async () => {});
     });
-  }); */
+  });
 
   describe('getAddresses()', () => {
     return;

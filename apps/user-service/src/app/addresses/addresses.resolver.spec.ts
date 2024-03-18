@@ -65,14 +65,14 @@ describe('addresses.resolver', () => {
         exp: now + 60,
       } as UserPayload;
 
-      test('address exists', async () => {
+      test('exists', async () => {
         const result = await resolver.getAddress(user, 1, []);
 
         expect(result.postalcode).toBe('12345678');
         expect(result.type).toBe(AddressTypeEnum.MAIN);
       });
 
-      test('address does not exists', async () => {
+      test('does not exists', async () => {
         const result = await resolver.getAddress(user, 3, []);
 
         expect(result).toBeNull();
@@ -89,14 +89,14 @@ describe('addresses.resolver', () => {
         exp: now + 60,
       } as UserPayload;
 
-      test('address exists', async () => {
+      test('exists', async () => {
         const result = await resolver.getAddress(user, 1, []);
 
         expect(result.postalcode).toBe('12345678');
         expect(result.type).toBe(AddressTypeEnum.MAIN);
       });
 
-      test('address does not exists', async () => {
+      test('user is not the owner', async () => {
         const result = await resolver.getAddress(user, 3, []);
 
         expect(result.postalcode).toBe('34567890');
