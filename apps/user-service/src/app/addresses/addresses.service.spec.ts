@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AddressesService } from './addresses.service';
 import { AddressesRepository } from '../repositories/addresses/addresses.repository';
-import { AddressesRepositoryMock } from './mocks/addresses-repository.mock';
+import { AddressesRepositoryMock } from '../repositories/addresses/mocks/';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 
