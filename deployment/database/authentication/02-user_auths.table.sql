@@ -5,7 +5,7 @@
 -- DROP TABLE public.user_auths;
 
 CREATE TABLE public.user_auths (
-	user_id uuid NOT NULL,
+	user_id uuid DEFAULT uuid_generate_v4() NOT NULL,
 	username varchar(50) NOT NULL,
 	"password" varchar(100) NOT NULL,
 	status public."user_auth_status_enum" DEFAULT 'active'::user_auth_status_enum NULL,

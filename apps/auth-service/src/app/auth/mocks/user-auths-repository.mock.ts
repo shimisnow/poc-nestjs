@@ -16,8 +16,6 @@ export class UserAuthsRepositoryMock {
               '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
             status: UserAuthStatusEnum.ACTIVE,
           } as UserAuthEntity;
-        case 'beatrice':
-          return null;
         case 'thomas':
           return {
             userId: 'fcf5cccf-c217-4502-8cc3-cc24270ae0b7',
@@ -27,6 +25,9 @@ export class UserAuthsRepositoryMock {
               '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
             status: UserAuthStatusEnum.INACTIVE,
           } as UserAuthEntity;
+        case 'beatrice':
+        case 'eleonor':
+          return null;
         default:
           throw new QueryFailedError('', null, new Error('some error'));
       }
@@ -54,11 +55,11 @@ export class UserAuthsRepositoryMock {
 
   async insert(entity: UserAuthEntity): Promise<InsertResult> {
     switch (entity.username) {
-      case 'anderson':
+      case 'eleonor':
         return {
           identifiers: [
             {
-              userId: entity.userId,
+              userId: 'd4279421-5aca-4d9b-92a3-0ade163a2c5c',
             },
           ],
           generatedMaps: [

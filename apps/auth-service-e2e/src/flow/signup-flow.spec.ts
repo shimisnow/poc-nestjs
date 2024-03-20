@@ -26,9 +26,9 @@ describe('login logout process (with refresh)', () => {
   });
 
   test('username available signup and login', async () => {
-    const userId = uuidv4();
     const username = 'sherlock-' + Math.floor(Math.random() * 1000);
     const password = 'test@1234';
+    let userId = '';
 
     // verify if the username is available
 
@@ -51,7 +51,6 @@ describe('login logout process (with refresh)', () => {
     await request(host)
       .post(endpointSignup)
       .send({
-        userId,
         username,
         password,
       })
@@ -62,6 +61,8 @@ describe('login logout process (with refresh)', () => {
         const body = response.body;
         expect(body).toHaveProperty('status');
         expect(body.status).toBeTruthy();
+        expect(body).toHaveProperty('userId');
+        userId = body.userId;
       });
 
     // vefify if the username is available
@@ -119,7 +120,6 @@ describe('login logout process (with refresh)', () => {
     await request(host)
       .post(endpointSignup)
       .send({
-        userId,
         username,
         password,
       })

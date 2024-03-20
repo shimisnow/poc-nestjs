@@ -76,36 +76,17 @@ describe('auth.service', () => {
   describe('signup()', () => {
     test('username already registered', async () => {
       try {
-        await service.signup(
-          'c3914f88-9a70-4775-9e32-7bcc8fbaeccd',
-          'thomas',
-          '',
-        );
-      } catch (error) {
-        expect(error).toBeInstanceOf(ConflictException);
-      }
-    });
-
-    test('userId already registered', async () => {
-      try {
-        await service.signup(
-          'c3914f88-9a70-4775-9e32-7bcc8fbaeaaa',
-          'nathan',
-          '',
-        );
+        await service.signup('thomas', '1234');
       } catch (error) {
         expect(error).toBeInstanceOf(ConflictException);
       }
     });
 
     test('insert without errors', async () => {
-      const result = await service.signup(
-        '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-        'anderson',
-        '',
-      );
+      const result = await service.signup('eleonor', '');
 
       expect(result.status).toBeTruthy();
+      expect(result.userId).not.toBeUndefined();
     });
   });
 
