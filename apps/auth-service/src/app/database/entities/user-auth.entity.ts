@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserAuthStatusEnum } from '../enums/user-auth-status.enum';
@@ -20,12 +20,10 @@ import * as bcrypt from 'bcrypt';
 })
 export class UserAuthEntity {
   /**
-   * User ID previous generated and stored at the users table in another database.
+   * User unique id to be used by this and other services.
    */
-  @PrimaryColumn({
+  @PrimaryGeneratedColumn('uuid', {
     name: 'user_id',
-    type: 'uuid',
-    nullable: false,
     primaryKeyConstraintName: 'pk_user_auths',
   })
   userId: string;
