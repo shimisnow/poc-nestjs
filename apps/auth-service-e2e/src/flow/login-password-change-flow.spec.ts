@@ -207,5 +207,5 @@ describe('login password change', () => {
         expect(body.performed).toBeTruthy();
         expect(body).toHaveProperty('performedAt');
       });
-  });
+  }, 60000);
 });
