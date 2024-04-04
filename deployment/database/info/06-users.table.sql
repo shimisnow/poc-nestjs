@@ -5,7 +5,7 @@
 -- DROP TABLE public.users;
 
 CREATE TABLE public.users (
-	user_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+	user_id uuid NOT NULL,
 	"name" varchar(30) NOT NULL,
 	surname varchar(50) NOT NULL,
 	email varchar(100) NOT NULL,

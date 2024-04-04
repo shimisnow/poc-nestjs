@@ -2,7 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
@@ -13,8 +13,9 @@ import {
   name: 'users',
 })
 export class UserEntity {
-  @PrimaryGeneratedColumn('uuid', {
+  @PrimaryColumn({
     name: 'user_id',
+    type: 'uuid',
     primaryKeyConstraintName: 'pk_users',
   })
   userId: string;
