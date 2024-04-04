@@ -238,11 +238,7 @@ export class AuthController {
     type: DefaultError502Serializer,
   })
   async signup(@Body() body: SignUpBodyDto): Promise<SignUpSerializer> {
-    return await this.authService.signup(
-      body.userId,
-      body.username,
-      body.password,
-    );
+    return await this.authService.signup(body.username, body.password);
   }
 
   @Version('1')

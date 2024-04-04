@@ -314,40 +314,31 @@ export class AuthService {
   /**
    * Register an user authentication information.
    *
-   * @param userId UUID user information.
    * @param username Username.
    * @param password Password in plain text.
-   * @returns Information if the user was registered.
-   * @throws ConflictException Username or userId duplicated.
+   * @returns Information if the user was registered and its unique id.
+   * @throws ConflictException Username duplicated.
    * @throws UnprocessableEntityException Database error from query parser.
    * @throws BadGatewayException Database error.
    */
-  async signup(
-    userId: string,
-    username: string,
-    password: string,
-  ): Promise<SignUpSerializer> {
-    let entities = null;
+  async signup(username: string, password: string): Promise<SignUpSerializer> {
+    let entity = null;
 
     try {
-      entities = await this.userAuthsRepository.findByIdOrUsername(
-        userId,
-        username,
-      );
+      entity = await this.userAuthsRepository.findByUsername(username);
     } catch (error) {
       throw new BadGatewayException();
     }
 
-    if (entities.length > 0) {
+    if (entity != null) {
       throw new ConflictException();
     }
 
-    const response = {
+    const response: SignUpSerializer = {
       status: false,
     };
 
-    const entity = new UserAuthEntity();
-    entity.userId = userId;
+    entity = new UserAuthEntity();
     entity.username = username;
     entity.password = password;
 
@@ -356,6 +347,7 @@ export class AuthService {
 
       if (result.identifiers.length > 0) {
         response.status = true;
+        response.userId = result.identifiers[0].userId;
       }
     } catch (error) {
       throw new BadGatewayException();
