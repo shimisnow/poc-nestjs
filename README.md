@@ -10,33 +10,33 @@
 [![Financial Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-financial-service/latest?logo=docker&label=Financial%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-financial-service)
 [![User Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-user-service/latest?logo=docker&label=User%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-user-service)
 
-This project implements a financial backend with NestJS and serves as a demonstration of how to architect and develop a scalable backend API application.
+## Project Overview
+
+This [NestJS](https://docs.nestjs.com/) project is designed to provide a robust and maintainable backend application with a strong emphasis on testing, documentation, and deployment automation.
 
 The project has three individual services:
 
 - Auth Service (REST API): implements the authentication process with JWT tokens
 - Financial Service (REST API): process and store financial data
-- User Service (GraphQL): process and store usar data (profile)
+- User Service (GraphQL): process and store user data (under development)
 
 ![General Diagram](/docs/markdown/diagrams/general-flow.svg)
 
 ## Key features
 
 - Showcases [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
-- Showcases [how to authenticate, issue and invalidate tokens](docs/markdown//resolved-problems/authentication-flow.md)
-- Demonstrates [NestJS](https://docs.nestjs.com/) architecture and patterns.
-- Demonstrates how to build a REST API and a [GraphQL API](https://graphql.org/)
-- Shows how to make a secure authentication with [JWT](https://jwt.io/).
-- Shows how to work with monorepo using [Nx](https://nx.dev/).
-- Integrates with PostgreSQL (using [TypeORM](https://typeorm.io/)) and Redis.
-- Shows how to log in JSON with [winston](https://github.com/winstonjs/winston).
-- Shows how to test with [Jest](https://jestjs.io/), [Supertest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/).
-- Shows how to deploy with Docker using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/)
-- Shows how to [Github Actions](https://github.com/features/actions) to E2E test the application and publish the compiled code to [Docker Hub](https://hub.docker.com/).
-- Shows how to use [OpenAPI/Swagger](https://www.openapis.org/) documentation for REST APIs.
-- Shows how to use pre-request script in [Postman](https://www.postman.com/) to build powerfull collections.
+- Showcases [how to authenticate, issue and invalidate tokens](docs/markdown//resolved-problems/authentication-flow.md) using Redis cache and without storing token in database
+- Shows how to make a secure authentication with [JWT](https://jwt.io/)
+- Shows how to work with monorepo using [Nx](https://nx.dev/)
+- Integrates with PostgreSQL (using [TypeORM](https://typeorm.io/)) and Redis
+- Shows how to log in JSON with [winston](https://github.com/winstonjs/winston)
+- Shows how to test with [Jest](https://jestjs.io/) and [Supertest](https://github.com/ladjs/supertest)
+- Shows how to e2e test usint [Testcontainers](https://testcontainers.com/) to create isolated environments for testing the entire application flow, ensuring that the application behaves correctly from the user's perspective
+- Shows how to make automated deployment to [Docker Hub](https://hub.docker.com/) using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/) and [Github Actions](https://github.com/features/actions)
+- Shows how to make API documentation with [OpenAPI/Swagger](https://www.openapis.org/)
+- Shows how to use pre-request scripts in [Postman](https://www.postman.com/) to build powerfull collections
 
-## Technologies
+## Technology Stack
 
 - Code organization: monorepo with [Nx](https://nx.dev/)
 - Backend: REST API, GraphQL, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
