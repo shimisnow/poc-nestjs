@@ -47,6 +47,10 @@ The project has three individual services:
 - Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/)
 - Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, JWT, [winston](https://github.com/winstonjs/winston)
 
+## DevOps flow
+
+![DevOps flow](docs/markdown/diagrams/devops.png)
+
 ## Details about
 
 - [How to run from code](docs/markdown/how-to-run.md)
