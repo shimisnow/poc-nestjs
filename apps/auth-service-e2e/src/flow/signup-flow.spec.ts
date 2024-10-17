@@ -5,7 +5,6 @@ import { getContainerRuntimeClient } from 'testcontainers';
 
 describe('login logout process (with refresh)', () => {
   let host: string;
-  const endpointAvailable = '/auth/username/available';
   const endpointSignup = '/auth/signup';
   const endpointLogin = '/auth/login';
   const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
@@ -25,26 +24,10 @@ describe('login logout process (with refresh)', () => {
     host = `http://localhost:${AUTH_SERVICE_TEST_PORT}`;
   });
 
-  test('username available signup and login', async () => {
+  test('signup and login', async () => {
     const username = 'sherlock-' + Math.floor(Math.random() * 1000);
     const password = 'test@1234';
     let userId = '';
-
-    // verify if the username is available
-
-    await request(host)
-      .get(endpointAvailable)
-      .query({
-        username,
-      })
-      .set('X-Api-Version', '1')
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .then((response) => {
-        const body = response.body;
-        expect(body).toHaveProperty('available');
-        expect(body.available).toBeTruthy();
-      });
 
     // signup process
 
@@ -63,22 +46,6 @@ describe('login logout process (with refresh)', () => {
         expect(body.status).toBeTruthy();
         expect(body).toHaveProperty('userId');
         userId = body.userId;
-      });
-
-    // vefify if the username is available
-
-    await request(host)
-      .get(endpointAvailable)
-      .query({
-        username,
-      })
-      .set('X-Api-Version', '1')
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .then((response) => {
-        const body = response.body;
-        expect(body).toHaveProperty('available');
-        expect(body.available).toBeFalsy();
       });
 
     // login with the newly created user

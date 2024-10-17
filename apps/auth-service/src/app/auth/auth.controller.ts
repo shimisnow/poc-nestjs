@@ -29,9 +29,6 @@ import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthService } from './auth.service';
 import { SignUpBodyDto } from './dtos/signup-body.dto';
 import { SignUpSerializer } from './serializers/signup.serializer';
-import { VerifyUsernameSerializer } from './serializers/verify-username.serializer';
-import { VerifyUsernameQueryDto } from './dtos/verify-username-query.dto';
-import { VerifyUsernameError400Serializer } from './serializers/verify-username-error-400.serializer';
 import { DefaultError500Serializer } from './serializers/default-error-500.serializer';
 import { DefaultError502Serializer } from './serializers/default-error-502.serializer';
 import { LoginBodyDto } from './dtos/login-body.dto';
@@ -50,46 +47,6 @@ import { PasswordChangeError400Serializer } from './serializers/password-change-
 @ApiTags('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-
-  @Version('1')
-  @Get('username/available')
-  @ApiOperation({
-    summary:
-      'Retrieves information if the provided username is already registered',
-  })
-  @ApiHeader({
-    name: 'X-Api-Version',
-    description: 'Sets the API version',
-    required: true,
-  })
-  @ApiOkResponse({
-    description: 'Information about the username availability',
-    type: VerifyUsernameSerializer,
-  })
-  @ApiBadRequestResponse({
-    description: 'Error validating request input data',
-    type: VerifyUsernameError400Serializer,
-  })
-  @ApiInternalServerErrorResponse({
-    description:
-      'The server has encountered a situation it does not know how to handle. See server logs for details',
-    type: DefaultError500Serializer,
-  })
-  @ApiBadGatewayResponse({
-    description: 'Internal data processing error. Probably a database error',
-    type: DefaultError502Serializer,
-  })
-  async verifyIfUsernameIsAvailable(
-    @Query() query: VerifyUsernameQueryDto,
-  ): Promise<VerifyUsernameSerializer> {
-    const result = await this.authService.verifyIfUsernameExists(
-      query.username,
-    );
-
-    return {
-      available: !result,
-    } as VerifyUsernameSerializer;
-  }
 
   @Version('1')
   @Post('login')
