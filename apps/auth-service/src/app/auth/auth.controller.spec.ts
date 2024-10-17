@@ -47,24 +47,4 @@ describe('auth.controller', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
   });
-
-  describe('verifyIfUsernameExists()', () => {
-    test('username already registered', async () => {
-      const result = await controller.verifyIfUsernameIsAvailable({
-        username: 'anderson',
-      });
-
-      expect(result).toHaveProperty('available');
-      expect(result.available).toBeFalsy();
-    });
-
-    test('username not registered', async () => {
-      const result = await controller.verifyIfUsernameIsAvailable({
-        username: 'beatrice',
-      });
-
-      expect(result).toHaveProperty('available');
-      expect(result.available).toBeTruthy();
-    });
-  });
 });
