@@ -49,7 +49,11 @@ The project has three individual services:
 
 ## DevOps flow
 
-![DevOps flow](docs/markdown/diagrams/devops.png)
+1. Development: lint, unit and integration tests (Jest), adds a coverage report to github pull request
+2. Staging: e2e test (Supertest) using [Testcontainers](https://testcontainers.com/) to replicate external dependencies
+3. Production: build all services, create Docker images, and deploy to Docker Hub
+
+![DevOps flow](docs/markdown/diagrams/devops.svg)
 
 ## Details about
 
