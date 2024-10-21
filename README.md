@@ -14,42 +14,37 @@
 
 This [NestJS](https://docs.nestjs.com/) project is designed to provide a robust and maintainable backend application with a strong emphasis on testing, documentation, and deployment automation.
 
+## Key features
+
+- Shows [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
+- Shows [how to authenticate, issue and invalidate JWT tokens](docs/markdown//resolved-problems/authentication-flow.md) using Redis cache and without storing token in database
+- Shows how to e2e test using [Testcontainers](https://testcontainers.com/) to create isolated environments for testing the entire application flow from the user perspective
+- Shows how to make automated deployment to [Docker Hub](https://hub.docker.com/) using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/) and [Github Actions](https://github.com/features/actions)
+
+## General organization
+
 The project has three individual services:
 
 - Auth Service (REST API): implements the authentication process with JWT tokens
 - Financial Service (REST API): process and store financial data
-- User Service (GraphQL): process and store user data (under development)
+- User Service (GraphQL): process and store user data (**under development**)
 
 ![General Diagram](/docs/markdown/diagrams/general-flow.svg)
-
-## Key features
-
-- Showcases [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
-- Showcases [how to authenticate, issue and invalidate tokens](docs/markdown//resolved-problems/authentication-flow.md) using Redis cache and without storing token in database
-- Shows how to make a secure authentication with [JWT](https://jwt.io/)
-- Shows how to work with monorepo using [Nx](https://nx.dev/)
-- Integrates with PostgreSQL (using [TypeORM](https://typeorm.io/)) and Redis
-- Shows how to log in JSON with [winston](https://github.com/winstonjs/winston)
-- Shows how to test with [Jest](https://jestjs.io/) and [Supertest](https://github.com/ladjs/supertest)
-- Shows how to e2e test usint [Testcontainers](https://testcontainers.com/) to create isolated environments for testing the entire application flow, ensuring that the application behaves correctly from the user's perspective
-- Shows how to make automated deployment to [Docker Hub](https://hub.docker.com/) using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/) and [Github Actions](https://github.com/features/actions)
-- Shows how to make API documentation with [OpenAPI/Swagger](https://www.openapis.org/)
-- Shows how to use pre-request scripts in [Postman](https://www.postman.com/) to build powerfull collections
 
 ## Technology Stack
 
 - Code organization: monorepo with [Nx](https://nx.dev/)
-- Backend: REST API, GraphQL, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
+- Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
 - Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
 - Security: [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt)
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
 - CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
 - Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/)
-- Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, JWT, [winston](https://github.com/winstonjs/winston)
+- Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, [winston](https://github.com/winstonjs/winston)
 
 ## DevOps flow
 
-1. Development: lint, unit and integration tests (Jest), adds a coverage report to github pull request
+1. Development: lint, unit and integration tests (Jest), adds a coverage report as github pull request comment
 2. Staging: e2e test (Supertest) using [Testcontainers](https://testcontainers.com/) to replicate external dependencies
 3. Production: build all services, create Docker images, and deploy to Docker Hub
 
