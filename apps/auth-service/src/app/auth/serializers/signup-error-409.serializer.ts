@@ -11,5 +11,5 @@ export class SignUpError409Serializer {
     description: 'HTTP error message',
     example: 'Conflict',
   })
-  message: string;
+  error: string;
 }

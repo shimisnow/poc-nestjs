@@ -13,10 +13,4 @@ export class DefaultError401Serializer {
     required: false,
   })
   data?: DefaultError401DataSerializer;
-
-  @ApiProperty({
-    description: 'HTTP error message',
-    example: 'Unauthorized',
-  })
-  error: string;
 }
