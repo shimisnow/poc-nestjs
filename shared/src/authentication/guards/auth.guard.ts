@@ -45,7 +45,7 @@ export class AuthGuard implements CanActivate {
     if (!token) {
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: {
           name: AuthErrorNames.JWT_EMPTY_ERROR,
         },
@@ -63,7 +63,7 @@ export class AuthGuard implements CanActivate {
     } catch (error) {
       const exceptionBody = {
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: error,
       };
 
@@ -93,7 +93,7 @@ export class AuthGuard implements CanActivate {
 
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: {
           name: AuthErrorNames.JWT_PAYLOAD_STRUCTURE_ERROR,
           errors: messages,
@@ -113,7 +113,7 @@ export class AuthGuard implements CanActivate {
     if (logoutVerification !== null) {
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: {
           name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
           errors: [AuthErrorMessages.INVALIDATED_BY_LOGOUT],
@@ -134,7 +134,7 @@ export class AuthGuard implements CanActivate {
       if (payload.iat * 1000 <= passwordChangeVerification.changedAt) {
         throw new UnauthorizedException({
           statusCode: HttpStatus.UNAUTHORIZED,
-          message: 'Unauthorized',
+          error: 'Unauthorized',
           data: {
             name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
             errors: [AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE],

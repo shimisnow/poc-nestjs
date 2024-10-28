@@ -155,7 +155,7 @@ export class AuthService {
 
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [AuthErrorMessages.WRONG_USER_PASSWORD],
@@ -175,7 +175,7 @@ export class AuthService {
 
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [AuthErrorMessages.WRONG_USER_PASSWORD],
@@ -246,7 +246,7 @@ export class AuthService {
     if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: {
           name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
           errors: [AuthErrorMessages.INACTIVE_USER],
@@ -294,7 +294,7 @@ export class AuthService {
     if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [AuthErrorMessages.INACTIVE_USER],
@@ -403,7 +403,7 @@ export class AuthService {
 
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [AuthErrorMessages.INACTIVE_USER],
@@ -427,7 +427,7 @@ export class AuthService {
 
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'Unauthorized',
+        error: 'Unauthorized',
         data: {
           name: AuthErrorNames.CREDENTIAL_ERROR,
           errors: [AuthErrorMessages.WRONG_USER_PASSWORD],
