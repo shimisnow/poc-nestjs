@@ -20,7 +20,6 @@ export class DefaultError401DataSerializer {
       'invalid signature',
       'exp must be a number conforming to the specified constraints',
       'wrong user or password information',
-      'user is inactive or does not exists',
     ],
   })
   errors?: Array<string>;

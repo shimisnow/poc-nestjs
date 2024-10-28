@@ -11,5 +11,5 @@ export class DefaultError502Serializer {
     description: 'HTTP error message',
     example: 'Bad Gateway',
   })
-  message: string;
+  error: string;
 }

@@ -9,12 +9,6 @@ export class DefaultError401Serializer {
   statusCode: number;
 
   @ApiProperty({
-    description: 'HTTP error message',
-    example: 'Unauthorized',
-  })
-  message: string;
-
-  @ApiProperty({
     description: 'Information about the error',
     required: false,
   })
