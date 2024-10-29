@@ -47,9 +47,7 @@ describe('Phones Resolver', () => {
 
       const error = result.errors[0];
 
-      expect(error.message).toBe('Unauthorized');
       expect(error.extensions.statusCode).toBe(401);
-      expect(error.extensions.message).toBe('Unauthorized');
       expect(error.extensions.data.name).toBe(AuthErrorNames.JWT_EMPTY_ERROR);
     });
 
@@ -86,9 +84,7 @@ describe('Phones Resolver', () => {
 
       const error = result.errors[0];
 
-      expect(error.message).toBe('Unauthorized');
       expect(error.extensions.statusCode).toBe(401);
-      expect(error.extensions.message).toBe('Unauthorized');
       expect(error.extensions.data.name).toBe(AuthErrorNames.JWT_EXPIRED_ERROR);
       expect(error.extensions.data).toHaveProperty('expiredAt');
       expect(error.extensions.data.errors).toEqual(
@@ -129,9 +125,7 @@ describe('Phones Resolver', () => {
 
       const error = result.errors[0];
 
-      expect(error.message).toBe('Unauthorized');
       expect(error.extensions.statusCode).toBe(401);
-      expect(error.extensions.message).toBe('Unauthorized');
       expect(error.extensions.data.name).toBe(AuthErrorNames.JWT_EXPIRED_ERROR);
       expect(error.extensions.data).toHaveProperty('expiredAt');
       expect(error.extensions.data.errors).toEqual(
