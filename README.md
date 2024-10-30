@@ -12,7 +12,7 @@
 
 ## Project Overview
 
-This [NestJS](https://docs.nestjs.com/) project is designed to provide a robust and maintainable backend application with a strong emphasis on testing, documentation, and deployment automation.
+This project is a robust REST API built using the [NestJS](https://docs.nestjs.com/) framework, designed for scalability and maintainability. Key features include a modular, testable architecture; comprehensive unit and integration testing with Jest to ensure code quality; end-to-end testing using Supertest and Testcontainers for consistent application stack testing; and an integrated CI/CD pipeline with GitHub Actions to automate testing and deployment processes.
 
 ## Key features
 
