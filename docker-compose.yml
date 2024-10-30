@@ -3,9 +3,19 @@ networks:
     driver: bridge
 
 services:
-  base-image:
-    image: pocnestjs-base:latest
-    build: .
+  base-image-development:
+    image: pocnestjs-base-dev:latest
+    build:
+      context: .
+      args:
+        NODE_ENV: development
+
+  base-image-production:
+    image: pocnestjs-base-prod:latest
+    build:
+      context: .
+      args:
+        NODE_ENV: production
 
   auth-service:
     image: shimisnow/pocnestjs-auth-service:latest
@@ -15,6 +25,8 @@ services:
     container_name: poc-nestjs-auth-service
     environment:
       AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
       DATABASE_AUTH_HOST: ${DATABASE_AUTH_HOST}
       DATABASE_AUTH_PORT: ${DATABASE_AUTH_PORT}
       DATABASE_AUTH_USERNAME: ${DATABASE_AUTH_USERNAME}
@@ -39,6 +51,8 @@ services:
     container_name: poc-nestjs-user-service
     environment:
       USER_SERVICE_PORT: ${USER_SERVICE_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
       DATABASE_USER_HOST: ${DATABASE_USER_HOST}
       DATABASE_USER_PORT: ${DATABASE_USER_PORT}
       DATABASE_USER_USERNAME: ${DATABASE_USER_USERNAME}

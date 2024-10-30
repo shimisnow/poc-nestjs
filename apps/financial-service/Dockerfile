@@ -1,11 +1,11 @@
-FROM pocnestjs-base:latest as base
+FROM pocnestjs-base-dev:latest as base
 
 WORKDIR /home/node/app
 COPY . .
 RUN npx nx build financial-service
 
 ##########
-FROM pocnestjs-base:latest
+FROM pocnestjs-base-prod:latest
 
 WORKDIR /home/node/app
 COPY --from=base /home/node/app/dist/apps/financial-service/main.js ./
