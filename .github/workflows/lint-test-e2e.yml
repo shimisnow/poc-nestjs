@@ -363,7 +363,7 @@ jobs:
 
       - name: Load .env variables
         id: dotenv
-        uses: falti/dotenv-action@v1.0.4
+        uses: falti/dotenv-action@v1.1.4
 
       - name: Testing
         run: npx nx e2e auth-service-e2e
@@ -404,7 +404,7 @@ jobs:
 
       - name: Load .env variables
         id: dotenv
-        uses: falti/dotenv-action@v1.0.4
+        uses: falti/dotenv-action@v1.1.4
 
       - name: Testing
         run: npx nx e2e financial-service-e2e
@@ -445,7 +445,7 @@ jobs:
 
       - name: Load .env variables
         id: dotenv
-        uses: falti/dotenv-action@v1.0.4
+        uses: falti/dotenv-action@v1.1.4
 
       - name: Testing
         run: npx nx e2e user-service-e2e
