@@ -1,8 +1,11 @@
-FROM node:22.11.0-alpine3.20
+FROM node:21.6.1-alpine3.18
 
-ARG NODE_ENV="production"
+ARG NODE_ENV=production
 
 WORKDIR /home/node/app
-COPY package.json package-lock.json ./
+
+COPY package*.json ./
+
 ENV NODE_ENV=${NODE_ENV}
-RUN npm install
+
+RUN npm install ci --no-audit
