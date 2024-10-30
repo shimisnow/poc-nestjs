@@ -50,7 +50,7 @@ The project has three individual services:
 
 ![DevOps flow](docs/markdown/diagrams/devops.svg)
 
-## Details about
+## Documentation about
 
 - [How to run from code](docs/markdown/how-to-run.md)
 - [How to deploy](docs/markdown/how-to-deploy.md)
