@@ -21,7 +21,8 @@ docker compose up -d database-authentication database-financial database-info re
 Build the Docker images for each service with the commands:
 
 ```sh
-docker compose build base-image
+docker compose build base-image-development
+docker compose build base-image-production
 docker compose build auth-service
 docker compose build financial-service
 docker compose build user-service
