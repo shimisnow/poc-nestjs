@@ -29,7 +29,42 @@ The project has three individual services:
 - Financial Service (REST API): process and store financial data
 - User Service (GraphQL): process and store user data (**under development**)
 
-![General Diagram](/docs/markdown/diagrams/general-flow.svg)
+```mermaid
+stateDiagram-v2
+direction LR
+
+state "Consumer" as consumer {
+    [*] --> api_consumer
+    state "API Consumer" as api_consumer
+    state api_gateway <<fork>>
+    api_consumer --> api_gateway
+}
+
+state "REST API Services" as service {
+    state auth_api <<fork>>
+    state "Auth Service" as auth
+    auth_api --> auth
+    state financial_api <<fork>>
+    state "Financial Service" as financial
+    financial_api --> financial
+}
+
+state "Database and Cache" as storage {
+    state "Auth Database" as auth_db
+    state "Redis" as redis
+    state "Financial Database" as financial_db
+}
+
+api_gateway --> auth_api: login or refresh token
+auth_api --> api_gateway: access token
+api_gateway --> financial_api: request + access token
+financial_api --> api_gateway: financial data
+
+auth --> auth_db: data exchange
+auth --> redis: data exchange
+financial --> redis: data exchange
+financial --> financial_db: data exchange
+```
 
 ## Technology Stack
 
@@ -39,7 +74,7 @@ The project has three individual services:
 - Security: [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt)
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
 - CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
-- Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/)
+- Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/), [Mermaid](https://mermaid.js.org/)
 - Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, [winston](https://github.com/winstonjs/winston)
 
 ## DevOps flow
@@ -52,6 +87,7 @@ The project has three individual services:
 
 ## Documentation about
 
+- [How to contribute](./CONTRIBUTING.md)
 - [How to run from code](docs/markdown/how-to-run.md)
 - [How to run with Docker](docs/markdown/how-to-deploy.md)
 - [Database structure and TypeORM entities](docs/markdown/database-structure.md)
