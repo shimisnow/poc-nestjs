@@ -53,7 +53,7 @@ The project has three individual services:
 ## Documentation about
 
 - [How to run from code](docs/markdown/how-to-run.md)
-- [How to deploy](docs/markdown/how-to-deploy.md)
+- [How to run with Docker](docs/markdown/how-to-deploy.md)
 - [Database structure and TypeORM entities](docs/markdown/database-structure.md)
 - [GitHub Actions](docs/markdown/github-actions.md)
 - [Documentation](docs/markdown/documentation.md)
