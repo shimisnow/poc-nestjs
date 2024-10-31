@@ -1,33 +1,30 @@
 # GitHub Actions
 
-This project does some cool things with Github Actions:
-
-1. Performs lint and tests for each service inside the monorepo when open pull request to development branches.
-2. When a pull request is open, generates code coverage for each service and adds the report to comments at the pull request.
-3. When a pull request is open for stageing and production branch, performs E2E tests using Docker and [Testcontainers](https://testcontainers.com/) with parallel jobs.
-4. When a pull request for the production branch is closed and merged, compiles the code, generates a Docker image and publish it to Docker Hub.
-
-## Workflows
+See the [contributing guide](../../CONTRIBUTING.md) to get a diagram for the project gitflow.
 
 ### Unit and Integration testing (Jest)
 
+Will be executed for pull request to the branches `milestone-**`, `develop`, `staging`.
+
 - See the [workflow file](../../.github/workflows/lint-test.yml) for details.
 
-This workflow creates the `node_modules` folder at the `setup` step and uses it to test the code for the services (`auth-service`, `financial-service`, and `user-service` steps) and for the shared code(`shared-code` step). At the end, generates a coverage report and adds it to a pull request comment (`coverage-report` step).
+This workflow creates the `node_modules` folder at the `setup` step and uses it to test the code for the services (`auth-service`, `financial-service`, and `user-service` steps) and for the shared code (`shared-code` step). At the end, generates a coverage report and adds it to a pull request comment (`coverage-report` step).
 
 ![](./images//github-actions-workflow-01.png)
 
 ### E2E Testing (Supertest and Testcontainers)
 
-- See the [workflow file](../../.github/workflows/lint-test-e2e.yml) for details.
+Will be executed for pull request to the branches `staging` and `main`.
 
-This workflow creates the `node_modules` folder at the `setup` step and uses it to test the code for the services (`auth-service`, `financial-service`, and `user-service` steps) and for the shared code(`shared-code` step). At the end, generates a coverage report and adds it to a pull request comment (`coverage-report` step).
+- See the [workflow file](../../.github/workflows/e2e-test.yml) for details.
 
-After all lint and testing process, executes e2e tests for each service (`auth-service-e2e`, `financial-service-e2e`, and `user-service-e2e` steps)
+This workflow creates the `node_modules` folder at the `setup` step and uses it to execute e2e tests for each service (`auth-service-e2e`, `financial-service-e2e`, and `user-service-e2e` steps).
 
 ![](./images//github-actions-workflow-02.png)
 
 ### Build Docker images and publish to Docker Hub
+
+Will be executed when a pull request to the branch `main` is accepted.
 
 - See the [workflow file](../../.github/workflows/deploy.yml) for details.
 
