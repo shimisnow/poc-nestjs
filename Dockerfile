@@ -8,4 +8,4 @@ COPY package*.json ./
 
 ENV NODE_ENV=${NODE_ENV}
 
-RUN npm install ci --no-audit --legacy-peer-deps
+RUN npm install ci --no-audit
