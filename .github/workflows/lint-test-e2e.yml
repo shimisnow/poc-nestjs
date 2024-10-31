@@ -348,19 +348,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Restore npm cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          fail-on-cache-miss: true
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npx nx build auth-service
-
       - name: Load .env variables
         id: dotenv
         uses: falti/dotenv-action@v1.1.4
@@ -389,19 +376,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Restore npm cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          fail-on-cache-miss: true
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npx nx build financial-service
-
       - name: Load .env variables
         id: dotenv
         uses: falti/dotenv-action@v1.1.4
@@ -429,19 +403,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-
-      - name: Restore npm cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          fail-on-cache-miss: true
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npx nx build user-service
 
       - name: Load .env variables
         id: dotenv
