@@ -50,9 +50,11 @@ module.exports = async function () {
       postgreSqlContainer.start(),
       redisContainer.start(),
       // build docker image with compiled code
-      GenericContainer.fromDockerfile('./').build(DOCKER_IMAGE_BUILD_NAME, {
-        deleteOnExit: false,
-      }),
+      GenericContainer.fromDockerfile('./')
+        .withBuildArgs({ NODE_ENV: 'production' })
+        .build(DOCKER_IMAGE_BUILD_NAME, {
+          deleteOnExit: false,
+        }),
     ]);
 
   /** *** CODE *****/
