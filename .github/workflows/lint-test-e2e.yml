@@ -31,7 +31,7 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci --no-audit
 
   shared-code:
     needs: setup
@@ -53,7 +53,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit
 
       - name: Lint
         run: npx nx lint shared
@@ -103,7 +103,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit
 
       - name: Lint
         run: npx nx lint auth-service
@@ -156,7 +156,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit
 
       - name: Lint
         run: npx nx lint financial-service
@@ -209,7 +209,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit
 
       - name: Lint
         run: npx nx lint user-service
@@ -356,10 +356,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npx nx build auth-service
+        run: npm install --only=dev --no-audit
 
       - name: Load .env variables
         id: dotenv
@@ -397,10 +394,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npx nx build financial-service
+        run: npm install --only=dev --no-audit
 
       - name: Load .env variables
         id: dotenv
@@ -438,10 +432,7 @@ jobs:
           fail-on-cache-miss: true
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npx nx build user-service
+        run: npm install --only=dev --no-audit
 
       - name: Load .env variables
         id: dotenv
