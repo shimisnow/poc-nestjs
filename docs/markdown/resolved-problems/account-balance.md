@@ -6,7 +6,52 @@ In an application that stores the user transactions as debit and credit operatio
 
 ### The Solution
 
-![](./images/account-balance.svg)
+```mermaid
+stateDiagram-v2
+direction LR
+
+classDef rest_req_res fill:yellow,color:black,font-weight:bold,stroke-width:2px,stroke:black
+
+state "REST API request" as api_req
+class api_req rest_req_res
+
+[*] --> api_req
+
+state "Verifies if account balance exists in cache" as get_balance
+api_req --> get_balance
+
+state has_cache <<choice>>
+get_balance --> has_cache
+
+state "Return balance" as return_balance
+has_cache --> return_balance: balance in cache
+
+state retrieve <<fork>>
+has_cache --> retrieve: balance not in cache
+
+state "Retrieves balance from database" as retrieve_database
+retrieve --> retrieve_database
+state "Retrieves unprocessed transactions" as transactions
+retrieve --> transactions
+
+state merge <<join>>
+retrieve_database --> merge
+transactions --> merge
+
+state "Sums the stored balance with the unprocessed transactions" as compute_balance
+merge --> compute_balance
+
+state "Save on cache" as save_cache
+compute_balance --> save_cache
+
+save_cache --> return_balance
+
+state "REST API response" as api_res
+class api_res rest_req_res
+
+return_balance --> api_res
+api_res --> [*]
+```
 
 #### Database
 
