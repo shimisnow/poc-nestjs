@@ -39,7 +39,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/js:node",
+      "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "auth-service:build"
@@ -54,21 +54,21 @@
       }
     },
     "serve-repl": {
-      "executor": "@nrwl/js:node",
+      "executor": "@nx/js:node",
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "auth-service:build-repl"
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["apps/auth-service/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/auth-service/jest.config.ts",
