@@ -4,7 +4,8 @@ on:
   pull_request:
     branches:
       - 'milestone-**'
-      - development
+      - develop
+      - staging
 
 env:
   NODE_VERSION: 21.6.1
