@@ -348,12 +348,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Install Nx
+        run: npm add --global nx@20.0.6
+
       - name: Load .env variables
         id: dotenv
         uses: falti/dotenv-action@v1.1.4
 
       - name: Testing
-        run: npx nx e2e auth-service-e2e
+        run: nx e2e auth-service-e2e
         env:
           AUTH_SERVICE_PORT: ${{ steps.dotenv.outputs.AUTH_SERVICE_PORT }}
           DATABASE_AUTH_HOST: ${{ steps.dotenv.outputs.DATABASE_AUTH_HOST }}
@@ -376,12 +379,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Install Nx
+        run: npm add --global nx@20.0.6
+
       - name: Load .env variables
         id: dotenv
         uses: falti/dotenv-action@v1.1.4
 
       - name: Testing
-        run: npx nx e2e financial-service-e2e
+        run: nx e2e financial-service-e2e
         env:
           FINANCIAL_SERVICE_PORT: ${{ steps.dotenv.outputs.FINANCIAL_SERVICE_PORT }}
           DATABASE_FINANCIAL_HOST: ${{ steps.dotenv.outputs.DATABASE_FINANCIAL_HOST }}
@@ -404,12 +410,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: Install Nx
+        run: npm add --global nx@20.0.6
+
       - name: Load .env variables
         id: dotenv
         uses: falti/dotenv-action@v1.1.4
 
       - name: Testing
-        run: npx nx e2e user-service-e2e
+        run: nx e2e user-service-e2e
         env:
           USER_SERVICE_PORT: ${{ steps.dotenv.outputs.USER_SERVICE_PORT }}
           DATABASE_USER_HOST: ${{ steps.dotenv.outputs.DATABASE_USER_HOST }}
