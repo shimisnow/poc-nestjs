@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {
   GenericContainer,
   Network,
@@ -8,13 +9,42 @@ import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { RedisContainer } from '@testcontainers/redis';
 
 module.exports = async function () {
-  const DOCKER_IMAGE_BUILD_NAME = 'poc-nestjs-node';
+  const DOCKER_IMAGE_POCNESTJS_BASE_DEV = 'pocnestjs-base-dev';
+  const DOCKER_IMAGE_POCNESTJS_BASE_PROD = 'pocnestjs-base-prod';
+  const DOCKER_IMAGE_FINANCIAL_SERVICE =
+    'shimisnow/pocnestjs-financial-service:latest';
   const DOCKER_POSTGRES_TAG = 'postgres:16.1';
   const DOCKER_REDIS_TAG = 'redis:7.2.4';
 
   const dockerNetwork = await new Network().start();
 
-  /** *** DATABASE *****/
+  /***** BUILD BASE DOCKER IMAGES *****/
+
+  const [baseImageDev, baseImageProd] = await Promise.all([
+    // build docker image with node_module for development
+    GenericContainer.fromDockerfile('./')
+      .withBuildArgs({ NODE_ENV: 'development' })
+      .build(DOCKER_IMAGE_POCNESTJS_BASE_DEV, {
+        deleteOnExit: false,
+      }),
+    // build docker image with node_module for production
+    GenericContainer.fromDockerfile('./')
+      .withBuildArgs({ NODE_ENV: 'production' })
+      .build(DOCKER_IMAGE_POCNESTJS_BASE_PROD, {
+        deleteOnExit: false,
+      }),
+  ]);
+
+  /***** BUILD SERVICE DOCKER IMAGE *****/
+
+  const serviceImage = await GenericContainer.fromDockerfile(
+    './',
+    'apps/financial-service/Dockerfile',
+  ).build(DOCKER_IMAGE_FINANCIAL_SERVICE, {
+    deleteOnExit: true,
+  });
+
+  /***** DEPENDENCIES SETUP *****/
 
   const postgreSqlContainer = new PostgreSqlContainer(DOCKER_POSTGRES_TAG)
     .withNetwork(dockerNetwork)
@@ -35,42 +65,26 @@ module.exports = async function () {
       ),
     );
 
-  /** *** CACHE *****/
-
   const redisContainer = new RedisContainer(DOCKER_REDIS_TAG)
     .withLabels({ 'poc-nestjs-name': 'financial-service-cache' })
     .withNetwork(dockerNetwork)
     .withNetworkAliases('redis')
     .withExposedPorts(parseInt(process.env.REDIS_PORT));
 
-  /** *** DEPENDENCIES START AND CODE BUILD *****/
+  /***** DEPENDENCIES START *****/
 
-  const [containerDatabase, containerCache, buildContainerCode] =
-    await Promise.all([
-      postgreSqlContainer.start(),
-      redisContainer.start(),
-      // build docker image with compiled code
-      GenericContainer.fromDockerfile('./')
-        .withBuildArgs({ NODE_ENV: 'production' })
-        .build(DOCKER_IMAGE_BUILD_NAME, {
-          deleteOnExit: false,
-        }),
-    ]);
+  const [containerDatabase, containerCache] = await Promise.all([
+    postgreSqlContainer.start(),
+    redisContainer.start(),
+  ]);
 
   /** *** CODE *****/
 
-  const containerCode: StartedTestContainer = await buildContainerCode
+  const containerCode: StartedTestContainer = await serviceImage
     .withLabels({ 'poc-nestjs-name': 'financial-service-code' })
     .withNetwork(dockerNetwork)
     .withNetworkAliases('financial-service')
     .withExposedPorts(parseInt(process.env.FINANCIAL_SERVICE_PORT))
-    .withCopyFilesToContainer([
-      {
-        source: './dist/apps/financial-service/main.js',
-        target: '/home/node/app/main.js',
-      },
-    ])
-    .withCommand(['node', 'main.js'])
     .withEnvironment({
       DATABASE_FINANCIAL_HOST: 'database-financial',
       DATABASE_FINANCIAL_PORT: '5432',
