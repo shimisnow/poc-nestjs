@@ -83,7 +83,86 @@ financial --> financial_db: data exchange
 2. Staging: e2e test (Supertest) using [Testcontainers](https://testcontainers.com/) to replicate external dependencies
 3. Production: build all services, create Docker images, and deploy to Docker Hub
 
-![DevOps flow](docs/markdown/diagrams/devops.svg)
+```mermaid
+stateDiagram-v2
+direction LR
+
+classDef dev_style fill:#7f51ce
+classDef staging_style fill:#e3942a
+classDef prod_style fill:green
+
+
+state "Development" as development_stage {
+    state "Code" as dev_code
+    state "Commit" as dev_commit
+    state "Pull Request" as dev_pr
+    [*] --> dev_code
+    dev_code --> dev_commit
+    dev_commit --> dev_pr
+    dev_pr --> [*]
+}
+development_stage:::dev_style
+
+[*] --> development_stage
+
+state "GitHub Actions • Development" as github_dev_stage {
+    state "Lint code" as lint
+    state "Unit test" as unit
+    state "Integration test" as integration
+    state "Coverage report" as coverage
+    [*] --> lint
+    lint --> unit
+    unit --> integration
+    integration --> coverage
+    coverage --> [*]
+}
+github_dev_stage:::dev_style
+
+development_stage --> github_dev_stage
+
+state "Staging" as staging_stage {
+    state "Pull Request" as staging_pr
+    [*] --> staging_pr
+    staging_pr --> [*]
+}
+staging_stage:::staging_style
+
+github_dev_stage --> staging_stage
+
+state "GitHub Actions • Staging" as github_staging_stage {
+    state "Setup Testcontainers" as testcontainers
+    state "e2e Tests" as e2e_tests
+    [*] --> testcontainers
+    testcontainers --> e2e_tests
+    e2e_tests --> [*]
+}
+github_staging_stage:::staging_style
+
+staging_stage --> github_staging_stage
+
+state "Production" as prod_stage {
+    state "Pull Request" as prod_pr
+    [*] --> prod_pr
+    prod_pr --> [*]
+}
+prod_stage:::prod_style
+
+github_staging_stage --> prod_stage
+
+state "GitHub Actions • Production" as github_prod_stage {
+    state "Build code" as build_code
+	state "Create Docker images" as docker_images
+	state "Deploy do DockerHub" as docker_hub
+	[*] --> build_code
+	build_code --> docker_images
+	docker_images --> docker_hub
+	docker_hub --> [*]
+}
+github_prod_stage:::prod_style
+
+prod_stage --> github_prod_stage
+github_prod_stage --> [*]
+```
 
 ## Documentation about
 
