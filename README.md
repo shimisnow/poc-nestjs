@@ -1,14 +1,12 @@
 ![POC NestJS](docs/markdown/images/poc-nestjs-bar//export/poc-nestjs-bar.png)
 
-# Financial API with NestJS
+# Financial REST API with NestJS
 
 [![Unit Integration](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml)
 [![E2E Test](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml)
 [![Build and publish Docker Images](https://github.com/shimisnow/poc-nestjs/actions/workflows/deploy.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/deploy.yml)
-
 [![Auth Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-auth-service/latest?logo=docker&label=Auth%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-auth-service)
 [![Financial Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-financial-service/latest?logo=docker&label=Financial%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-financial-service)
-[![User Service Docker image size](https://img.shields.io/docker/image-size/shimisnow/pocnestjs-user-service/latest?logo=docker&label=User%20Service)](https://hub.docker.com/r/shimisnow/pocnestjs-user-service)
 
 ## Project Overview
 
@@ -34,11 +32,10 @@ This project is a robust REST API built using the [NestJS](https://docs.nestjs.c
 
 ## General organization
 
-The project has three individual services:
+The project has two individual services:
 
-- Auth Service (REST API): implements the authentication process with JWT tokens
-- Financial Service (REST API): process and store financial data
-- User Service (GraphQL): process and store user data (**under development**)
+- Auth Service: implements the authentication process with JWT tokens
+- Financial Service: process and store financial data
 
 ```mermaid
 stateDiagram-v2

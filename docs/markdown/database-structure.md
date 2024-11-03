@@ -4,7 +4,6 @@ SQL files with database structure can be found at:
 
 - [Authentication](../../deployment/database/authentication)
 - [Financial](../../deployment/database/financial)
-- [User](../../deployment/database/info/)
 
 ### Authentication database
 
@@ -14,14 +13,9 @@ SQL files with database structure can be found at:
 
 ![Financial database](./images/database-diagram-financial.png)
 
-### User database
-
-![User database](./images/database-diagram-info.png)
-
 ## TypeORM entities
 
 The TypeORM entities can be found at:
 
 - [Authentication](../../apps/auth-service/src/app/database/entities/)
 - [Financial](../../apps/financial-service/src/app/database/entities/)
-- [User](../../apps/user-service/src/app/database/entities/)
