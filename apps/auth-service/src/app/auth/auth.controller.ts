@@ -112,10 +112,6 @@ export class AuthController {
     description: 'Information if the logout process was performed',
     type: LogoutSerializer,
   })
-  @ApiUnauthorizedResponse({
-    description: 'User does not exists or is inactive',
-    type: DefaultError401Serializer,
-  })
   @ApiInternalServerErrorResponse({
     description:
       'The server has encountered a situation it does not know how to handle. See server logs for details',

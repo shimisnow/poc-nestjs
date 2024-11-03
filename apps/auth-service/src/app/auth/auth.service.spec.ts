@@ -207,27 +207,6 @@ describe('auth.service', () => {
   });
 
   describe('logout()', () => {
-    test('INACTIVE user', async () => {
-      const user = {
-        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4b04',
-        loginId: new Date().getTime().toString(),
-      } as UserPayload;
-
-      try {
-        await service.logout(user.userId, user.loginId);
-      } catch (error) {
-        expect(error).toBeInstanceOf(UnauthorizedException);
-        const response = error.response;
-        expect(response).toHaveProperty('data');
-        expect(response.data.name).toBe(
-          AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
-        );
-        expect(response.data.errors).toEqual(
-          expect.arrayContaining([AuthErrorMessages.INACTIVE_USER]),
-        );
-      }
-    });
-
     test('ACTIVE user', async () => {
       const user = {
         userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
