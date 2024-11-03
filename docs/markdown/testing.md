@@ -12,7 +12,6 @@ Available service name to be replace in `$SERVICE_NAME`:
 
 - auth-service
 - financial-service
-- user-service
 
 The `*.spec.ts` files can be found at `/apps/SERVICE_NAME/app/MODULE_NAME` with one file for the controller and one for the service.
 
