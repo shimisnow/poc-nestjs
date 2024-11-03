@@ -230,27 +230,8 @@ export class AuthService {
    * @param userId User id as UUID.
    * @param loginId Login identification from JWT token.
    * @returns Information if the process was perfomed.
-   * @throws UnauthorizedException User does not exists or is inactive.
    */
   async logout(userId: string, loginId: string): Promise<LogoutSerializer> {
-    let userEntity: UserAuthEntity = null;
-
-    try {
-      userEntity = await this.userAuthsRepository.findById(userId);
-    } catch (error) {
-      throw new BadGatewayException(error.message);
-    }
-
-    if (userEntity?.status !== UserAuthStatusEnum.ACTIVE) {
-      throw new UnauthorizedException({
-        statusCode: HttpStatus.UNAUTHORIZED,
-        data: {
-          name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
-          errors: [AuthErrorMessages.INACTIVE_USER],
-        },
-      });
-    }
-
     const performedAt = new Date().getTime();
 
     await this.cacheService.set(
