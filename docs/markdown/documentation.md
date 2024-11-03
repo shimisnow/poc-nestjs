@@ -48,4 +48,3 @@ docker compose up -d compodoc
 ```
 
 And then got to `http://localhost:PORT`.
-
