@@ -13,8 +13,8 @@ module.exports = async function () {
   const DOCKER_IMAGE_POCNESTJS_BASE_DEV = 'pocnestjs-base-dev';
   const DOCKER_IMAGE_POCNESTJS_BASE_PROD = 'pocnestjs-base-prod';
   const DOCKER_IMAGE_USER_SERVICE = 'shimisnow/pocnestjs-auth-service:latest';
-  const DOCKER_POSTGRES_TAG = 'postgres:16.1';
-  const DOCKER_REDIS_TAG = 'redis:7.2.4';
+  const DOCKER_POSTGRES_TAG = 'postgres:17.0';
+  const DOCKER_REDIS_TAG = 'redis:7.4.1';
 
   const dockerNetwork: StartedNetwork = await new Network().start();
 
