@@ -21,6 +21,17 @@ This project is a robust REST API built using the [NestJS](https://docs.nestjs.c
 - Shows how to e2e test using [Testcontainers](https://testcontainers.com/) to create isolated environments for testing the entire application flow from the user perspective
 - Shows how to make automated deployment to [Docker Hub](https://hub.docker.com/) using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/) and [Github Actions](https://github.com/features/actions)
 
+## Technology Stack
+
+- Code organization: monorepo with [Nx](https://nx.dev/)
+- Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
+- Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
+- Security: [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt)
+- Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
+- CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
+- Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/), [Mermaid (diagram-as-code)](https://mermaid.js.org/)
+- Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, [winston](https://github.com/winstonjs/winston)
+
 ## General organization
 
 The project has three individual services:
@@ -65,17 +76,6 @@ auth --> redis: data exchange
 financial --> redis: data exchange
 financial --> financial_db: data exchange
 ```
-
-## Technology Stack
-
-- Code organization: monorepo with [Nx](https://nx.dev/)
-- Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
-- Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
-- Security: [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt)
-- Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
-- CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
-- Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/), [Mermaid](https://mermaid.js.org/)
-- Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, [winston](https://github.com/winstonjs/winston)
 
 ## DevOps flow
 
