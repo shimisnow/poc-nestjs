@@ -2,7 +2,7 @@ FROM pocnestjs-base-dev:latest as base
 
 WORKDIR /home/node/app
 COPY . .
-RUN npx nx build financial-service
+RUN npx nx build financial-service --prod
 
 ##########
 FROM pocnestjs-base-prod:latest
