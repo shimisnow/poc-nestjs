@@ -10,30 +10,11 @@ import { PostgreSqlContainer } from '@testcontainers/postgresql';
 import { RedisContainer } from '@testcontainers/redis';
 
 module.exports = async function () {
-  const DOCKER_IMAGE_POCNESTJS_BASE_DEV = 'pocnestjs-base-dev';
-  const DOCKER_IMAGE_POCNESTJS_BASE_PROD = 'pocnestjs-base-prod';
   const DOCKER_IMAGE_AUTH_SERVICE = 'shimisnow/pocnestjs-auth-service:latest';
   const DOCKER_POSTGRES_TAG = 'postgres:17.0';
   const DOCKER_REDIS_TAG = 'redis:7.4.1';
 
   const dockerNetwork: StartedNetwork = await new Network().start();
-
-  /***** BUILD BASE DOCKER IMAGES *****/
-
-  const [baseImageDev, baseImageProd] = await Promise.all([
-    // build docker image with node_module for development
-    GenericContainer.fromDockerfile('./')
-      .withBuildArgs({ NODE_ENV: 'development' })
-      .build(DOCKER_IMAGE_POCNESTJS_BASE_DEV, {
-        deleteOnExit: false,
-      }),
-    // build docker image with node_module for production
-    GenericContainer.fromDockerfile('./')
-      .withBuildArgs({ NODE_ENV: 'production' })
-      .build(DOCKER_IMAGE_POCNESTJS_BASE_PROD, {
-        deleteOnExit: false,
-      }),
-  ]);
 
   /***** BUILD SERVICE DOCKER IMAGE *****/
 

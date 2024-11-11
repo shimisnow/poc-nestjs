@@ -25,7 +25,16 @@ The results can be found at `coverage/apps/$SERVICE_NAME`.
 
 ## E2E testing
 
-The project E2E testing is done with Jest, Supertest and [Testcontainers](https://testcontainers.com/) and can be performed with the command:
+The project E2E testing is done with Jest, Supertest and [Testcontainers](https://testcontainers.com/).
+
+Before running the tests, it is necessary to build two Docker images with the commands:
+
+```sh
+docker compose build base-image-development
+docker compose build base-image-production
+```
+
+The tests can be performed with:
 
 ```sh
 npx nx e2e $SERVICE_NAME-e2e
