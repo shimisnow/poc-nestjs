@@ -26,6 +26,8 @@ import { PasswordChangeSerializer } from './serializers/password-change.serializ
 import { PasswordChangeCachePayload } from '@shared/cache/payloads/password-change-cache.payload';
 import { GenerateLog } from '../utils/logging/generate-log';
 import { AuthRoleEnum } from '@shared/authentication/enums/auth-role.enum';
+import { VerifyTokenValidSerializer } from './serializers/verify-token-valid.serializer';
+import { InvalidatedErrorEnum } from './enums/invalidated-error.enum';
 
 @Injectable()
 export class AuthService {
@@ -480,6 +482,56 @@ export class AuthService {
         accessToken,
       };
     }
+  }
+
+  /**
+   * Verifies if an user payload is valid by checking if user has logout or made a password change.
+   *
+   * @param payload Information extracted from JWT token.
+   * @returns Information if the token is valid.
+   */
+  async verifyTokenValid(
+    payload: UserPayload,
+  ): Promise<VerifyTokenValidSerializer> {
+    let result: VerifyTokenValidSerializer = {
+      valid: true,
+    };
+
+    // verify if the combination of userId with loginId is marked in cache as invalid
+    const logoutVerification = await this.cacheService.get(
+      [
+        CacheKeyPrefix.AUTH_SESSION_LOGOUT,
+        payload.userId,
+        payload.loginId,
+      ].join(':'),
+    );
+
+    if (logoutVerification !== null) {
+      result = {
+        valid: false,
+        invalidatedBy: InvalidatedErrorEnum.INVALIDATED_BY_LOGOUT,
+      };
+    }
+
+    // verify if the user had a password change event
+    const passwordChangeVerification =
+      await this.cacheService.get<PasswordChangeCachePayload>(
+        [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, payload.userId].join(':'),
+      );
+
+    // if there is an cache entry
+    if (passwordChangeVerification != null) {
+      // if this token was not issued after the password change
+      // iat is in seconds and changedAt at milliseconds
+      if (payload.iat * 1000 <= passwordChangeVerification.changedAt) {
+        result = {
+          valid: false,
+          invalidatedBy: InvalidatedErrorEnum.INVALIDATED_BY_PASSWORD_CHANGE,
+        };
+      }
+    }
+
+    return result;
   }
 
   /**

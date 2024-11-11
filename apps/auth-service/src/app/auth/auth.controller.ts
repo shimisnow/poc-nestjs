@@ -41,6 +41,7 @@ import { LogoutSerializer } from './serializers/logout.serializer';
 import { PasswordChangeBodyDto } from './dtos/password-change-body.dto';
 import { PasswordChangeSerializer } from './serializers/password-change.serializer';
 import { PasswordChangeError400Serializer } from './serializers/password-change-error-400.serializer';
+import { VerifyTokenValidSerializer } from './serializers/verify-token-valid.serializer';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -241,5 +242,37 @@ export class AuthController {
       ip,
       headers,
     );
+  }
+
+  @Version('1')
+  @Get('verify')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth('AccessToken')
+  @ApiOperation({
+    summary:
+      'Verifies if an user payload is valid by checking if user has logout or made a password change',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
+  })
+  @ApiOkResponse({
+    description: 'Information if the token is valid',
+    type: VerifyTokenValidSerializer,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'User does not exists or is inactive or password is incorrect',
+    type: DefaultError401Serializer,
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'The server has encountered a situation it does not know how to handle. See server logs for details',
+    type: DefaultError500Serializer,
+  })
+  async verifyTokenValid(
+    @User() user: UserPayload,
+  ): Promise<VerifyTokenValidSerializer> {
+    return await this.authService.verifyTokenValid(user);
   }
 }

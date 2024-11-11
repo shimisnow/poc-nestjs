@@ -17,6 +17,9 @@ import { UserAuthEntity } from '../database/entities/user-auth.entity';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
 import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
+import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
+import { PasswordChangeCachePayload } from '@shared/cache/payloads/password-change-cache.payload';
+import { InvalidatedErrorEnum } from './enums/invalidated-error.enum';
 
 describe('auth.service', () => {
   let service: AuthService;
@@ -39,6 +42,31 @@ describe('auth.service', () => {
           useValue: {
             // eslint-disable-next-line @typescript-eslint/no-empty-function
             set: (key, value) => {},
+            get: (key) => {
+              // key that exists by logout process
+              const logoutKey = [
+                CacheKeyPrefix.AUTH_SESSION_LOGOUT,
+                '4b3c74ae-57aa-4752-9452-ed083b6d4bfb',
+                '1707920014294',
+              ].join(':');
+
+              // key that exists by password change process
+              const passwordKey = [
+                CacheKeyPrefix.AUTH_PASSWORD_CHANGE,
+                '4b3c74ae-57aa-4752-9452-ed083b6d4bfc',
+              ].join(':');
+
+              switch (key) {
+                case logoutKey:
+                  return {};
+                case passwordKey:
+                  return {
+                    changedAt: new Date().getTime(),
+                  } as PasswordChangeCachePayload;
+                default:
+                  return null;
+              }
+            },
           },
         },
       ],
@@ -366,6 +394,51 @@ describe('auth.service', () => {
       ) as JwtPayload;
 
       expect(accessToken.loginId).toBe(loginId);
+    });
+  });
+
+  describe('verifyTokenValid()', () => {
+    test('valid', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        loginId: new Date().getTime().toString(),
+        iat: Math.floor(new Date().getTime() / 1000),
+      } as UserPayload;
+
+      const result = await service.verifyTokenValid(user);
+
+      expect(result.valid).toBeTruthy();
+      expect(result).not.toHaveProperty('performinvalidatedBy');
+    });
+
+    test('invalid by logout', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfb',
+        loginId: '1707920014294',
+        iat: Math.floor(new Date().getTime() / 1000),
+      } as UserPayload;
+
+      const result = await service.verifyTokenValid(user);
+
+      expect(result.valid).toBeFalsy();
+      expect(result.invalidatedBy).toBe(
+        InvalidatedErrorEnum.INVALIDATED_BY_LOGOUT,
+      );
+    });
+
+    test('invalid by password change', async () => {
+      const user = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfc',
+        loginId: '1707920014295',
+        iat: 1731353603,
+      } as UserPayload;
+
+      const result = await service.verifyTokenValid(user);
+
+      expect(result.valid).toBeFalsy();
+      expect(result.invalidatedBy).toBe(
+        InvalidatedErrorEnum.INVALIDATED_BY_PASSWORD_CHANGE,
+      );
     });
   });
 
