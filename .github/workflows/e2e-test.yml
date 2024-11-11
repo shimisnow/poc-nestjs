@@ -13,7 +13,56 @@ env:
   NODE_VERSION: 21.6.1
 
 jobs:
+  build-base-image-dev:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image and export
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          build-args: NODE_ENV=development
+          push: false
+          tags: pocnestjs-base-dev:latest
+          outputs: type=docker,dest=/tmp/pocnestjs-base-dev.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pocnestjs-base-dev
+          path: /tmp/pocnestjs-base-dev.tar
+
+  build-base-image-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image and export
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          build-args: NODE_ENV=production
+          push: false
+          tags: pocnestjs-base-prod:latest
+          outputs: type=docker,dest=/tmp/pocnestjs-base-prod.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pocnestjs-base-prod
+          path: /tmp/pocnestjs-base-prod.tar
+
   setup:
+    needs:
+      - build-base-image-dev
+      - build-base-image-prod
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,6 +93,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download development base artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pocnestjs-base-dev
+          path: /tmp
+
+      - name: Load development base docker image
+        run: |
+          docker load --input /tmp/pocnestjs-base-dev.tar
+          docker image ls -a
+
+      - name: Download production base artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pocnestjs-base-prod
+          path: /tmp
+
+      - name: Load production base docker image
+        run: |
+          docker load --input /tmp/pocnestjs-base-prod.tar
+          docker image ls -a
 
       - name: Restore npm cache
         uses: actions/cache/restore@v4
@@ -82,6 +153,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+
+      - name: Download development base artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pocnestjs-base-dev
+          path: /tmp
+
+      - name: Load development base docker image
+        run: |
+          docker load --input /tmp/pocnestjs-base-dev.tar
+          docker image ls -a
+
+      - name: Download production base artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pocnestjs-base-prod
+          path: /tmp
+
+      - name: Load production base docker image
+        run: |
+          docker load --input /tmp/pocnestjs-base-prod.tar
+          docker image ls -a
 
       - name: Restore npm cache
         uses: actions/cache/restore@v4
