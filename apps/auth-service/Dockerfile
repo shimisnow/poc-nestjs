@@ -2,7 +2,7 @@ FROM pocnestjs-base-dev:latest as base
 
 WORKDIR /home/node/app
 COPY . .
-RUN npx nx build auth-service --prod
+RUN npx nx build auth-service --prod --no-cache
 
 ##########
 FROM pocnestjs-base-prod:latest

@@ -38,17 +38,27 @@ Will be executed for pull request to the branches `staging` and `main`.
 
 - See the [workflow file](../../.github/workflows/e2e-test.yml) for details.
 
-This workflow creates the `node_modules` folder at the `setup` step and uses it to execute e2e tests for each service (`auth-service-e2e` and `financial-service-e2e` steps).
+This workflow builds two Docker images to be used at the multi-stage build process. One at the `build-base-image-dev` step that creates an image with all npm packages (prod and dev) that are necessary to build the code. The second image is created at the `build-base-image-prod` step and has only the production dependencies. Creates the `node_modules` folder at the `setup` step and uses it to execute e2e tests for each service (`auth-service-e2e` and `financial-service-e2e` steps).
 
 ```mermaid
 stateDiagram-v2
 direction LR
+
+state "build-base-image-dev" as dev
+state "build-base-image-prod" as prod
+[*] --> dev
+[*] --> prod
+state build <<fork>>
+dev --> build
+prod --> build
+
+build --> setup
+state wait <<fork>>
+setup --> wait
+
 state "auth-service-e2e" as auth
 state "financial-service-e2e" as financial
-state wait <<fork>>
 
-[*] --> setup
-setup --> wait
 wait --> auth
 wait --> financial
 auth --> [*]
