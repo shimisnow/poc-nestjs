@@ -112,7 +112,7 @@ describe('POST /auth/verify', () => {
       'redis-cli',
       'SET',
       'auth:password:4799cc31-7692-40b3-afff-cc562baf5376',
-      `{changedAt: ${Date.now()}}`,
+      `{"changedAt": ${Date.now()}}`,
     ]);
 
     await request(host)
