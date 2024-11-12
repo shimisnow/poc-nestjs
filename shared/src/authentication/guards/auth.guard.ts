@@ -98,7 +98,7 @@ export class AuthGuard implements CanActivate {
       });
     }
 
-    // verify if the combination of userId with loginId is marked in cache as invalid
+    /* // verify if the combination of userId with loginId is marked in cache as invalid
     const logoutVerification = await this.cacheService.get(
       [
         CacheKeyPrefix.AUTH_SESSION_LOGOUT,
@@ -137,7 +137,7 @@ export class AuthGuard implements CanActivate {
           },
         });
       }
-    }
+    } */
 
     return payload;
   }
