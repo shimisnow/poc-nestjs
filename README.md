@@ -1,6 +1,6 @@
 ![POC NestJS](docs/markdown/images/poc-nestjs-bar//export/poc-nestjs-bar.png)
 
-# Financial REST API with NestJS
+# Authentication and Financial REST API with NestJS
 
 [![Unit Integration](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml)
 [![E2E Test](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml)
@@ -14,8 +14,8 @@ This project is a robust REST API built using the [NestJS](https://docs.nestjs.c
 
 ## Key features
 
-- Shows [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Shows [how to authenticate, issue and invalidate JWT tokens](docs/markdown//resolved-problems/authentication-flow.md) using Redis cache and without storing token in database
+- Shows [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Shows how to e2e test using [Testcontainers](https://testcontainers.com/) to create isolated environments for testing the entire application flow from the user perspective
 - Shows how to make automated deployment to [Docker Hub](https://hub.docker.com/) using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/) and [Github Actions](https://github.com/features/actions)
 
@@ -25,6 +25,7 @@ This project is a robust REST API built using the [NestJS](https://docs.nestjs.c
 - Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
 - Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
 - Security: [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt)
+- Service-to-service communication with Axios
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
 - CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
 - Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/), [Mermaid (diagram-as-code)](https://mermaid.js.org/)
@@ -41,37 +42,35 @@ The project has two individual services:
 stateDiagram-v2
 direction LR
 
-state "Consumer" as consumer {
-    [*] --> api_consumer
-    state "API Consumer" as api_consumer
-    state api_gateway <<fork>>
-    api_consumer --> api_gateway
+state "Auth Consumer" as auth_consumer_group {
+    state "API request" as auth_consumer_api_call
+    [*] --> auth_consumer_api_call
+    auth_consumer_api_call --> auth: login or refresh token
+    auth --> auth_consumer_api_call: access token
 }
 
-state "REST API Services" as service {
-    state auth_api <<fork>>
-    state "Auth Service" as auth
-    auth_api --> auth
-    state financial_api <<fork>>
-    state "Financial Service" as financial
-    financial_api --> financial
+state "Financial Consumer" as financial_consumer_group {
+    state "API request" as financial_consumer_api_call
+    [*] --> financial_consumer_api_call
+    financial_consumer_api_call --> financial: request + access token
+    financial --> financial_consumer_api_call: financial data
 }
 
-state "Database and Cache" as storage {
+state "Services" as service {
+    state "Auth Service REST API" as auth
+    state "Financial Service REST API" as financial
+}
+
+state "Infrastructure" as storage {
     state "Auth Database" as auth_db
     state "Redis" as redis
     state "Financial Database" as financial_db
 }
 
-api_gateway --> auth_api: login or refresh token
-auth_api --> api_gateway: access token
-api_gateway --> financial_api: request + access token
-financial_api --> api_gateway: financial data
-
-auth --> auth_db: data exchange
-auth --> redis: data exchange
-financial --> redis: data exchange
-financial --> financial_db: data exchange
+auth --> auth_db
+auth --> redis
+financial --> redis
+financial --> financial_db
 ```
 
 ## DevOps flow

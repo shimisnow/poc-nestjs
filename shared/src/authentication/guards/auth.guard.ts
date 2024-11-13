@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
@@ -12,9 +13,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { plainToClass } from 'class-transformer';
 import { validateOrReject } from 'class-validator';
+import { HttpService } from '@nestjs/axios';
+import { catchError, lastValueFrom, throwError } from 'rxjs';
 import { UserPayload } from '../payloads/user.payload';
-import { CacheKeyPrefix } from '../../cache/enums/cache-key-prefix.enum';
-import { PasswordChangeCachePayload } from '../../cache/payloads/password-change-cache.payload';
 import { AuthErrorNames } from '../enums/auth-error-names.enum';
 import { AuthErrorMessages } from '../enums/auth-error-messages.enum';
 
@@ -23,6 +24,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     @Inject(CACHE_MANAGER) private cacheService: Cache,
     private jwtService: JwtService,
+    private readonly httpService: HttpService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -98,44 +100,57 @@ export class AuthGuard implements CanActivate {
       });
     }
 
-    // verify if the combination of userId with loginId is marked in cache as invalid
-    const logoutVerification = await this.cacheService.get(
-      [
-        CacheKeyPrefix.AUTH_SESSION_LOGOUT,
-        payload.userId,
-        payload.loginId,
-      ].join(':'),
-    );
+    let responseBody = null;
 
-    if (logoutVerification !== null) {
-      throw new UnauthorizedException({
-        statusCode: HttpStatus.UNAUTHORIZED,
-        data: {
-          name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
-          errors: [AuthErrorMessages.INVALIDATED_BY_LOGOUT],
-        },
-      });
-    }
-
-    // verify if the user had a password change event
-    const passwordChangeVerification =
-      await this.cacheService.get<PasswordChangeCachePayload>(
-        [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, payload.userId].join(':'),
+    try {
+      const response = await lastValueFrom(
+        this.httpService
+          .post(
+            process.env.FINANCIAL_SERVICE_AUTH_VERIFY_ENDPOINT,
+            {
+              userId: payload.userId,
+              loginId: payload.loginId,
+              iat: payload.iat,
+            },
+            {
+              headers: {
+                'X-Api-Version': 1,
+              },
+            },
+          )
+          .pipe(
+            catchError((error) => {
+              console.log(error);
+              return throwError(() => new Error('External API call failed'));
+            }),
+          ),
       );
 
-    // if there is an cache entry
-    if (passwordChangeVerification != null) {
-      // if this token was not issued after the password change
-      // iat is in seconds and changedAt at milliseconds
-      if (payload.iat * 1000 <= passwordChangeVerification.changedAt) {
-        throw new UnauthorizedException({
-          statusCode: HttpStatus.UNAUTHORIZED,
-          error: 'Unauthorized',
-          data: {
-            name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
-            errors: [AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE],
-          },
-        });
+      responseBody = response.data;
+    } catch (error) {
+      console.error('Error in HTTP request:', error);
+      throw new InternalServerErrorException('External API call failed');
+    }
+
+    if (responseBody.valid === false) {
+      switch (responseBody.invalidatedBy) {
+        case 'logout':
+          throw new UnauthorizedException({
+            statusCode: HttpStatus.UNAUTHORIZED,
+            data: {
+              name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
+              errors: [AuthErrorMessages.INVALIDATED_BY_LOGOUT],
+            },
+          });
+        case 'password':
+          throw new UnauthorizedException({
+            statusCode: HttpStatus.UNAUTHORIZED,
+            error: 'Unauthorized',
+            data: {
+              name: AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
+              errors: [AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE],
+            },
+          });
       }
     }
 

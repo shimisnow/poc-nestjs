@@ -8,7 +8,7 @@ on:
       - staging
 
 env:
-  NODE_VERSION: 21.6.1
+  NODE_VERSION: 22.9.0
 
 jobs:
   setup:

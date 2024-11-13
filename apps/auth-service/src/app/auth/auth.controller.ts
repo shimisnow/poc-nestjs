@@ -21,8 +21,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@shared/authentication/guards/auth.guard';
-import { AuthRefreshGuard } from '@shared/authentication/guards/auth-refresh.guard';
+import { AuthGuard } from '../utils/guards/auth.guard';
+import { AuthRefreshGuard } from '../utils/guards/auth-refresh.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthService } from './auth.service';
@@ -41,6 +41,8 @@ import { LogoutSerializer } from './serializers/logout.serializer';
 import { PasswordChangeBodyDto } from './dtos/password-change-body.dto';
 import { PasswordChangeSerializer } from './serializers/password-change.serializer';
 import { PasswordChangeError400Serializer } from './serializers/password-change-error-400.serializer';
+import { VerifyTokenInvalidationProcessSerializer } from './serializers/verify-token-invalidation-process.serializer';
+import { VerifyTokenInvalidationProcessBodyDto } from './dtos/verify-token-invalidation-process-body.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -240,6 +242,40 @@ export class AuthController {
       body.requestRefreshToken,
       ip,
       headers,
+    );
+  }
+
+  @Version('1')
+  @Post('verify')
+  @HttpCode(200)
+  @ApiOperation({
+    summary: 'Checkes if user has logged out or made a password change',
+  })
+  @ApiHeader({
+    name: 'X-Api-Version',
+    description: 'Sets the API version',
+    required: true,
+  })
+  @ApiOkResponse({
+    description: 'Information if the token is valid',
+    type: VerifyTokenInvalidationProcessSerializer,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'User does not exists or is inactive or password is incorrect',
+    type: DefaultError401Serializer,
+  })
+  @ApiInternalServerErrorResponse({
+    description:
+      'The server has encountered a situation it does not know how to handle. See server logs for details',
+    type: DefaultError500Serializer,
+  })
+  async verifyTokenInvalidationProcess(
+    @Body() body: VerifyTokenInvalidationProcessBodyDto,
+  ): Promise<VerifyTokenInvalidationProcessSerializer> {
+    return await this.authService.verifyTokenInvalidationProcess(
+      body.userId,
+      body.loginId,
+      body.iat,
     );
   }
 }

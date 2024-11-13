@@ -1,7 +1,8 @@
+/* eslint-disable */
 module.exports = async function () {
-  await Promise.all([
-    globalThis.containerDatabase.stop(),
-    globalThis.containerCache.stop(),
-    globalThis.containerCode.stop(),
+  await Promise.allSettled([
+    globalThis.authDatabaseContainer.stop(),
+    globalThis.financialDatabaseContainer.stop(),
+    globalThis.authCodeContainer.stop(),
   ]);
 };

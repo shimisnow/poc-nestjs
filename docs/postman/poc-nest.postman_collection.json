@@ -53,7 +53,7 @@
 									"\r",
 									"/***** DO NOT EDIT AFTER THIS *****/\r",
 									"\r",
-									"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; \r",
+									"const currentTimeInSeconds = Math.floor(new Date().getTime() / 1000);\r",
 									"const issuedAtTimeSeconds = currentTimeInSeconds; // iat\r",
 									"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp\r",
 									"const SECRET_KEY = pm.collectionVariables.get('JWT_SECRET');\r",
@@ -149,7 +149,7 @@
 									"\r",
 									"/***** DO NOT EDIT AFTER THIS *****/\r",
 									"\r",
-									"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; \r",
+									"const currentTimeInSeconds = Math.floor(new Date().getTime() / 1000);\r",
 									"const issuedAtTimeSeconds = currentTimeInSeconds; // iat\r",
 									"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp\r",
 									"const SECRET_KEY = pm.collectionVariables.get('JWT_SECRET');\r",
@@ -226,6 +226,66 @@
 					"response": []
 				},
 				{
+					"name": "/auth/verify",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.upsert({\r",
+									"    key: 'Content-Type',\r",
+									"    value: 'application/json'\r",
+									"});\r",
+									"\r",
+									"pm.request.body.raw = JSON.stringify({\r",
+									"    userId: '4799cc31-7692-40b3-afff-cc562baf5374',\r",
+									"    loginId: '1707920014294',\r",
+									"    iat: Math.floor(new Date().getTime() / 1000)\r",
+									"});\r",
+									"\r",
+									"console.log(pm.request.body);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_service_host}}/auth/verify",
+							"host": [
+								"{{auth_service_host}}"
+							],
+							"path": [
+								"auth",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "/auth/refresh",
 					"event": [
 						{
@@ -236,7 +296,7 @@
 									"\r",
 									"/***** DO NOT EDIT AFTER THIS *****/\r",
 									"\r",
-									"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; \r",
+									"const currentTimeInSeconds = Math.floor(new Date().getTime() / 1000);\r",
 									"const issuedAtTimeSeconds = currentTimeInSeconds; // iat\r",
 									"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp\r",
 									"const SECRET_KEY = pm.collectionVariables.get('JWT_REFRESH_SECRET');\r",
@@ -518,7 +578,7 @@
 							"",
 							"/***** DO NOT EDIT AFTER THIS *****/",
 							"",
-							"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; ",
+							"const currentTimeInSeconds = Math.floor(new Date().getTime() / 1000); ",
 							"const issuedAtTimeSeconds = currentTimeInSeconds; // iat",
 							"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp",
 							"const SECRET_KEY = pm.collectionVariables.get('JWT_SECRET');",
@@ -906,7 +966,7 @@
 							"",
 							"/***** DO NOT EDIT AFTER THIS *****/",
 							"",
-							"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; ",
+							"const currentTimeInSeconds = Math.floor(new Date().getTime() / 1000); ",
 							"const issuedAtTimeSeconds = currentTimeInSeconds; // iat",
 							"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp",
 							"const SECRET_KEY = pm.collectionVariables.get('JWT_SECRET');",
@@ -917,6 +977,7 @@
 							"",
 							"const payload = {",
 							"    userId,",
+							"    role: 'user',",
 							"    loginId: new Date().getTime().toString(),",
 							"    iat: issuedAtTimeSeconds,",
 							"    exp: expirationTimeSeconds,",
@@ -950,360 +1011,6 @@
 					"listen": "test",
 					"script": {
 						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			]
-		},
-		{
-			"name": "graphql",
-			"item": [
-				{
-					"name": "user",
-					"item": [
-						{
-							"name": "user (simple)",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"protocolProfileBehavior": {
-								"disabledSystemHeaders": {}
-							},
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query q ($userId: String!) {\r\n    user (userId: $userId) {\r\n        userId\r\n        name\r\n        addresses {\r\n            postalcode\r\n        }\r\n    }\r\n}",
-										"variables": "{\r\n    \"jwtUserId\": \"b5667f41-ffae-43a0-a363-a6a12c36875f\",\r\n    \"userId\": \"b5667f41-ffae-43a0-a363-a6a12c36875f\"\r\n}"
-									}
-								},
-								"url": {
-									"raw": "{{user_service_host}}/api",
-									"host": [
-										"{{user_service_host}}"
-									],
-									"path": [
-										"api"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "address",
-					"item": [
-						{
-							"name": "address (simple)",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"protocolProfileBehavior": {
-								"disabledSystemHeaders": {}
-							},
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query q ($addressId: Float!) {\r\n    address (addressId: $addressId) {\r\n        postalcode\r\n    }\r\n}",
-										"variables": "{\r\n    \"jwtUserId\": \"b5667f41-ffae-43a0-a363-a6a12c36875f\",\r\n    \"addressId\": 3\r\n}"
-									}
-								},
-								"url": {
-									"raw": "{{user_service_host}}/api",
-									"host": [
-										"{{user_service_host}}"
-									],
-									"path": [
-										"api"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "social-media",
-					"item": [
-						{
-							"name": "social-media (simple)",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"protocolProfileBehavior": {
-								"disabledSystemHeaders": {}
-							},
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query q ($socialMediaId: Float!) {\r\n    socialmedia (socialMediaId: $socialMediaId) {\r\n        type\r\n        identifier\r\n    }\r\n}",
-										"variables": "{\r\n    \"jwtUserId\": \"b5667f41-ffae-43a0-a363-a6a12c36875f\",\r\n    \"socialMediaId\": 1\r\n}"
-									}
-								},
-								"url": {
-									"raw": "{{user_service_host}}/api",
-									"host": [
-										"{{user_service_host}}"
-									],
-									"path": [
-										"api"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "legal-doc",
-					"item": [
-						{
-							"name": "legal-doc (simple)",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"protocolProfileBehavior": {
-								"disabledSystemHeaders": {}
-							},
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query q ($legalDocId: Float!) {\r\n    legaldocs (legalDocId: $legalDocId) {\r\n        type\r\n        identifier\r\n    }\r\n}",
-										"variables": "{\r\n    \"jwtUserId\": \"b5667f41-ffae-43a0-a363-a6a12c36875f\",\r\n    \"legalDocId\": 1\r\n}"
-									}
-								},
-								"url": {
-									"raw": "{{user_service_host}}/api",
-									"host": [
-										"{{user_service_host}}"
-									],
-									"path": [
-										"api"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "phone",
-					"item": [
-						{
-							"name": "phone (simple)",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"protocolProfileBehavior": {
-								"disabledSystemHeaders": {}
-							},
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query q ($phoneId: Float!) {\r\n    phone (phoneId: $phoneId) {\r\n        type\r\n        number\r\n    }\r\n}",
-										"variables": "{\r\n    \"jwtUserId\": \"b5667f41-ffae-43a0-a363-a6a12c36875f\",\r\n    \"phoneId\": 1\r\n}"
-									}
-								},
-								"url": {
-									"raw": "{{user_service_host}}/api",
-									"host": [
-										"{{user_service_host}}"
-									],
-									"path": [
-										"api"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "country",
-					"item": [
-						{
-							"name": "country (simple)",
-							"event": [
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											""
-										],
-										"type": "text/javascript",
-										"packages": {}
-									}
-								}
-							],
-							"protocolProfileBehavior": {
-								"disabledSystemHeaders": {}
-							},
-							"request": {
-								"auth": {
-									"type": "noauth"
-								},
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "graphql",
-									"graphql": {
-										"query": "query q ($code: String!) {\r\n    country (code: $code) {\r\n        code\r\n    }\r\n}",
-										"variables": "{\r\n    \"jwtUserId\": \"b5667f41-ffae-43a0-a363-a6a12c36875f\",\r\n    \"code\": \"BRA\"\r\n}"
-									}
-								},
-								"url": {
-									"raw": "{{user_service_host}}/api",
-									"host": [
-										"{{user_service_host}}"
-									],
-									"path": [
-										"api"
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"type": "text/javascript",
-						"packages": {},
-						"exec": [
-							"/***** DO NOT EDIT AFTER THIS *****/\r",
-							"\r",
-							"const { jwtUserId } = JSON.parse(pm.request.body.graphql.variables);\r",
-							"\r",
-							"const currentTimeInSeconds = Math.floor(new Date().getTime()) / 1000; \r",
-							"const issuedAtTimeSeconds = currentTimeInSeconds; // iat\r",
-							"const expirationTimeSeconds = currentTimeInSeconds + 60; // exp\r",
-							"const SECRET_KEY = pm.collectionVariables.get('JWT_SECRET');\r",
-							"\r",
-							"const header = {\r",
-							"    alg: 'HS256',\r",
-							"}\r",
-							"\r",
-							"const payload = {\r",
-							"    userId: jwtUserId,\r",
-							"    loginId: new Date().getTime().toString(),\r",
-							"    role: 'user',\r",
-							"    iat: issuedAtTimeSeconds,\r",
-							"    exp: expirationTimeSeconds,\r",
-							"};\r",
-							"\r",
-							"const removeIllegalCharacters = (input) => {\r",
-							"    return input\r",
-							"        .replace(/=/g, '')\r",
-							"        .replace(/\\+/g, '-')\r",
-							"        .replace(/\\//g, '_');\r",
-							"};\r",
-							"\r",
-							"const base64object = (input) => {\r",
-							"    const inputWords = CryptoJS.enc.Utf8.parse(JSON.stringify(input));\r",
-							"    const base64 = CryptoJS.enc.Base64.stringify(inputWords);\r",
-							"    const output = removeIllegalCharacters(base64);\r",
-							"    return output;\r",
-							"};\r",
-							"\r",
-							"const unsignedToken = base64object(header) + \".\" + base64object(payload);\r",
-							"const signatureHash = CryptoJS.HmacSHA256(unsignedToken, SECRET_KEY);\r",
-							"const signature = CryptoJS.enc.Base64.stringify(signatureHash);\r",
-							"const token = unsignedToken + '.' + signature;\r",
-							"const formattedToken = removeIllegalCharacters(token);\r",
-							"\r",
-							"pm.request.addHeader({\r",
-							"    key: 'Authorization',\r",
-							"    value: `Bearer ${formattedToken}`\r",
-							"})\r",
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"packages": {},
 						"exec": [
 							""
 						]

@@ -3,14 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '@nestjs/jwt';
 import * as jsonwebtoken from 'jsonwebtoken';
-import { AuthGuard } from './auth.guard';
+import { AuthRefreshGuard } from './auth-refresh.guard';
 import { CacheManagerMock } from './mocks/cache-manager.mock';
 import { UnauthorizedException } from '@nestjs/common';
-import { AuthErrorNames } from '../enums/auth-error-names.enum';
-import { AuthErrorMessages } from '../enums/auth-error-messages.enum';
-import { UserPayload } from '../payloads/user.payload';
-import { HttpService } from '@nestjs/axios';
-import { of } from 'rxjs';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 const generateContext = (authToken: string) => {
   const context = {
@@ -30,46 +28,23 @@ const generateContext = (authToken: string) => {
   return context;
 };
 
-describe('auth.guard', () => {
-  let guard: AuthGuard;
-  const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+describe('auth-refresh.guard', () => {
+  let guard: AuthRefreshGuard;
+  const JWT_REFRESH_SECRET_KEY = process.env.JWT_REFRESH_SECRET_KEY;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AuthGuard,
+        AuthRefreshGuard,
         JwtService,
         {
           provide: CACHE_MANAGER,
           useClass: CacheManagerMock,
         },
-        {
-          provide: HttpService,
-          useValue: {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            post: (url, data, config) => {
-              switch (data.userId) {
-                case '01e57c05-45d6-4d6f-8f30-2bddce37df5f':
-                  switch (data.loginId) {
-                    case '1708003432088':
-                      return of({
-                        data: { valid: false, invalidatedBy: 'logout' },
-                      });
-                  }
-                  break;
-                case '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5':
-                  return of({
-                    data: { valid: false, invalidatedBy: 'password' },
-                  });
-              }
-              return of({ data: { valid: true } });
-            },
-          },
-        },
       ],
     }).compile();
 
-    guard = module.get<AuthGuard>(AuthGuard);
+    guard = module.get<AuthRefreshGuard>(AuthRefreshGuard);
   });
 
   describe('canActivate()', () => {
@@ -134,7 +109,7 @@ describe('auth.guard', () => {
           iat: now,
           exp: now + 60,
         } as UserPayload,
-        JWT_SECRET_KEY,
+        JWT_REFRESH_SECRET_KEY,
       );
 
       try {
@@ -163,30 +138,22 @@ describe('auth.guard', () => {
           iat: now,
           exp: now + 60,
         } as UserPayload,
-        JWT_SECRET_KEY,
+        JWT_REFRESH_SECRET_KEY,
       );
 
-      await expect(
-        guard.canActivate(generateContext(token) as any),
-      ).rejects.toBeInstanceOf(UnauthorizedException);
-
-      await expect(
-        guard.canActivate(generateContext(token) as any),
-      ).rejects.toHaveProperty('response.data');
-
-      await expect(
-        guard.canActivate(generateContext(token) as any),
-      ).rejects.toHaveProperty(
-        'response.data.name',
-        AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
-      );
-
-      await expect(
-        guard.canActivate(generateContext(token) as any),
-      ).rejects.toHaveProperty(
-        'response.data.errors',
-        expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_LOGOUT]),
-      );
+      try {
+        await guard.canActivate(generateContext(token) as any);
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(
+          AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
+        );
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_LOGOUT]),
+        );
+      }
     });
 
     test('invalidated by user password change', async () => {
@@ -197,35 +164,27 @@ describe('auth.guard', () => {
           userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5',
           loginId: new Date().getTime().toString(),
           role: 'user',
-          iat: now,
+          iat: Math.floor((new Date().getTime() - 10000) / 1000),
           exp: now + 60,
         } as UserPayload,
-        JWT_SECRET_KEY,
+        JWT_REFRESH_SECRET_KEY,
       );
 
-      await expect(
-        guard.canActivate(generateContext(token) as any),
-      ).rejects.toBeInstanceOf(UnauthorizedException);
-
-      await expect(
-        guard.canActivate(generateContext(token) as any),
-      ).rejects.toHaveProperty('response.data');
-
-      await expect(
-        guard.canActivate(generateContext(token) as any),
-      ).rejects.toHaveProperty(
-        'response.data.name',
-        AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
-      );
-
-      await expect(
-        guard.canActivate(generateContext(token) as any),
-      ).rejects.toHaveProperty(
-        'response.data.errors',
-        expect.arrayContaining([
-          AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE,
-        ]),
-      );
+      try {
+        await guard.canActivate(generateContext(token) as any);
+      } catch (error) {
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        const response = error.response;
+        expect(response).toHaveProperty('data');
+        expect(response.data.name).toBe(
+          AuthErrorNames.JWT_INVALIDATED_BY_SERVER,
+        );
+        expect(response.data.errors).toEqual(
+          expect.arrayContaining([
+            AuthErrorMessages.INVALIDATED_BY_PASSWORD_CHANGE,
+          ]),
+        );
+      }
     });
 
     test('token issued after password change', async () => {
@@ -233,13 +192,13 @@ describe('auth.guard', () => {
       const token = jsonwebtoken.sign(
         {
           // user in cache for password change
-          userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd6',
+          userId: '3e699250-4bc4-4c3d-a0ea-0aa3dc17abd5',
           loginId: new Date().getTime().toString(),
           role: 'user',
           iat: now,
           exp: now + 60,
         } as UserPayload,
-        JWT_SECRET_KEY,
+        JWT_REFRESH_SECRET_KEY,
       );
 
       const result = await guard.canActivate(generateContext(token) as any);
@@ -257,7 +216,7 @@ describe('auth.guard', () => {
           iat: now,
           exp: now + 60,
         } as UserPayload,
-        JWT_SECRET_KEY,
+        JWT_REFRESH_SECRET_KEY,
       );
 
       const result = await guard.canActivate(generateContext(token) as any);
@@ -267,7 +226,7 @@ describe('auth.guard', () => {
 
   describe('extractTokenFromHeader()', () => {
     // necessary to access the private mothod
-    const guard = new AuthGuard(null, null, null) as any;
+    const guard = new AuthRefreshGuard(null, null) as any;
 
     test('empty authorization header', async () => {
       const authHeader = {
