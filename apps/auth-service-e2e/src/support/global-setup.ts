@@ -18,7 +18,7 @@ module.exports = async function () {
 
   /***** BUILD SERVICE DOCKER IMAGE *****/
 
-  const serviceImage = await GenericContainer.fromDockerfile(
+  const authServiceImage = await GenericContainer.fromDockerfile(
     './',
     'apps/auth-service/Dockerfile',
   ).build(DOCKER_IMAGE_AUTH_SERVICE, {
@@ -27,7 +27,9 @@ module.exports = async function () {
 
   /***** DEPENDENCIES SETUP *****/
 
-  const postgreSqlContainer = new PostgreSqlContainer(DOCKER_POSTGRES_TAG)
+  const authDatabaseContainerSetup = new PostgreSqlContainer(
+    DOCKER_POSTGRES_TAG,
+  )
     .withNetwork(dockerNetwork)
     .withNetworkAliases('database-authentication')
     .withDatabase(process.env.DATABASE_AUTH_DBNAME)
@@ -46,7 +48,7 @@ module.exports = async function () {
       ),
     );
 
-  const redisContainer = new RedisContainer(DOCKER_REDIS_TAG)
+  const cacheContainerSetup = new RedisContainer(DOCKER_REDIS_TAG)
     .withLabels({ 'poc-nestjs-name': 'auth-service-cache' })
     .withNetwork(dockerNetwork)
     .withNetworkAliases('redis')
@@ -54,14 +56,13 @@ module.exports = async function () {
 
   /***** DEPENDENCIES START *****/
 
-  const [containerDatabase, containerCache] = await Promise.all([
-    postgreSqlContainer.start(),
-    redisContainer.start(),
-  ]);
+  const [authDatabaseContainer, financialDatabaseContainer] = await Promise.all(
+    [authDatabaseContainerSetup.start(), cacheContainerSetup.start()],
+  );
 
   /***** CODE *****/
 
-  const containerCode: StartedTestContainer = await serviceImage
+  const authCodeContainer: StartedTestContainer = await authServiceImage
     .withLabels({ 'poc-nestjs-name': 'auth-service-code' })
     .withNetwork(dockerNetwork)
     .withNetworkAliases('auth-service')
@@ -83,10 +84,19 @@ module.exports = async function () {
       AUTH_SERVICE_PORT: process.env.AUTH_SERVICE_PORT,
       AUTH_SERVICE_LOG_DIR: './logs',
     })
+    .withWaitStrategy(Wait.forListeningPorts())
+    // use this to see container log in realtime
+    /* .withLogConsumer((stream) => {
+      stream.on('data', (line) => console.log(line));
+      stream.on('err', (line) => console.error(line));
+      stream.on('end', () => console.log('Stream closed'));
+    }) */
     .start();
 
   // Hint: Use `globalThis` to pass variables to global teardown.
-  globalThis.containerDatabase = containerDatabase;
-  globalThis.containerCache = containerCache;
-  globalThis.containerCode = containerCode;
+  Object.assign(globalThis, {
+    authDatabaseContainer,
+    financialDatabaseContainer,
+    authCodeContainer,
+  });
 };

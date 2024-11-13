@@ -100,14 +100,13 @@ export class AuthRefreshGuard implements CanActivate {
       });
     }
 
-    const url = 'http://localhost:3001/auth/verify';
     let responseBody = null;
 
     try {
       const response = await lastValueFrom(
         this.httpService
           .post(
-            url,
+            process.env.FINANCIAL_SERVICE_AUTH_VERIFY_ENDPOINT,
             {
               userId: payload.userId,
               loginId: payload.loginId,
@@ -120,7 +119,8 @@ export class AuthRefreshGuard implements CanActivate {
             },
           )
           .pipe(
-            catchError((err) => {
+            catchError((error) => {
+              console.log(error);
               return throwError(() => new Error('External API call failed'));
             }),
           ),

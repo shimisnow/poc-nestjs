@@ -46,6 +46,7 @@ describe('auth-refresh.guard', () => {
         {
           provide: HttpService,
           useValue: {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             post: (url, data, config) => {
               switch (data.userId) {
                 case '01e57c05-45d6-4d6f-8f30-2bddce37df5f':

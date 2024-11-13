@@ -1,4 +1,4 @@
-FROM node:21.6.1-alpine3.18
+FROM node:22.9.0-alpine3.19
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -7,4 +7,4 @@ WORKDIR /home/node/app
 
 COPY package*.json ./
 
-RUN npm ci --no-audit
+RUN npm install --no-audit

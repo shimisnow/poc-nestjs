@@ -25,6 +25,7 @@ This project is a robust REST API built using the [NestJS](https://docs.nestjs.c
 - Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
 - Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
 - Security: [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt)
+- Service-to-service communication with Axios
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
 - CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
 - Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/), [Mermaid (diagram-as-code)](https://mermaid.js.org/)
@@ -54,8 +55,7 @@ state "REST API Services" as service {
 
 state "Database and Cache" as storage {
     state "Auth Database" as auth_db
-    state "Redis Authentication" as redis_auth
-    state "Redis Financial" as redis_financial
+    state "Redis" as redis
     state "Financial Database" as financial_db
 }
 
@@ -65,8 +65,8 @@ api_consumer --> financial: request + access token
 financial --> api_consumer: financial data
 
 auth --> auth_db
-auth --> redis_auth
-financial --> redis_financial
+auth --> redis
+financial --> redis
 financial --> financial_db
 ```
 
