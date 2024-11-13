@@ -6,9 +6,9 @@ import * as jsonwebtoken from 'jsonwebtoken';
 import { AuthGuard } from './auth.guard';
 import { CacheManagerMock } from './mocks/cache-manager.mock';
 import { UnauthorizedException } from '@nestjs/common';
-import { AuthErrorNames } from '../enums/auth-error-names.enum';
-import { AuthErrorMessages } from '../enums/auth-error-messages.enum';
-import { UserPayload } from '../payloads/user.payload';
+import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
+import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
+import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 const generateContext = (authToken: string) => {
   const context = {
