@@ -41,7 +41,8 @@ import { LogoutSerializer } from './serializers/logout.serializer';
 import { PasswordChangeBodyDto } from './dtos/password-change-body.dto';
 import { PasswordChangeSerializer } from './serializers/password-change.serializer';
 import { PasswordChangeError400Serializer } from './serializers/password-change-error-400.serializer';
-import { VerifyTokenValidSerializer } from './serializers/verify-token-valid.serializer';
+import { VerifyTokenInvalidationProcessSerializer } from './serializers/verify-token-invalidation-process.serializer';
+import { VerifyTokenInvalidationProcessBodyDto } from './dtos/verify-token-invalidation-process-body.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -245,12 +246,10 @@ export class AuthController {
   }
 
   @Version('1')
-  @Get('verify')
-  @UseGuards(AuthGuard)
-  @ApiBearerAuth('AccessToken')
+  @Post('verify')
+  @HttpCode(200)
   @ApiOperation({
-    summary:
-      'Verifies if an user payload is valid by checking if user has logout or made a password change',
+    summary: 'Checkes if user has logged out or made a password change',
   })
   @ApiHeader({
     name: 'X-Api-Version',
@@ -259,7 +258,7 @@ export class AuthController {
   })
   @ApiOkResponse({
     description: 'Information if the token is valid',
-    type: VerifyTokenValidSerializer,
+    type: VerifyTokenInvalidationProcessSerializer,
   })
   @ApiUnauthorizedResponse({
     description: 'User does not exists or is inactive or password is incorrect',
@@ -270,9 +269,13 @@ export class AuthController {
       'The server has encountered a situation it does not know how to handle. See server logs for details',
     type: DefaultError500Serializer,
   })
-  async verifyTokenValid(
-    @User() user: UserPayload,
-  ): Promise<VerifyTokenValidSerializer> {
-    return await this.authService.verifyTokenValid(user);
+  async verifyTokenInvalidationProcess(
+    @Body() body: VerifyTokenInvalidationProcessBodyDto,
+  ): Promise<VerifyTokenInvalidationProcessSerializer> {
+    return await this.authService.verifyTokenInvalidationProcess(
+      body.userId,
+      body.loginId,
+      body.iat,
+    );
   }
 }

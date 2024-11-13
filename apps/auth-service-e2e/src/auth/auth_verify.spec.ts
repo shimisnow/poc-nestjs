@@ -1,12 +1,9 @@
 import request from 'supertest';
-import jsonwebtoken from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
-import { UserPayload } from '@shared/authentication/payloads/user.payload';
 
 describe('POST /auth/verify', () => {
   let host: string;
   const endpoint = '/auth/verify';
-  const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
   beforeAll(async () => {
     const containerRuntimeClient = await getContainerRuntimeClient();
@@ -23,24 +20,20 @@ describe('POST /auth/verify', () => {
   });
 
   test('valid', async () => {
-    const now = Math.floor(Date.now() / 1000);
-    const refreshToken = jsonwebtoken.sign(
-      {
-        userId: '4799cc31-7692-40b3-afff-cc562baf5374',
-        loginId: new Date().getTime().toString(),
-        role: 'user',
-        iat: now,
-        exp: now + 60,
-      } as UserPayload,
-      JWT_SECRET_KEY,
-    );
+    const userId = '4799cc31-7692-40b3-afff-cc562baf5374';
+    const loginId = new Date().getTime().toString();
+    const iat = Math.floor(Date.now() / 1000);
 
     await request(host)
-      .get(endpoint)
-      .set('Authorization', `Bearer ${refreshToken}`)
+      .post(endpoint)
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
       .expect(200)
+      .send({
+        userId,
+        loginId,
+        iat,
+      })
       .then((response) => {
         const body = response.body;
         expect(body).toHaveProperty('valid');
@@ -50,17 +43,9 @@ describe('POST /auth/verify', () => {
   });
 
   test('invalid by logout', async () => {
-    const now = Math.floor(Date.now() / 1000);
-    const refreshToken = jsonwebtoken.sign(
-      {
-        userId: '4799cc31-7692-40b3-afff-cc562baf5375',
-        loginId: '1731355542035',
-        role: 'user',
-        iat: now,
-        exp: now + 60,
-      } as UserPayload,
-      JWT_SECRET_KEY,
-    );
+    const userId = '4799cc31-7692-40b3-afff-cc562baf5375';
+    const loginId = '1731355542035';
+    const iat = Math.floor(Date.now() / 1000);
 
     const containerRuntimeClient = await getContainerRuntimeClient();
     const containerCache = await containerRuntimeClient.container.fetchByLabel(
@@ -71,16 +56,20 @@ describe('POST /auth/verify', () => {
     await containerRuntimeClient.container.exec(containerCache, [
       'redis-cli',
       'SET',
-      'auth:logout:4799cc31-7692-40b3-afff-cc562baf5375:1731355542035',
+      `auth:logout:${userId}:${loginId}`,
       '{}',
     ]);
 
     await request(host)
-      .get(endpoint)
-      .set('Authorization', `Bearer ${refreshToken}`)
+      .post(endpoint)
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
       .expect(200)
+      .send({
+        userId,
+        loginId,
+        iat,
+      })
       .then((response) => {
         const body = response.body;
         expect(body).toHaveProperty('valid');
@@ -90,17 +79,9 @@ describe('POST /auth/verify', () => {
   });
 
   test('invalid by password change', async () => {
-    const now = Math.floor(Date.now() / 1000);
-    const refreshToken = jsonwebtoken.sign(
-      {
-        userId: '4799cc31-7692-40b3-afff-cc562baf5376',
-        loginId: '1731355542036',
-        role: 'user',
-        iat: now,
-        exp: now + 60,
-      } as UserPayload,
-      JWT_SECRET_KEY,
-    );
+    const userId = '4799cc31-7692-40b3-afff-cc562baf5376';
+    const loginId = '1731355542036';
+    const iat = Math.floor(Date.now() / 1000);
 
     const containerRuntimeClient = await getContainerRuntimeClient();
     const containerCache = await containerRuntimeClient.container.fetchByLabel(
@@ -111,16 +92,20 @@ describe('POST /auth/verify', () => {
     await containerRuntimeClient.container.exec(containerCache, [
       'redis-cli',
       'SET',
-      'auth:password:4799cc31-7692-40b3-afff-cc562baf5376',
+      `auth:password:${userId}`,
       `{"changedAt": ${Date.now()}}`,
     ]);
 
     await request(host)
-      .get(endpoint)
-      .set('Authorization', `Bearer ${refreshToken}`)
+      .post(endpoint)
       .set('X-Api-Version', '1')
       .expect('Content-Type', /json/)
       .expect(200)
+      .send({
+        userId,
+        loginId,
+        iat,
+      })
       .then((response) => {
         const body = response.body;
         expect(body).toHaveProperty('valid');
