@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
@@ -105,15 +106,21 @@ export class AuthGuard implements CanActivate {
     try {
       const response = await lastValueFrom(
         this.httpService
-          .get(url, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'X-Api-Version': 1,
+          .post(
+            url,
+            {
+              userId: payload.userId,
+              loginId: payload.loginId,
+              iat: payload.iat,
             },
-          })
+            {
+              headers: {
+                'X-Api-Version': 1,
+              },
+            },
+          )
           .pipe(
             catchError((err) => {
-              console.error('HTTP Request failed:', err);
               return throwError(() => new Error('External API call failed'));
             }),
           ),
@@ -122,7 +129,7 @@ export class AuthGuard implements CanActivate {
       responseBody = response.data;
     } catch (error) {
       console.error('Error in HTTP request:', error);
-      // return false; // Deny access if the HTTP request fails
+      throw new InternalServerErrorException('External API call failed');
     }
 
     if (responseBody.valid === false) {
