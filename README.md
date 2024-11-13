@@ -1,6 +1,6 @@
 ![POC NestJS](docs/markdown/images/poc-nestjs-bar//export/poc-nestjs-bar.png)
 
-# Financial REST API with NestJS
+# Authentication and Financial REST API with NestJS
 
 [![Unit Integration](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml)
 [![E2E Test](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml)
@@ -14,8 +14,8 @@ This project is a robust REST API built using the [NestJS](https://docs.nestjs.c
 
 ## Key features
 
-- Shows [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Shows [how to authenticate, issue and invalidate JWT tokens](docs/markdown//resolved-problems/authentication-flow.md) using Redis cache and without storing token in database
+- Shows [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Shows how to e2e test using [Testcontainers](https://testcontainers.com/) to create isolated environments for testing the entire application flow from the user perspective
 - Shows how to make automated deployment to [Docker Hub](https://hub.docker.com/) using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/) and [Github Actions](https://github.com/features/actions)
 
@@ -44,34 +44,30 @@ direction LR
 state "Consumer" as consumer {
     [*] --> api_consumer
     state "API Consumer" as api_consumer
-    state api_gateway <<fork>>
-    api_consumer --> api_gateway
 }
 
 state "REST API Services" as service {
-    state auth_api <<fork>>
     state "Auth Service" as auth
-    auth_api --> auth
-    state financial_api <<fork>>
     state "Financial Service" as financial
-    financial_api --> financial
+    auth --> financial: token validation
 }
 
 state "Database and Cache" as storage {
     state "Auth Database" as auth_db
-    state "Redis" as redis
+    state "Redis Authentication" as redis_auth
+    state "Redis Financial" as redis_financial
     state "Financial Database" as financial_db
 }
 
-api_gateway --> auth_api: login or refresh token
-auth_api --> api_gateway: access token
-api_gateway --> financial_api: request + access token
-financial_api --> api_gateway: financial data
+api_consumer --> auth: login or refresh token
+auth --> api_consumer: access token
+api_consumer --> financial: request + access token
+financial --> api_consumer: financial data
 
-auth --> auth_db: data exchange
-auth --> redis: data exchange
-financial --> redis: data exchange
-financial --> financial_db: data exchange
+auth --> auth_db
+auth --> redis_auth
+financial --> redis_financial
+financial --> financial_db
 ```
 
 ## DevOps flow
