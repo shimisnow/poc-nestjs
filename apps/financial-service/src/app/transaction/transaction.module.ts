@@ -5,6 +5,7 @@ import { TransactionsRepositoryModule } from './repositories/transactions/transa
 import { BalanceModule } from '../balance/balance.module';
 import { UserModule } from '../user/user.module';
 import { AccountsRepositoryModule } from './repositories/accounts/accounts-repository.module';
+import { AuthGuardModule } from '@shared/authentication/guards/auth-guard.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AccountsRepositoryModule } from './repositories/accounts/accounts-repos
     TransactionsRepositoryModule,
     BalanceModule,
     UserModule,
+    AuthGuardModule,
   ],
   controllers: [TransactionController],
   providers: [TransactionService],

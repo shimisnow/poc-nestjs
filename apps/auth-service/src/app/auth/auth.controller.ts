@@ -21,8 +21,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AuthGuard } from '@shared/authentication/guards/auth.guard';
-import { AuthRefreshGuard } from '@shared/authentication/guards/auth-refresh.guard';
+import { AuthGuard } from '../utils/guards/auth.guard';
+import { AuthRefreshGuard } from '../utils/guards/auth-refresh.guard';
 import { User } from '@shared/authentication/decorators/user.decorator';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthService } from './auth.service';
