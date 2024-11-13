@@ -119,7 +119,8 @@ export class AuthGuard implements CanActivate {
             },
           )
           .pipe(
-            catchError((err) => {
+            catchError((error) => {
+              console.log(error);
               return throwError(() => new Error('External API call failed'));
             }),
           ),

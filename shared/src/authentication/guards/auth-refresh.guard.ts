@@ -119,7 +119,8 @@ export class AuthRefreshGuard implements CanActivate {
             },
           )
           .pipe(
-            catchError((err) => {
+            catchError((error) => {
+              console.log(error);
               return throwError(() => new Error('External API call failed'));
             }),
           ),
