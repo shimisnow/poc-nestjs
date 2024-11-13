@@ -26,7 +26,7 @@ import { PasswordChangeSerializer } from './serializers/password-change.serializ
 import { PasswordChangeCachePayload } from '@shared/cache/payloads/password-change-cache.payload';
 import { GenerateLog } from '../utils/logging/generate-log';
 import { AuthRoleEnum } from '@shared/authentication/enums/auth-role.enum';
-import { VerifyTokenValidSerializer } from './serializers/verify-token-valid.serializer';
+import { VerifyTokenInvalidationProcessSerializer } from './serializers/verify-token-invalidation-process.serializer';
 import { InvalidatedErrorEnum } from './enums/invalidated-error.enum';
 
 @Injectable()
@@ -485,25 +485,25 @@ export class AuthService {
   }
 
   /**
-   * Verifies if an user payload is valid by checking if user has logout or made a password change.
+   * Verifies if an user has logged out or made a password change.
    *
-   * @param payload Information extracted from JWT token.
+   * @param userId User unique identification.
+   * @param loginId Login request identifiction.
+   * @param iat Token issued timestamp.
    * @returns Information if the token is valid.
    */
-  async verifyTokenValid(
-    payload: UserPayload,
-  ): Promise<VerifyTokenValidSerializer> {
-    let result: VerifyTokenValidSerializer = {
+  async verifyTokenInvalidationProcess(
+    userId: string,
+    loginId: string,
+    iat: number,
+  ): Promise<VerifyTokenInvalidationProcessSerializer> {
+    let result: VerifyTokenInvalidationProcessSerializer = {
       valid: true,
     };
 
     // verify if the combination of userId with loginId is marked in cache as invalid
     const logoutVerification = await this.cacheService.get(
-      [
-        CacheKeyPrefix.AUTH_SESSION_LOGOUT,
-        payload.userId,
-        payload.loginId,
-      ].join(':'),
+      [CacheKeyPrefix.AUTH_SESSION_LOGOUT, userId, loginId].join(':'),
     );
 
     if (logoutVerification !== null) {
@@ -516,14 +516,14 @@ export class AuthService {
     // verify if the user had a password change event
     const passwordChangeVerification =
       await this.cacheService.get<PasswordChangeCachePayload>(
-        [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, payload.userId].join(':'),
+        [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, userId].join(':'),
       );
 
     // if there is an cache entry
     if (passwordChangeVerification != null) {
       // if this token was not issued after the password change
       // iat is in seconds and changedAt at milliseconds
-      if (payload.iat * 1000 <= passwordChangeVerification.changedAt) {
+      if (iat * 1000 <= passwordChangeVerification.changedAt) {
         result = {
           valid: false,
           invalidatedBy: InvalidatedErrorEnum.INVALIDATED_BY_PASSWORD_CHANGE,

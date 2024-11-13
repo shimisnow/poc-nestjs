@@ -399,26 +399,30 @@ describe('auth.service', () => {
 
   describe('verifyTokenValid()', () => {
     test('valid', async () => {
-      const user = {
-        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
-        loginId: new Date().getTime().toString(),
-        iat: Math.floor(new Date().getTime() / 1000),
-      } as UserPayload;
+      const userId = '4b3c74ae-57aa-4752-9452-ed083b6d4bfa';
+      const loginId = new Date().getTime().toString();
+      const iat = Math.floor(new Date().getTime() / 1000);
 
-      const result = await service.verifyTokenValid(user);
+      const result = await service.verifyTokenInvalidationProcess(
+        userId,
+        loginId,
+        iat,
+      );
 
       expect(result.valid).toBeTruthy();
       expect(result).not.toHaveProperty('performinvalidatedBy');
     });
 
     test('invalid by logout', async () => {
-      const user = {
-        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfb',
-        loginId: '1707920014294',
-        iat: Math.floor(new Date().getTime() / 1000),
-      } as UserPayload;
+      const userId = '4b3c74ae-57aa-4752-9452-ed083b6d4bfb';
+      const loginId = '1707920014294';
+      const iat = Math.floor(new Date().getTime() / 1000);
 
-      const result = await service.verifyTokenValid(user);
+      const result = await service.verifyTokenInvalidationProcess(
+        userId,
+        loginId,
+        iat,
+      );
 
       expect(result.valid).toBeFalsy();
       expect(result.invalidatedBy).toBe(
@@ -427,13 +431,15 @@ describe('auth.service', () => {
     });
 
     test('invalid by password change', async () => {
-      const user = {
-        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfc',
-        loginId: '1707920014295',
-        iat: 1731353603,
-      } as UserPayload;
+      const userId = '4b3c74ae-57aa-4752-9452-ed083b6d4bfc';
+      const loginId = '1707920014295';
+      const iat = 1731353603;
 
-      const result = await service.verifyTokenValid(user);
+      const result = await service.verifyTokenInvalidationProcess(
+        userId,
+        loginId,
+        iat,
+      );
 
       expect(result.valid).toBeFalsy();
       expect(result.invalidatedBy).toBe(
