@@ -12,9 +12,9 @@ module.exports = async function () {
     );
   homeNodeAppArquive.pipe(outputFileStream);
 
-  await Promise.all([
-    globalThis.containerDatabase.stop(),
-    globalThis.containerCache.stop(),
-    globalThis.containerCode.stop(),
+  await Promise.allSettled([
+    globalThis.authDatabaseContainer.stop(),
+    globalThis.financialDatabaseContainer.stop(),
+    globalThis.authCodeContainer.stop(),
   ]);
 };
