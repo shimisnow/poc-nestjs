@@ -1,7 +1,9 @@
 module.exports = async function () {
-  await Promise.all([
-    globalThis.containerDatabase.stop(),
-    globalThis.containerCache.stop(),
-    globalThis.containerCode.stop(),
+  await Promise.allSettled([
+    globalThis.authDatabaseContainer.stop(),
+    globalThis.financialDatabaseContainer.stop(),
+    globalThis.cacheContainer.stop(),
+    globalThis.authCodeContainer.stop(),
+    globalThis.financialCodeContainer.stop(),
   ]);
 };
