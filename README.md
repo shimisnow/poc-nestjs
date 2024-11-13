@@ -42,27 +42,30 @@ The project has two individual services:
 stateDiagram-v2
 direction LR
 
-state "Consumer" as consumer {
-    [*] --> api_consumer
-    state "API Consumer" as api_consumer
+state "Auth Consumer" as auth_consumer_group {
+    state "API request" as auth_consumer_api_call
+    [*] --> auth_consumer_api_call
+    auth_consumer_api_call --> auth: login or refresh token
+    auth --> auth_consumer_api_call: access token
 }
 
-state "REST API Services" as service {
-    state "Auth Service" as auth
-    state "Financial Service" as financial
-    auth --> financial: token validation
+state "Financial Consumer" as financial_consumer_group {
+    state "API request" as financial_consumer_api_call
+    [*] --> financial_consumer_api_call
+    financial_consumer_api_call --> financial: request + access token
+    financial --> financial_consumer_api_call: financial data
 }
 
-state "Database and Cache" as storage {
+state "Services" as service {
+    state "Auth Service REST API" as auth
+    state "Financial Service REST API" as financial
+}
+
+state "Infrastructure" as storage {
     state "Auth Database" as auth_db
     state "Redis" as redis
     state "Financial Database" as financial_db
 }
-
-api_consumer --> auth: login or refresh token
-auth --> api_consumer: access token
-api_consumer --> financial: request + access token
-financial --> api_consumer: financial data
 
 auth --> auth_db
 auth --> redis
