@@ -15,7 +15,11 @@ export class CreateTransactionError403Serializer {
 
   @ApiProperty({
     description: 'Error information',
-    type: 'raw',
+    type: 'object',
+    properties: {
+      name: { type: 'string' },
+      errors: { type: 'array', items: { type: 'string' } },
+    },
     example: {
       name: 'InexistentOrInactiveAccount',
       errors: [

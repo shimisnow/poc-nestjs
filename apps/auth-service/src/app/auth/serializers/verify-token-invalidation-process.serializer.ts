@@ -10,7 +10,6 @@ export class VerifyTokenInvalidationProcessSerializer {
 
   @ApiProperty({
     description: 'Motive because the token is invalid',
-    type: 'enum',
     enum: InvalidatedErrorEnum,
     example: InvalidatedErrorEnum.INVALIDATED_BY_LOGOUT,
   })
