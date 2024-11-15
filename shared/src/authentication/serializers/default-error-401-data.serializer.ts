@@ -4,7 +4,6 @@ import { AUTHENTICATION_ERROR } from '../enums/authentication-error.enum';
 export class DefaultError401DataSerializer {
   @ApiProperty({
     description: 'Unique error name. Can be used to identify the error',
-    type: 'enum',
     enum: AUTHENTICATION_ERROR,
     required: true,
   })
