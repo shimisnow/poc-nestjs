@@ -128,3 +128,8 @@ services:
       - 8082:80
     volumes:
       - ./apps/financial-service/docs/openapi:/usr/share/nginx/html:ro
+
+  mermaid:
+    image: ghcr.io/mermaid-js/mermaid-live-editor
+    ports:
+      - 8082:8080

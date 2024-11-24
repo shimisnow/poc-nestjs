@@ -40,3 +40,6 @@ testem.log
 Thumbs.db
 debug.log
 *.bkp
+
+# Variables
+.env
