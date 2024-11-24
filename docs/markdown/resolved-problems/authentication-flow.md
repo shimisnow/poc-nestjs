@@ -4,12 +4,10 @@
 
 This authentication method solves the following questions:
 
-1. How to ask the user for username and password only once in a while
-2. How to issue new tokens without the username/password information
-3. How to treat login from multiples sources (server, device, browser, etc)
-4. How to make a logout process from one source without logout the user from another source
-5. How to change the password and invalidate all issued token before the change
-6. How to do all of this without a lot of database use and without add latency to the api response
+1. How to treat login from multiple sources (server, device, browser, etc)
+2. How to make a logout process from one source without logout the user from another
+3. How to change the password and invalidate all issued token before the change
+4. How to do all of this without a lot of database use and without add latency to the api response
 
 All process will build up from the JWT standard
 
@@ -19,7 +17,7 @@ The login process is simples:
 
 1. An API call is made with username and password
 2. If the user exists, is active and the password is correct, issues an `accessToken` and `refreshToken`
-3. Each token have information about the `userId` and a `loginId` that represents this login request
+3. Each token has information about `userId` and `loginId` that represents the login request
 
 ```mermaid
 stateDiagram-v2
@@ -46,14 +44,14 @@ Once a login request is made, all access and refresh tokens has the same `loginI
 stateDiagram-v2
 direction LR
 
-state "Loggout request" as loggout_req
-state "Loggout response" as loggout_res
+state "Logout request" as logout_req
+state "Logout response" as logout_res
 
-[*] --> loggout_req
+[*] --> logout_req
 state "Auth Service" as auth
-loggout_req --> auth: accessToken
+logout_req --> auth: accessToken
 
-state "Verifies if token was invalidated by loggout or password change" as verify
+state "Verifies if token was invalidated by logout or password change" as verify
 auth --> verify
 
 state is_valid <<choice>>
@@ -72,9 +70,9 @@ state "Valid token" as valid_token {
 
 is_valid --> valid_token
 
-invalid_token --> loggout_res
-valid_token --> loggout_res
-loggout_res --> [*]
+invalid_token --> logout_res
+valid_token --> logout_res
+logout_res --> [*]
 ```
 
 ## Password change
@@ -85,7 +83,7 @@ The password change process is:
 2. The current password is required along with the new one
 3. The `userId` is extracted and added to the cache to mark that the user had a password change event
 4. The password change timestamp is store at cache
-5. A new pair of `accessToken` and `refreshToken` is issued **after** the timestamp stored at cache
+5. A new pair of `accessToken` and `refreshToken` is issued **AFTER** the timestamp stored at cache
 
 With the above process, all tokens issued before the password change timestamp for this user will be invalidated
 
@@ -100,7 +98,7 @@ state "Password change response" as password_res
 state "Auth Service" as auth
 password_req --> auth: accessToken
 
-state "Verifies if token was invalidated by loggout or password change" as verify
+state "Verifies if token was invalidated by logout or password change" as verify
 auth --> verify
 
 state is_valid <<choice>>
@@ -146,7 +144,7 @@ state "Refresh token response" as refresh_res
 state "Auth Service" as auth
 refresh_req --> auth: accessToken
 
-state "Verifies if token was invalidated by loggout or password change" as verify
+state "Verifies if token was invalidated by logout or password change" as verify
 auth --> verify
 
 state is_valid <<choice>>
@@ -171,30 +169,33 @@ refresh_res --> [*]
 
 ## API calls
 
-All secure API calls requires the `accessToken` to perform authenticate and the verification within the steps:
+All secure API calls requires the `accessToken` to perform authentication within the steps:
 
-1. Extract the `userId` and `loginId` from `accessToken`
-2. Verifies if the `loginId` is not present at the list of performed logout
-3. Verifies if the `userId` is not into the cached list of password changed users. If it is at the list, verifies if the token was issued after the password change event.
+1. Extract `userId` and `loginId` from `accessToken`
+2. Verifies if `loginId` is not present at the list of performed logout
+3. Verifies if `userId` is not into the cached list of password changed users. If it is, verifies if the token was issued after the password change event.
 4. If all the above applies, accept the request
 
-The algorithm described above is present in the following diagram:
+The algorithm is present in the following diagrams:
+
+#### JWT validation
 
 ```mermaid
 stateDiagram-v2
 direction LR
 
 classDef unauthorized_style fill:red,font-weight:bold,stroke-width:2px,stroke:yellow
-classDef authorized_style fill:green,font-weight:bold,stroke-width:2px,stroke:yellow
 classDef rest_req_res fill:yellow,color:black,font-weight:bold,stroke-width:2px,stroke:black
+classDef transfer_state fill:#661ae6,color:white,font-weight:bold,stroke-width:2px,stroke:white
 
 state "Unauthorized" as unauthorized
 class unauthorized unauthorized_style
-state "Authorized" as authorized
-class authorized authorized_style
 
 state "REST API request" as api_call
-class api_call rest_req_res
+api_call:::rest_req_res
+
+state "REST API Response" as response
+response:::rest_req_res
 
 [*] --> api_call
 
@@ -209,30 +210,79 @@ state "JWT Validation" as jwt_validation {
 api_call --> jwt_validation
 state jwt_is_valid <<choice>>
 jwt_validation --> jwt_is_valid
+
+state "Logout verification" as logout
+logout:::transfer_state
+
+jwt_is_valid --> logout: Token has passed JWT validation
 jwt_is_valid --> unauthorized: Token has not passed JWT validation
+unauthorized --> response
 
+response --> [*]
+```
 
-state "Loggout verification" as loggout {
-    state "Extract userId and loginId from accessToken" as loggout_extraction
-    state "Verify if the combination of userId with loginId is marked in cache as invalid" as loggout_verification
-    [*] --> loggout_extraction
-    loggout_extraction --> loggout_verification
-    state has_loggout_event <<choice>>
-    loggout_verification --> has_loggout_event
-    state "Invalid token" as loggout_invalid_token
-    state "Valid token" as loggout_valid_token
-    has_loggout_event --> loggout_invalid_token: combination marked as invalid
-    has_loggout_event --> loggout_valid_token: combination not present in cache
-    loggout_invalid_token --> [*]
-    loggout_valid_token --> [*]
+#### Logout verification
+
+```mermaid
+stateDiagram-v2
+direction LR
+
+classDef unauthorized_style fill:red,font-weight:bold,stroke-width:2px,stroke:yellow
+classDef authorized_style fill:green,font-weight:bold,stroke-width:2px,stroke:yellow
+classDef rest_req_res fill:yellow,color:black,font-weight:bold,stroke-width:2px,stroke:black
+classDef transfer_state fill:#661ae6,color:white,font-weight:bold,stroke-width:2px,stroke:white
+
+state "Unauthorized" as unauthorized
+class unauthorized unauthorized_style
+
+state "Logout verification" as logout {
+    state "Extract userId and loginId from accessToken" as logout_extraction
+    state "Verify if the combination of userId with loginId is marked in cache as invalid" as logout_verification
+    [*] --> logout_extraction
+    logout_extraction --> logout_verification
+    state has_logout_event <<choice>>
+    logout_verification --> has_logout_event
+    state "Invalid token" as logout_invalid_token
+    state "Valid token" as logout_valid_token
+    has_logout_event --> logout_invalid_token: combination marked as invalid
+    has_logout_event --> logout_valid_token: combination not present in cache
+    logout_invalid_token --> [*]
+    logout_valid_token --> [*]
 }
-class loggout_invalid_token unauthorized_style
-class loggout_valid_token authorized_style
+class logout_invalid_token unauthorized_style
+class logout_valid_token authorized_style
 
-jwt_is_valid --> loggout: Token has passed JWT validation
-state loggout_is_valid <<choice>>
-loggout --> loggout_is_valid
-loggout_is_valid --> unauthorized: Token has not passed logout verification
+[*] --> logout
+
+state logout_is_valid <<choice>>
+logout --> logout_is_valid
+logout_is_valid --> unauthorized: Token has not passed logout verification
+
+state "Password change verification" as password_change
+password_change:::transfer_state
+logout_is_valid --> password_change: Token has passed logout verification
+
+state "REST API Response" as response
+response:::rest_req_res
+
+unauthorized --> response
+response --> [*]
+```
+
+#### Password change verification
+
+```mermaid
+stateDiagram-v2
+direction LR
+
+classDef unauthorized_style fill:red,font-weight:bold,stroke-width:2px,stroke:yellow
+classDef authorized_style fill:green,font-weight:bold,stroke-width:2px,stroke:yellow
+classDef rest_req_res fill:yellow,color:black,font-weight:bold,stroke-width:2px,stroke:black
+
+state "Unauthorized" as unauthorized
+class unauthorized unauthorized_style
+state "Authorized" as authorized
+class authorized authorized_style
 
 state "Password change verification" as password_change {
     state "Extract userId from accessToken" as password_change_extraction
@@ -260,7 +310,7 @@ state "Password change verification" as password_change {
 class invalid_token unauthorized_style
 class valid_token authorized_style
 
-loggout_is_valid --> password_change: Token has passed logout verification
+[*] --> password_change
 
 state password_change_is_valid <<choice>>
 
