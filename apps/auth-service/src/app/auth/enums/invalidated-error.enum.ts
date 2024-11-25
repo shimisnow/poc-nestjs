@@ -7,4 +7,7 @@ export enum InvalidatedErrorEnum {
 
   /** JWT: when the user had a password change event */
   INVALIDATED_BY_PASSWORD_CHANGE = 'password',
+
+  /** when the user is marked with a status that make it invalid */
+  INVALIDATED_BY_USER_STATUS = 'user-status',
 }
