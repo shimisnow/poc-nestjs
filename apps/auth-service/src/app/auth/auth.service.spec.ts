@@ -20,6 +20,8 @@ import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messa
 import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 import { PasswordChangeCachePayload } from '@shared/cache/payloads/password-change-cache.payload';
 import { InvalidatedErrorEnum } from './enums/invalidated-error.enum';
+import { verify } from 'crypto';
+import { VerifyTokenAdditionalEnum } from './enums/verify-token-additional.enum';
 
 describe('auth.service', () => {
   let service: AuthService;
@@ -397,32 +399,28 @@ describe('auth.service', () => {
     });
   });
 
-  describe('verifyTokenValid()', () => {
+  describe('verifyTokenInvalidationProcess()', () => {
     test('valid', async () => {
-      const userId = '4b3c74ae-57aa-4752-9452-ed083b6d4bfa';
-      const loginId = new Date().getTime().toString();
-      const iat = Math.floor(new Date().getTime() / 1000);
+      const body = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfa',
+        loginId: new Date().getTime().toString(),
+        iat: Math.floor(new Date().getTime() / 1000),
+      };
 
-      const result = await service.verifyTokenInvalidationProcess(
-        userId,
-        loginId,
-        iat,
-      );
+      const result = await service.verifyTokenInvalidationProcess(body);
 
       expect(result.valid).toBeTruthy();
       expect(result).not.toHaveProperty('performinvalidatedBy');
     });
 
     test('invalid by logout', async () => {
-      const userId = '4b3c74ae-57aa-4752-9452-ed083b6d4bfb';
-      const loginId = '1707920014294';
-      const iat = Math.floor(new Date().getTime() / 1000);
+      const body = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfb',
+        loginId: '1707920014294',
+        iat: Math.floor(new Date().getTime() / 1000),
+      };
 
-      const result = await service.verifyTokenInvalidationProcess(
-        userId,
-        loginId,
-        iat,
-      );
+      const result = await service.verifyTokenInvalidationProcess(body);
 
       expect(result.valid).toBeFalsy();
       expect(result.invalidatedBy).toBe(
@@ -431,19 +429,33 @@ describe('auth.service', () => {
     });
 
     test('invalid by password change', async () => {
-      const userId = '4b3c74ae-57aa-4752-9452-ed083b6d4bfc';
-      const loginId = '1707920014295';
-      const iat = 1731353603;
+      const body = {
+        userId: '4b3c74ae-57aa-4752-9452-ed083b6d4bfc',
+        loginId: '1707920014295',
+        iat: 1731353603,
+      };
 
-      const result = await service.verifyTokenInvalidationProcess(
-        userId,
-        loginId,
-        iat,
-      );
+      const result = await service.verifyTokenInvalidationProcess(body);
 
       expect(result.valid).toBeFalsy();
       expect(result.invalidatedBy).toBe(
         InvalidatedErrorEnum.INVALIDATED_BY_PASSWORD_CHANGE,
+      );
+    });
+
+    test('invalid by user status', async () => {
+      const body = {
+        userId: 'fcf5cccf-c217-4502-8cc3-cc24270ae0b7',
+        loginId: '1707920014295',
+        iat: 1731353603,
+        verify: [VerifyTokenAdditionalEnum.IS_ACTIVE],
+      };
+
+      const result = await service.verifyTokenInvalidationProcess(body);
+
+      expect(result.valid).toBeFalsy();
+      expect(result.invalidatedBy).toBe(
+        InvalidatedErrorEnum.INVALIDATED_BY_USER_STATUS,
       );
     });
   });
