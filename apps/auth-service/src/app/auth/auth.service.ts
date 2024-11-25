@@ -28,6 +28,8 @@ import { GenerateLog } from '../utils/logging/generate-log';
 import { AuthRoleEnum } from '@shared/authentication/enums/auth-role.enum';
 import { VerifyTokenInvalidationProcessSerializer } from './serializers/verify-token-invalidation-process.serializer';
 import { InvalidatedErrorEnum } from './enums/invalidated-error.enum';
+import { VerifyTokenInvalidationProcessBodyDto } from './dtos/verify-token-invalidation-process-body.dto';
+import { VerifyTokenAdditionalEnum } from './enums/verify-token-additional.enum';
 
 @Injectable()
 export class AuthService {
@@ -493,9 +495,7 @@ export class AuthService {
    * @returns Information if the token is valid.
    */
   async verifyTokenInvalidationProcess(
-    userId: string,
-    loginId: string,
-    iat: number,
+    body: VerifyTokenInvalidationProcessBodyDto,
   ): Promise<VerifyTokenInvalidationProcessSerializer> {
     let result: VerifyTokenInvalidationProcessSerializer = {
       valid: true,
@@ -503,7 +503,7 @@ export class AuthService {
 
     // verify if the combination of userId with loginId is marked in cache as invalid
     const logoutVerification = await this.cacheService.get(
-      [CacheKeyPrefix.AUTH_SESSION_LOGOUT, userId, loginId].join(':'),
+      [CacheKeyPrefix.AUTH_SESSION_LOGOUT, body.userId, body.loginId].join(':'),
     );
 
     if (logoutVerification !== null) {
@@ -516,18 +516,38 @@ export class AuthService {
     // verify if the user had a password change event
     const passwordChangeVerification =
       await this.cacheService.get<PasswordChangeCachePayload>(
-        [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, userId].join(':'),
+        [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, body.userId].join(':'),
       );
 
     // if there is an cache entry
     if (passwordChangeVerification != null) {
       // if this token was not issued after the password change
       // iat is in seconds and changedAt at milliseconds
-      if (iat * 1000 <= passwordChangeVerification.changedAt) {
+      if (body.iat * 1000 <= passwordChangeVerification.changedAt) {
         result = {
           valid: false,
           invalidatedBy: InvalidatedErrorEnum.INVALIDATED_BY_PASSWORD_CHANGE,
         };
+      }
+    }
+
+    // has key to verify the additional properties
+    if (body.verify) {
+      if (body.verify.indexOf(VerifyTokenAdditionalEnum.IS_ACTIVE) > -1) {
+        let entity: UserAuthEntity = null;
+
+        try {
+          entity = await this.userAuthsRepository.findById(body.userId);
+        } catch (error) {
+          throw new BadGatewayException(error.message);
+        }
+
+        if (entity.status !== UserAuthStatusEnum.ACTIVE) {
+          result = {
+            valid: false,
+            invalidatedBy: InvalidatedErrorEnum.INVALIDATED_BY_USER_STATUS,
+          };
+        }
       }
     }
 

@@ -226,7 +226,7 @@
 					"response": []
 				},
 				{
-					"name": "/auth/verify",
+					"name": "/auth/verify (simple)",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -241,6 +241,67 @@
 									"    userId: '4799cc31-7692-40b3-afff-cc562baf5374',\r",
 									"    loginId: '1707920014294',\r",
 									"    iat: Math.floor(new Date().getTime() / 1000)\r",
+									"});\r",
+									"\r",
+									"console.log(pm.request.body);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Api-Version",
+								"value": "1",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{auth_service_host}}/auth/verify",
+							"host": [
+								"{{auth_service_host}}"
+							],
+							"path": [
+								"auth",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/auth/verify (complex)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.upsert({\r",
+									"    key: 'Content-Type',\r",
+									"    value: 'application/json'\r",
+									"});\r",
+									"\r",
+									"pm.request.body.raw = JSON.stringify({\r",
+									"    userId: '10f88251-d181-4255-92ed-d0d874e3a166',\r",
+									"    loginId: '1707920014294',\r",
+									"    iat: Math.floor(new Date().getTime() / 1000),\r",
+									"    verify: ['isActive']\r",
 									"});\r",
 									"\r",
 									"console.log(pm.request.body);\r",

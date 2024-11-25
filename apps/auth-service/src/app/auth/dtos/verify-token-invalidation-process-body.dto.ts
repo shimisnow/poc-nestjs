@@ -1,5 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { VerifyTokenAdditionalEnum } from '../enums/verify-token-additional.enum';
 
 export class VerifyTokenInvalidationProcessBodyDto {
   @ApiProperty({
@@ -25,4 +33,16 @@ export class VerifyTokenInvalidationProcessBodyDto {
   @IsNotEmpty()
   @IsNumber()
   iat: number;
+
+  @ApiProperty({
+    description: 'A list of additional verification to be performed',
+    type: [String],
+    enum: VerifyTokenAdditionalEnum,
+    required: false,
+    example: [VerifyTokenAdditionalEnum.IS_ACTIVE],
+  })
+  @IsOptional()
+  @IsArray()
+  @IsEnum(VerifyTokenAdditionalEnum, { each: true })
+  verify?: VerifyTokenAdditionalEnum[];
 }
