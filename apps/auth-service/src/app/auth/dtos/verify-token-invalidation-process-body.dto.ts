@@ -38,10 +38,11 @@ export class VerifyTokenInvalidationProcessBodyDto {
     description: 'A list of additional verification to be performed',
     type: [String],
     enum: VerifyTokenAdditionalEnum,
+    required: false,
     example: [VerifyTokenAdditionalEnum.IS_ACTIVE],
   })
   @IsOptional()
   @IsArray()
   @IsEnum(VerifyTokenAdditionalEnum, { each: true })
-  verify: VerifyTokenAdditionalEnum[];
+  verify?: VerifyTokenAdditionalEnum[];
 }
