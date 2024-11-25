@@ -1,3 +1,4 @@
+import { verify } from 'crypto';
 import request from 'supertest';
 import { getContainerRuntimeClient } from 'testcontainers';
 
@@ -111,6 +112,30 @@ describe('POST /auth/verify', () => {
         expect(body).toHaveProperty('valid');
         expect(body.valid).toBeFalsy();
         expect(body.invalidatedBy).toBe('password');
+      });
+  });
+
+  test('invalid by user status', async () => {
+    const userId = '10f88251-d181-4255-92ed-d0d874e3a166';
+    const loginId = new Date().getTime().toString();
+    const iat = Math.floor(Date.now() / 1000);
+
+    await request(host)
+      .post(endpoint)
+      .set('X-Api-Version', '1')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .send({
+        userId,
+        loginId,
+        iat,
+        verify: ['isActive'],
+      })
+      .then((response) => {
+        const body = response.body;
+        expect(body).toHaveProperty('valid');
+        expect(body.valid).toBeFalsy();
+        expect(body.invalidatedBy).toBe('user-status');
       });
   });
 });

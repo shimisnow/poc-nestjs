@@ -47,6 +47,15 @@ export class UserAuthsRepositoryMock {
               '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
             status: UserAuthStatusEnum.ACTIVE,
           } as UserAuthEntity;
+        case 'fcf5cccf-c217-4502-8cc3-cc24270ae0b7':
+          return {
+            userId: 'fcf5cccf-c217-4502-8cc3-cc24270ae0b7',
+            username: 'null',
+            password:
+              // test@1234
+              '$2b$10$C8.WgVhIpd5NY81.b1GH1uCI53mggPdxrrIvyLyMjvZ68WOgOBQBW',
+            status: UserAuthStatusEnum.INACTIVE,
+          } as UserAuthEntity;
         default:
           return null;
       }

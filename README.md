@@ -1,6 +1,6 @@
 ![POC NestJS](docs/markdown/images/poc-nestjs-bar//export/poc-nestjs-bar.png)
 
-# Authentication and Financial REST API with NestJS
+# Authentication REST API with NestJS
 
 [![Unit Integration](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml)
 [![E2E Test](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml)
@@ -10,7 +10,7 @@
 
 ## Project Overview
 
-This project is a robust REST API built using the [NestJS](https://docs.nestjs.com/) framework, designed for scalability and maintainability. Key features include a modular, testable architecture; comprehensive unit and integration testing with Jest to ensure code quality; end-to-end testing using Supertest and Testcontainers for consistent application stack testing; and an integrated CI/CD pipeline with GitHub Actions to automate testing and deployment processes.
+This project is a robust authentication REST API built using the NestJS framework, designed for scalability and maintainability. Key features include a modular, testable architecture; comprehensive unit and integration testing with Jest to ensure code quality; end-to-end testing using Supertest and Testcontainers for application stack testing; and an integrated CI/CD pipeline with GitHub Actions to automate testing and deployment processes
 
 ## Key features
 
@@ -36,7 +36,7 @@ This project is a robust REST API built using the [NestJS](https://docs.nestjs.c
 The project has two individual services:
 
 - Auth Service: implements the authentication process with JWT tokens
-- Financial Service: process and store financial data
+- Financial Service: process and store financial data (used to demonstrate the authentication)
 
 ```mermaid
 stateDiagram-v2

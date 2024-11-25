@@ -272,10 +272,6 @@ export class AuthController {
   async verifyTokenInvalidationProcess(
     @Body() body: VerifyTokenInvalidationProcessBodyDto,
   ): Promise<VerifyTokenInvalidationProcessSerializer> {
-    return await this.authService.verifyTokenInvalidationProcess(
-      body.userId,
-      body.loginId,
-      body.iat,
-    );
+    return await this.authService.verifyTokenInvalidationProcess(body);
   }
 }

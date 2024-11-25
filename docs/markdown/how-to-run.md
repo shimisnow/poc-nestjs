@@ -1,5 +1,9 @@
 # How to run
 
+## Environment variables
+
+Copy the file `example.env` to `.env` and configure the values
+
 ## Docker containers (database and cache)
 
 First, start the databases and the cache manager:
