@@ -13,7 +13,7 @@ module.exports = async function () {
   const DOCKER_IMAGE_FINANCIAL_SERVICE =
     'shimisnow/pocnestjs-financial-service:latest';
   const DOCKER_POSTGRES_TAG = 'postgres:17.0';
-  const DOCKER_REDIS_TAG = 'redis:7.4.1';
+  const DOCKER_REDIS_TAG = 'valkey/valkey:8.0.1';
 
   const dockerNetwork = await new Network().start();
 

@@ -69,7 +69,7 @@ services:
       - ${FINANCIAL_SERVICE_PORT}:${FINANCIAL_SERVICE_PORT}
 
   redis:
-    image: redis:7.4.1
+    image: valkey/valkey:8.0.1
     networks:
       - poc-nestjs
     restart: always
