@@ -78,4 +78,4 @@ The commit message should be structured as follows:
 
 The commit message will be validated with the regex:
 
-`^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\[(#\d+)\])?[!]?: .*$`
+`^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\[(#\d+)\])?[!]?: .*`
