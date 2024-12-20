@@ -6,7 +6,7 @@
     "start": "nx serve",
     "build": "nx build",
     "test": "nx test",
-    "prepare": "husky"
+    "prepare": "node .husky/install.mjs"
   },
   "private": true,
   "dependencies": {

@@ -7,4 +7,6 @@ WORKDIR /home/node/app
 
 COPY package*.json ./
 
+COPY .husky/install.mjs ./.husky/install.mjs
+
 RUN npm install --no-audit
