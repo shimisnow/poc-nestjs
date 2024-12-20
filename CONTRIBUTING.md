@@ -1,4 +1,4 @@
-# Sumamry
+# How to contribute
 
 This project uses Gitflow as follow:
 
@@ -76,6 +76,6 @@ The commit message should be structured as follows:
 
 ## Regex
 
-The commit message will be validated with the regex:
+The commit message will be validated using git hooks with the regex:
 
-`^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\[(#\d+)\])?[!]?: .*$`
+`^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\[(#\d+)\])?[!]?: .*`

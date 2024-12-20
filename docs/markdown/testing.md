@@ -77,7 +77,7 @@ The tests can be performed with:
 npx nx e2e financial-service-e2e
 ```
 
-The tests for `financial-service` also used `auth-service` because the service is always necessary to validate token invalidation.
+The tests for `financial-service` also uses `auth-service` because the service is always necessary to validate token invalidation.
 
 ```mermaid
 stateDiagram-v2
