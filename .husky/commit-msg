@@ -1,0 +1,17 @@
+# The commit message file path is passed as the first argument to the hook
+COMMIT_MSG_FILE=$1
+
+# Read the commit message from the file
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Perl-compatible regex
+PATTERN="^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\[(#\d+)\])?[!]?: .*"
+
+# Check if the commit message matches the regex
+if ! echo "$COMMIT_MSG" | grep -Pq "$PATTERN"; then
+  echo "-----------------------------------------------------------------"
+  echo "--- ERROR: Commit message does not match the required pattern ---"
+  echo "---   FIX: See CONTRIBUTING.md file to details                ---"
+  echo "-----------------------------------------------------------------"
+  exit 1  # Exit with non-zero status to abort the commit
+fi
