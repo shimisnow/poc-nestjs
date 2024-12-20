@@ -25,7 +25,7 @@ docker pull shimisnow/pocnestjs-financial-service:latest
 The auxiliary services can be launched with:
 
 ```sh
-docker compose up -d database-authentication database-financial redis
+docker compose up -d database-authentication database-financial cache
 ```
 
 The services can be started with:
