@@ -1,10 +1,5 @@
 ## REST API
 
-| service name      | port |
-| :---------------- | :--: |
-| auth-service      | 8081 |
-| financial-service | 8082 |
-
 OpenAPI/Swagger documentation can be found at `apps/$SERVICE_NAME/docs/openapi/openapi-docs.json`
 
 ### How to visualize the documentation
@@ -15,6 +10,11 @@ docker compose up -d financial-service-openapi
 ```
 
 The documentation can be viewed at `http://localhost:$PORT/`. The port will be different to each service, see the table for reference.
+
+| service name      | port |
+| :---------------- | :--: |
+| auth-service      | 8081 |
+| financial-service | 8082 |
 
 ### How to generate/update the json file
 

@@ -1,6 +1,6 @@
 ![POC NestJS](docs/markdown/images/poc-nestjs-bar//export/poc-nestjs-bar.png)
 
-# Authentication REST API with NestJS
+# REST API with NestJS
 
 [![Unit Integration](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml)
 [![E2E Test](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml)
@@ -10,11 +10,11 @@
 
 ## Project Overview
 
-This project is a robust authentication REST API built using the NestJS framework, designed for scalability and maintainability. Key features include a modular, testable architecture; comprehensive unit and integration testing with Jest to ensure code quality; end-to-end testing using Supertest and Testcontainers for application stack testing; and an integrated CI/CD pipeline with GitHub Actions to automate testing and deployment processes
+This project is a robust authentication REST API built using the NestJS framework, designed for scalability and maintainability. Key features include a modular, testable architecture; comprehensive unit and integration testing with Jest to ensure code quality; end-to-end testing using Supertest and Testcontainers for application stack testing; and an integrated CI/CD pipeline with GitHub Actions to automate testing and deployment process.
 
 ## Key features
 
-- Shows [how to authenticate, issue and invalidate JWT tokens](docs/markdown//resolved-problems/authentication-flow.md) using Redis cache and without storing token in database
+- Shows [how to authenticate, issue and invalidate JWT tokens](docs/markdown//resolved-problems/authentication-flow.md) using Redis cache and without storing tokens in database
 - Shows [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
 - Shows how to e2e test using [Testcontainers](https://testcontainers.com/) to create isolated environments for testing the entire application flow from the user perspective
 - Shows how to make automated deployment to [Docker Hub](https://hub.docker.com/) using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/) and [Github Actions](https://github.com/features/actions)
@@ -29,13 +29,13 @@ This project is a robust authentication REST API built using the NestJS framewor
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
 - CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
 - Documentation: [OpenAPI/Swagger](https://www.openapis.org/), [Postman](https://www.postman.com/) collections, [Compodoc](https://compodoc.app/), [Mermaid (diagram-as-code)](https://mermaid.js.org/)
-- Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), Docker Compose, ESLint, Webpack, [winston](https://github.com/winstonjs/winston)
+- Others: Docker ([with multi-stage build](https://docs.docker.com/build/building/multi-stage/)), [Husky](https://typicode.github.io/husky/), ESLint, Webpack, [winston](https://github.com/winstonjs/winston)
 
 ## General organization
 
-The project has two individual services:
+This project has two individual services:
 
-- Auth Service: implements the authentication process with JWT tokens
+- Auth Service: implements an authentication process with JWT tokens
 - Financial Service: process and store financial data (used to demonstrate the authentication)
 
 ```mermaid
