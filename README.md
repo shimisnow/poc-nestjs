@@ -45,15 +45,11 @@ direction LR
 state "Auth Consumer" as auth_consumer_group {
     state "API request" as auth_consumer_api_call
     [*] --> auth_consumer_api_call
-    auth_consumer_api_call --> auth: login or refresh token
-    auth --> auth_consumer_api_call: access token
 }
 
 state "Financial Consumer" as financial_consumer_group {
     state "API request" as financial_consumer_api_call
     [*] --> financial_consumer_api_call
-    financial_consumer_api_call --> financial: request + access token
-    financial --> financial_consumer_api_call: financial data
 }
 
 state "Services" as service {
@@ -61,15 +57,20 @@ state "Services" as service {
     state "Financial Service REST API" as financial
 }
 
+auth_consumer_api_call --> auth: login or refresh token
+auth --> auth_consumer_api_call: access token
+financial_consumer_api_call --> financial: request + access token
+financial --> financial_consumer_api_call: financial data
+
 state "Infrastructure" as storage {
     state "Auth Database" as auth_db
-    state "Redis" as redis
+    state "Cache" as cache
     state "Financial Database" as financial_db
 }
 
 auth --> auth_db
-auth --> redis
-financial --> redis
+auth --> cache
+financial --> cache
 financial --> financial_db
 ```
 
