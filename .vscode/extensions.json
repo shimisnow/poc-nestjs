@@ -3,7 +3,10 @@
     "bierner.markdown-mermaid",
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
+    "fill-labs.dependi",
     "firsttris.vscode-jest-runner",
-    "ms-azuretools.vscode-docker"
+    "github.vscode-github-actions",
+    "ms-azuretools.vscode-docker",
+    "natqe.reload"
   ]
 }
