@@ -13,7 +13,8 @@ export default {
     'main.ts',
     'repl.ts',
     'index.ts',
-    '(module|controller|dto|serializer|body|result|mock|output|payload).ts$',
+    'data-source.ts',
+    '(module|controller|dto|serializer|body|result|mock|output|payload|entity).ts$',
   ],
   coverageReporters: ['clover', 'html'],
   coverageThreshold: {
