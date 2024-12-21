@@ -3,29 +3,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-redis-store';
 import { JwtModule } from '@nestjs/jwt';
-import { AccountEntity } from './database/entities/account.entity';
-import { BalanceEntity } from './database/entities/balance.entity';
-import { TransactionEntity } from './database/entities/transaction.entity';
 import { TransactionModule } from './transaction/transaction.module';
 import { BalanceModule } from './balance/balance.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     CacheModule.register({
       isGlobal: true,
       store: redisStore,
       host: process.env.REDIS_HOST,
       port: process.env.REDIS_PORT,
-    }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DATABASE_FINANCIAL_HOST,
-      port: parseInt(process.env.DATABASE_FINANCIAL_PORT),
-      username: process.env.DATABASE_FINANCIAL_USERNAME,
-      password: process.env.DATABASE_FINANCIAL_PASSWORD,
-      database: process.env.DATABASE_FINANCIAL_DBNAME,
-      entities: [AccountEntity, BalanceEntity, TransactionEntity],
-      logging: true,
     }),
     JwtModule.register({
       global: true,
