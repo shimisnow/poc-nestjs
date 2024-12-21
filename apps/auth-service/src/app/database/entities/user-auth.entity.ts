@@ -6,6 +6,7 @@ import {
   Entity,
   Index,
   PrimaryGeneratedColumn,
+  QueryFailedError,
   UpdateDateColumn,
 } from 'typeorm';
 import { UserAuthStatusEnum } from '../enums/user-auth-status.enum';
@@ -47,7 +48,7 @@ export class UserAuthEntity {
   @Column({
     name: 'username',
     type: 'varchar',
-    length: 50,
+    length: 20,
     nullable: false,
   })
   @Index('idx_user_auths_username', {
@@ -63,7 +64,7 @@ export class UserAuthEntity {
   @Column({
     name: 'password',
     type: 'varchar',
-    length: 100,
+    length: 60,
     nullable: false,
   })
   password: string;
@@ -108,5 +109,22 @@ export class UserAuthEntity {
   @BeforeUpdate()
   private async passwordEncryption() {
     this.password = await bcrypt.hash(this.password, 10);
+  }
+
+  /**
+   * Verifies the username.
+   */
+  @BeforeInsert()
+  @BeforeUpdate()
+  private validateUsername() {
+    if (/^[a-z0-9]*([_.][a-z0-9]*)?$/.test(this.username) == false) {
+      throw new QueryFailedError(
+        'Validation failed',
+        [],
+        new Error(
+          'username allows only lowercase letters, digits and one underscore or period allowed',
+        ),
+      );
+    }
   }
 }
