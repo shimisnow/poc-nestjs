@@ -90,10 +90,16 @@
         "command": "npx typeorm migration:create ./apps/auth-service/src/app/database/migrations/{args.name}"
       }
     },
+    "typeorm:migration:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node -P apps/auth-service/tsconfig.app.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:generate --dataSource apps/auth-service/src/app/database/data-source.ts apps/auth-service/src/app/database/migrations/{args.name}"
+      }
+    },
     "typeorm:migration:run": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -- migration:run --dataSource apps/auth-service/src/app/database/data-source.ts"
+        "command": "npx ts-node -P apps/auth-service/tsconfig.app.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:run --dataSource ./apps/auth-service/src/app/database/data-source.ts"
       }
     }
   },
