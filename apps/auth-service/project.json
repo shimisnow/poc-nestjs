@@ -83,6 +83,18 @@
     },
     "compodoc": {
       "command": "npx @compodoc/compodoc --config apps/auth-service/.compodoc.config.json"
+    },
+    "typeorm:migration:create": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx typeorm migration:create ./apps/auth-service/src/app/database/migrations/{args.name}"
+      }
+    },
+    "typeorm:migration:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js -- migration:run --dataSource apps/auth-service/src/app/database/data-source.ts"
+      }
     }
   },
   "tags": []
