@@ -166,7 +166,7 @@ github_prod_stage --> [*]
 - [How to contribute](./CONTRIBUTING.md)
 - [How to run from code](docs/markdown/how-to-run.md)
 - [How to run with Docker](docs/markdown/how-to-deploy.md)
-- [Database structure and TypeORM entities](docs/markdown/database-structure.md)
+- [Database structure, TypeORM entities, and migrations](docs/markdown/database-structure.md)
 - [GitHub Actions](docs/markdown/github-actions.md)
 - [Documentation](docs/markdown/documentation.md)
 - [Testing](docs/markdown/testing.md)
