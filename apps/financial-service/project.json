@@ -83,6 +83,24 @@
     },
     "compodoc": {
       "command": "npx @compodoc/compodoc --config apps/financial-service/.compodoc.config.json"
+    },
+    "typeorm:migration:create": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx typeorm migration:create ./apps/financial-service/src/app/database/migrations/{args.name}"
+      }
+    },
+    "typeorm:migration:generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node -P apps/financial-service/tsconfig.app.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:generate --dataSource apps/financial-service/src/app/database/data-source.ts apps/financial-service/src/app/database/migrations/{args.name}"
+      }
+    },
+    "typeorm:migration:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx ts-node -P apps/financial-service/tsconfig.app.json -r tsconfig-paths/register node_modules/typeorm/cli.js migration:run --dataSource ./apps/financial-service/src/app/database/data-source.ts"
+      }
     }
   },
   "tags": []
