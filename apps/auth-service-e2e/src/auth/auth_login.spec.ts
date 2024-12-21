@@ -118,9 +118,101 @@ describe('POST /auth/login', () => {
 
       expect(body).toHaveProperty('message');
       expect(body.message).toBeInstanceOf(Array);
-      expect(body.message.length).toBe(2);
+      expect(body.message.length).toBe(3);
       expect(
         body.message.includes('username should not be empty'),
+      ).toBeTruthy();
+    });
+
+    test('Username error by min length', async () => {
+      const response = await request(host)
+        .post(endpoint)
+        .send({
+          username: 'a',
+          password: 'test@1234',
+        })
+        .set('X-Api-Version', '1')
+        .expect('Content-Type', /json/)
+        .expect(400);
+
+      const body = response.body;
+
+      expect(body).toHaveProperty('message');
+      expect(body.message).toBeInstanceOf(Array);
+      expect(body.message.length).toBe(1);
+      expect(
+        body.message.includes(
+          'username must be longer than or equal to 2 characters',
+        ),
+      ).toBeTruthy();
+    });
+
+    test('Username error by max length', async () => {
+      const response = await request(host)
+        .post(endpoint)
+        .send({
+          username: 'abcdefghijklmnopqrstu',
+          password: 'test@1234',
+        })
+        .set('X-Api-Version', '1')
+        .expect('Content-Type', /json/)
+        .expect(400);
+
+      const body = response.body;
+
+      expect(body).toHaveProperty('message');
+      expect(body.message).toBeInstanceOf(Array);
+      expect(body.message.length).toBe(1);
+      expect(
+        body.message.includes(
+          'username must be shorter than or equal to 20 characters',
+        ),
+      ).toBeTruthy();
+    });
+
+    test('Username error by regex fail (not allowed character)', async () => {
+      const response = await request(host)
+        .post(endpoint)
+        .send({
+          username: 'teste@teste',
+          password: 'test@1234',
+        })
+        .set('X-Api-Version', '1')
+        .expect('Content-Type', /json/)
+        .expect(400);
+
+      const body = response.body;
+
+      expect(body).toHaveProperty('message');
+      expect(body.message).toBeInstanceOf(Array);
+      expect(body.message.length).toBe(1);
+      expect(
+        body.message.includes(
+          'only lowercase letters, digits and one underscore or period allowed',
+        ),
+      ).toBeTruthy();
+    });
+
+    test('Username error by regex fail (using _ and . at the same time)', async () => {
+      const response = await request(host)
+        .post(endpoint)
+        .send({
+          username: 'teste.teste_teste',
+          password: 'test@1234',
+        })
+        .set('X-Api-Version', '1')
+        .expect('Content-Type', /json/)
+        .expect(400);
+
+      const body = response.body;
+
+      expect(body).toHaveProperty('message');
+      expect(body.message).toBeInstanceOf(Array);
+      expect(body.message.length).toBe(1);
+      expect(
+        body.message.includes(
+          'only lowercase letters, digits and one underscore or period allowed',
+        ),
       ).toBeTruthy();
     });
   });
