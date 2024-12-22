@@ -1,6 +1,6 @@
 {
   "extends": ["../../.eslintrc.base.json"],
-  "ignorePatterns": ["!**/*"],
+  "ignorePatterns": ["!**/*", "src/app/database/migrations"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],

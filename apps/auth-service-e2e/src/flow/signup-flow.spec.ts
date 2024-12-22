@@ -1,5 +1,4 @@
 import request from 'supertest';
-import { v4 as uuidv4 } from 'uuid';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken';
 import { getContainerRuntimeClient } from 'testcontainers';
 
@@ -25,7 +24,7 @@ describe('login logout process (with refresh)', () => {
   });
 
   test('signup and login', async () => {
-    const username = 'sherlock-' + Math.floor(Math.random() * 1000);
+    const username = 'sherlock' + Math.floor(Math.random() * 1000);
     const password = 'test@1234';
     let userId = '';
 

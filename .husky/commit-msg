@@ -7,11 +7,14 @@ COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
 # Perl-compatible regex
 PATTERN="^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\[(#\d+)\])?[!]?: .*"
 
-# Check if the commit message matches the regex
-if ! echo "$COMMIT_MSG" | grep -Pq "$PATTERN"; then
-  echo "-----------------------------------------------------------------"
-  echo "--- ERROR: Commit message does not match the required pattern ---"
-  echo "---   FIX: See CONTRIBUTING.md file to details                ---"
-  echo "-----------------------------------------------------------------"
-  exit 1  # Exit with non-zero status to abort the commit
+# Allow merge default commit message
+if [[ ! "$COMMIT_MSG" =~ ^Merge\ branch ]]; then
+  # Check if the commit message matches the regex
+  if ! echo "$COMMIT_MSG" | grep -Pq "$PATTERN"; then
+    echo "-----------------------------------------------------------------"
+    echo "--- ERROR: Commit message does not match the required pattern ---"
+    echo "---   FIX: See CONTRIBUTING.md file to details                ---"
+    echo "-----------------------------------------------------------------"
+    exit 1  # Exit with non-zero status to abort the commit
+  fi
 fi
