@@ -31,10 +31,9 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit
 
-  shared-code:
+  lint:
     needs: setup
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -53,13 +52,34 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit
 
-      - name: Lint
-        run: npx nx lint shared
+      - name: Lint all apps
+        run: npx nx run-many --targets=lint --projects='shared,auth-service,auth-service-e2e,financial-service,financial-service-e2e'
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore npm cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          fail-on-cache-miss: true
+
+      - name: Install dependencies
+        run: npm ci --no-audit
 
       - name: Unit and Integration tests
-        run: npx nx test shared -- --coverage --coverageReporters=cobertura
+        run: npx nx run-many --targets=test --projects='shared,auth-service,financial-service' --coverage --coverageReporters=cobertura
 
-      - name: Coverage report
+      - name: SHARED - Generate coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
         with:
@@ -73,49 +93,18 @@ jobs:
           output: both
           thresholds: '80 90'
 
-      - name: Rename report file
+      - name: SHARED - Rename report file
         if: github.event_name == 'pull_request'
         run: mv code-coverage-results.md shared-code-coverage-results.md
 
-      - name: Cache coverage report
+      - name: SHARED - Cache coverage report
         uses: actions/cache/save@v4
         if: github.event_name == 'pull_request'
         with:
           path: shared-code-coverage-results.md
           key: ${{ runner.os }}-shared-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
-  auth-service:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Restore npm cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          fail-on-cache-miss: true
-
-      - name: Install dependencies
-        run: npm ci --no-audit
-
-      - name: Lint
-        run: npx nx lint auth-service
-
-      - name: Lint E2E
-        run: npx nx lint auth-service-e2e
-
-      - name: Unit and Integration tests
-        run: npx nx test auth-service -- --coverage --coverageReporters=cobertura
-
-      - name: Coverage report
+      - name: AUTH-SERVICE - Generate coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
         with:
@@ -129,49 +118,18 @@ jobs:
           output: both
           thresholds: '80 90'
 
-      - name: Rename report file
+      - name: AUTH-SERVICE - Rename report file
         if: github.event_name == 'pull_request'
         run: mv code-coverage-results.md auth-service-coverage-results.md
 
-      - name: Cache coverage report
+      - name: AUTH-SERVICE - Cache coverage report
         uses: actions/cache/save@v4
         if: github.event_name == 'pull_request'
         with:
           path: auth-service-coverage-results.md
           key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
 
-  financial-service:
-    needs: setup
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Restore npm cache
-        uses: actions/cache/restore@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          fail-on-cache-miss: true
-
-      - name: Install dependencies
-        run: npm ci --no-audit
-
-      - name: Lint
-        run: npx nx lint financial-service
-
-      - name: Lint E2E
-        run: npx nx lint financial-service-e2e
-
-      - name: Unit and Integration tests
-        run: npx nx test financial-service -- --coverage --coverageReporters=cobertura
-
-      - name: Coverage report
+      - name: FINANCIAL-SERVICE - Generate coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
         with:
@@ -185,11 +143,11 @@ jobs:
           output: both
           thresholds: '80 90'
 
-      - name: Rename report file
+      - name: FINANCIAL-SERVICE - Rename report file
         if: github.event_name == 'pull_request'
         run: mv code-coverage-results.md financial-service-coverage-results.md
 
-      - name: Cache coverage report
+      - name: FINANCIAL-SERVICE - Cache coverage report
         uses: actions/cache/save@v4
         if: github.event_name == 'pull_request'
         with:
@@ -198,10 +156,7 @@ jobs:
 
   coverage-report:
     if: github.event_name == 'pull_request'
-    needs:
-      - shared-code
-      - auth-service
-      - financial-service
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
