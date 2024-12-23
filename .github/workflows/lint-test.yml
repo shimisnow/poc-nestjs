@@ -20,18 +20,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
 
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache/save@v4
+      - name: Manage npm cache
+        uses: actions/cache@v4
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-audit
+        run: npm ci --no-audit --no-fund
 
   lint:
     needs: setup
@@ -44,15 +41,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Restore npm cache
-        uses: actions/cache/restore@v4
+      - name: Manage npm cache
+        uses: actions/cache@v4
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          fail-on-cache-miss: true
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
-      #- name: Install dependencies
-      #  run: npm ci --no-audit
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
 
       - name: Lint all apps
         run: npx nx run-many --targets=lint --projects='shared,auth-service,auth-service-e2e,financial-service,financial-service-e2e'
@@ -68,15 +64,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Restore npm cache
-        uses: actions/cache/restore@v4
+      - name: Manage npm cache
+        uses: actions/cache@v4
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
-          fail-on-cache-miss: true
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
 
-      #- name: Install dependencies
-      #  run: npm ci --no-audit
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
 
       - name: Unit and Integration tests
         run: npx nx run-many --targets=test --projects='shared,auth-service,financial-service' --coverage --coverageReporters=cobertura
@@ -99,13 +94,6 @@ jobs:
         if: github.event_name == 'pull_request'
         run: mv code-coverage-results.md shared-code-coverage-results.md
 
-      - name: SHARED - Cache coverage report
-        uses: actions/cache/save@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: shared-code-coverage-results.md
-          key: ${{ runner.os }}-shared-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
-
       - name: AUTH-SERVICE - Generate coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
@@ -124,13 +112,6 @@ jobs:
         if: github.event_name == 'pull_request'
         run: mv code-coverage-results.md auth-service-coverage-results.md
 
-      - name: AUTH-SERVICE - Cache coverage report
-        uses: actions/cache/save@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: auth-service-coverage-results.md
-          key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
-
       - name: FINANCIAL-SERVICE - Generate coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
@@ -148,40 +129,6 @@ jobs:
       - name: FINANCIAL-SERVICE - Rename report file
         if: github.event_name == 'pull_request'
         run: mv code-coverage-results.md financial-service-coverage-results.md
-
-      - name: FINANCIAL-SERVICE - Cache coverage report
-        uses: actions/cache/save@v4
-        if: github.event_name == 'pull_request'
-        with:
-          path: financial-service-coverage-results.md
-          key: ${{ runner.os }}-financial-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
-
-  coverage-report:
-    if: github.event_name == 'pull_request'
-    needs: test
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Restore shared code report
-        uses: actions/cache/restore@v4
-        with:
-          path: shared-code-coverage-results.md
-          key: ${{ runner.os }}-shared-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
-          fail-on-cache-miss: true
-
-      - name: Restore auth-service report
-        uses: actions/cache/restore@v4
-        with:
-          path: auth-service-coverage-results.md
-          key: ${{ runner.os }}-auth-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
-          fail-on-cache-miss: true
-
-      - name: Restore financial-service report
-        uses: actions/cache/restore@v4
-        with:
-          path: financial-service-coverage-results.md
-          key: ${{ runner.os }}-financial-service-coverage-report-${{ github.run_id }}-${{ github.run_attempt }}
-          fail-on-cache-miss: true
 
       - name: Set title for shared code
         run: |
