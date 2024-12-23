@@ -76,11 +76,11 @@ jobs:
       - name: Unit and Integration tests
         run: npx nx run-many --targets=test --projects='shared,auth-service,financial-service' --coverage --coverageReporters=cobertura
 
-      - name: Generate coverage report
+      - name: SHARED - Generate coverage report
         uses: irongut/CodeCoverageSummary@v1.3.0
         if: github.event_name == 'pull_request'
         with:
-          filename: coverage/**/cobertura-coverage.xml
+          filename: coverage/shared/cobertura-coverage.xml
           badge: true
           fail_below_min: false
           format: markdown
@@ -90,9 +90,88 @@ jobs:
           output: both
           thresholds: '80 90'
 
+      - name: SHARED - Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md shared-code-coverage-results.md
+
+      - name: AUTH-SERVICE - Generate coverage report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: github.event_name == 'pull_request'
+        with:
+          filename: coverage/apps/auth-service/cobertura-coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '80 90'
+
+      - name: AUTH-SERVICE - Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md auth-service-coverage-results.md
+
+      - name: FINANCIAL-SERVICE - Generate coverage report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        if: github.event_name == 'pull_request'
+        with:
+          filename: coverage/apps/financial-service/cobertura-coverage.xml
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: both
+          thresholds: '80 90'
+
+      - name: FINANCIAL-SERVICE - Rename report file
+        if: github.event_name == 'pull_request'
+        run: mv code-coverage-results.md financial-service-coverage-results.md
+
+      - name: Set title for shared code
+        run: |
+          cat <<EOF >> code-coverage-output.md
+          ## 📦 Shared
+
+          EOF
+
+      - name: Merge shared report file
+        run: cat shared-code-coverage-results.md >> code-coverage-output.md
+
+      - name: Set title for auth-service
+        run: |
+          cat <<EOF >> code-coverage-output.md
+
+          ## 📦 Auth Service
+
+          EOF
+
+      - name: Merge auth-service report file
+        run: cat auth-service-coverage-results.md >> code-coverage-output.md
+
+      - name: Set title for financial-service
+        run: |
+          cat <<EOF >> code-coverage-output.md
+
+          ## 📦 Financial Service
+
+          EOF
+
+      - name: Merge financial-service report file
+        run: cat financial-service-coverage-results.md >> code-coverage-output.md
+
+      - name: Set final PR message
+        run: |
+          cat <<EOF >> code-coverage-output.md
+
+          ⛔️ This comment can be replaced by Github Actions. Do not quote or react to it.
+          EOF
+
       - name: Add coverage PR comment
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: code-coverage
           recreate: true
-          path: code-coverage-results.md
+          path: code-coverage-output.md
