@@ -23,12 +23,14 @@ jobs:
           cache: 'npm'
 
       - name: Cache node_modules
+        id: cache-node-modules
         uses: actions/cache/save@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --no-audit
 
   lint:
@@ -45,12 +47,12 @@ jobs:
       - name: Restore npm cache
         uses: actions/cache/restore@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           fail-on-cache-miss: true
 
-      - name: Install dependencies
-        run: npm ci --no-audit
+      #- name: Install dependencies
+      #  run: npm ci --no-audit
 
       - name: Lint all apps
         run: npx nx run-many --targets=lint --projects='shared,auth-service,auth-service-e2e,financial-service,financial-service-e2e'
@@ -69,12 +71,12 @@ jobs:
       - name: Restore npm cache
         uses: actions/cache/restore@v4
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           fail-on-cache-miss: true
 
-      - name: Install dependencies
-        run: npm ci --no-audit
+      #- name: Install dependencies
+      #  run: npm ci --no-audit
 
       - name: Unit and Integration tests
         run: npx nx run-many --targets=test --projects='shared,auth-service,financial-service' --coverage --coverageReporters=cobertura
