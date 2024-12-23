@@ -8,7 +8,7 @@ Will be executed for pull request to the branches `milestone-**`, `develop`, `st
 
 - See the [workflow file](../../.github/workflows/lint-test.yml) for details.
 
-This workflow creates the `node_modules` folder at the `project setup` step and uses it to lint and test the code for the services and shared code. At the end, generates a coverage report and adds it to a pull request comment (`coverage report` step).
+This workflow creates the `node_modules` folder at the `project setup` step and uses it to lint and test the code for the services and shared code. At the end, generates a coverage report and adds it to a pull request comment.
 
 ```mermaid
 stateDiagram-v2
@@ -16,13 +16,11 @@ direction LR
 state "project setup" as setup
 state "lint apps" as lint
 state "unit and integration tests" as test
-state "coverage report" as coverage
 
 [*] --> setup
 setup --> lint
 lint --> test
-test --> coverage
-coverage --> [*]
+test --> [*]
 ```
 
 ### E2E Testing (Supertest and Testcontainers)
