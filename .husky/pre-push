@@ -1,8 +1,2 @@
-npx nx lint shared
-npx nx lint auth-service
-npx nx lint auth-service-e2e
-npx nx lint financial-service
-npx nx lint financial-service-e2e
-npx nx test shared
-npx nx test auth-service
-npx nx test financial-service
+npx nx run-many --targets=lint --projects='shared,auth-service,auth-service-e2e,financial-service,financial-service-e2e'
+npx nx run-many --targets=test --projects='shared,auth-service,financial-service'
