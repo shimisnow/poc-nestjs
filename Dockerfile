@@ -9,4 +9,4 @@ COPY package*.json ./
 
 COPY .husky/install.mjs ./.husky/install.mjs
 
-RUN npm install --no-audit
+RUN npm install --prefer-offline --no-audit --no-fund
