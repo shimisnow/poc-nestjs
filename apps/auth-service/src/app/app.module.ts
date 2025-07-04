@@ -18,6 +18,7 @@ import KeyvRedis from '@keyv/redis';
       port: process.env.REDIS_PORT,
     }), */
     CacheModule.registerAsync({
+      isGlobal: true,
       useFactory: async () => {
         return {
           stores: [
@@ -27,7 +28,6 @@ import KeyvRedis from '@keyv/redis';
           ],
         };
       },
-      isGlobal: true,
     }),
     JwtModule.register({
       global: true,

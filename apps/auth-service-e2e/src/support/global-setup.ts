@@ -18,6 +18,8 @@ module.exports = async function () {
 
   /***** BUILD SERVICE DOCKER IMAGE *****/
 
+  console.log(`Building docker image: ${DOCKER_IMAGE_AUTH_SERVICE}`);
+
   const authServiceImage = await GenericContainer.fromDockerfile(
     './',
     'apps/auth-service/Dockerfile',
@@ -26,6 +28,8 @@ module.exports = async function () {
   });
 
   /***** DEPENDENCIES SETUP *****/
+
+  console.log('Setting up database container');
 
   const authDatabaseContainerSetup = new PostgreSqlContainer(
     DOCKER_POSTGRES_TAG,
@@ -48,6 +52,8 @@ module.exports = async function () {
       ),
     );
 
+  console.log('Setting up cache container');
+
   const cacheContainerSetup = new RedisContainer(DOCKER_REDIS_TAG)
     .withLabels({ 'poc-nestjs-name': 'auth-service-cache' })
     .withNetwork(dockerNetwork)
@@ -56,11 +62,16 @@ module.exports = async function () {
 
   /***** DEPENDENCIES START *****/
 
-  const [authDatabaseContainer, financialDatabaseContainer] = await Promise.all(
-    [authDatabaseContainerSetup.start(), cacheContainerSetup.start()],
-  );
+  console.log('Starting database and cache containers');
+
+  const [authDatabaseContainer, cacheContainer] = await Promise.all([
+    authDatabaseContainerSetup.start(),
+    cacheContainerSetup.start(),
+  ]);
 
   /***** CODE *****/
+
+  console.log('Starting code container');
 
   const authCodeContainer: StartedTestContainer = await authServiceImage
     .withLabels({ 'poc-nestjs-name': 'auth-service-code' })
@@ -86,17 +97,19 @@ module.exports = async function () {
     })
     .withWaitStrategy(Wait.forListeningPorts())
     // use this to see container log in realtime
-    .withLogConsumer((stream) => {
+    /* .withLogConsumer((stream) => {
       stream.on('data', (line) => console.log(line));
       stream.on('err', (line) => console.error(line));
       stream.on('end', () => console.log('Stream closed'));
-    })
+    }) */
     .start();
+
+  console.log('Code container started');
 
   // Hint: Use `globalThis` to pass variables to global teardown.
   Object.assign(globalThis, {
     authDatabaseContainer,
-    financialDatabaseContainer,
+    cacheContainer,
     authCodeContainer,
   });
 };

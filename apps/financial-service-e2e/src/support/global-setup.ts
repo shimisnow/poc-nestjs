@@ -19,6 +19,10 @@ module.exports = async function () {
 
   /***** BUILD SERVICES DOCKER IMAGE *****/
 
+  console.log(
+    `Building docker images: ${DOCKER_IMAGE_AUTH_SERVICE} and ${DOCKER_IMAGE_FINANCIAL_SERVICE}`,
+  );
+
   const [authServiceImage, financialServiceImage] = await Promise.all([
     // auth-service is required by perform service-to-service comunication
     GenericContainer.fromDockerfile('./', 'apps/auth-service/Dockerfile').build(
@@ -36,6 +40,8 @@ module.exports = async function () {
   ]);
 
   /***** DEPENDENCIES SETUP *****/
+
+  console.log('Setting up database-authentication container');
 
   const authDatabaseContainerSetup = new PostgreSqlContainer(
     DOCKER_POSTGRES_TAG,
@@ -58,6 +64,8 @@ module.exports = async function () {
       ),
     );
 
+  console.log('Setting up database-financial container');
+
   const financialDatabaseContainerSetup = new PostgreSqlContainer(
     DOCKER_POSTGRES_TAG,
   )
@@ -79,6 +87,8 @@ module.exports = async function () {
       ),
     );
 
+  console.log('Setting up cache container');
+
   const cacheContainerSetup = new RedisContainer(DOCKER_REDIS_TAG)
     .withLabels({ 'poc-nestjs-name': 'financial-service-cache' })
     .withNetwork(dockerNetwork)
@@ -86,6 +96,8 @@ module.exports = async function () {
     .withExposedPorts(parseInt(process.env.REDIS_PORT));
 
   /***** DEPENDENCIES START *****/
+
+  console.log('Starting databases and cache containers');
 
   const [authDatabaseContainer, financialDatabaseContainer, cacheContainer] =
     await Promise.all([
@@ -95,6 +107,8 @@ module.exports = async function () {
     ]);
 
   /***** CODE *****/
+
+  console.log('Starting auth-service code container');
 
   const authCodeContainer: StartedTestContainer = await authServiceImage
     .withLabels({ 'poc-nestjs-name': 'auth-service-code' })
@@ -126,6 +140,8 @@ module.exports = async function () {
       stream.on('end', () => console.log('Stream closed'));
     }) */
     .start();
+
+  console.log('Starting financial-service code container');
 
   const financialCodeContainer: StartedTestContainer =
     await financialServiceImage
