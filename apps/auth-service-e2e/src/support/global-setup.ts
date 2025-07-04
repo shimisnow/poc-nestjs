@@ -22,7 +22,7 @@ module.exports = async function () {
     './',
     'apps/auth-service/Dockerfile',
   ).build(DOCKER_IMAGE_AUTH_SERVICE, {
-    deleteOnExit: true,
+    deleteOnExit: false,
   });
 
   /***** DEPENDENCIES SETUP *****/
@@ -86,11 +86,11 @@ module.exports = async function () {
     })
     .withWaitStrategy(Wait.forListeningPorts())
     // use this to see container log in realtime
-    /* .withLogConsumer((stream) => {
+    .withLogConsumer((stream) => {
       stream.on('data', (line) => console.log(line));
       stream.on('err', (line) => console.error(line));
       stream.on('end', () => console.log('Stream closed'));
-    }) */
+    })
     .start();
 
   // Hint: Use `globalThis` to pass variables to global teardown.
