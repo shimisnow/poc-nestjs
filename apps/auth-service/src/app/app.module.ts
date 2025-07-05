@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { CacheModule } from '@nestjs/cache-manager';
-import * as redisStore from 'cache-manager-redis-store';
 import { JwtModule } from '@nestjs/jwt';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';

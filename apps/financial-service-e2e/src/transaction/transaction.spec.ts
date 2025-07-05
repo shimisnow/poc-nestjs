@@ -169,15 +169,19 @@ describe('POST /transaction', () => {
           containerRuntimeClient.container.exec(containerCache, [
             'redis-cli',
             'SET',
-            `${CacheKeyPrefix.FINANCIAL_BALANCE}:3`,
-            JSON.stringify(cacheValue),
+            [CacheKeyPrefix.FINANCIAL_BALANCE, 3].join(':'),
+            JSON.stringify({
+              value: cacheValue,
+            }),
           ]),
           // defines a cached value to pair account
           containerRuntimeClient.container.exec(containerCache, [
             'redis-cli',
             'SET',
-            `${CacheKeyPrefix.FINANCIAL_BALANCE}:4`,
-            JSON.stringify(cacheValue),
+            [CacheKeyPrefix.FINANCIAL_BALANCE, 4].join(':'),
+            JSON.stringify({
+              value: cacheValue,
+            }),
           ]),
         ]);
 

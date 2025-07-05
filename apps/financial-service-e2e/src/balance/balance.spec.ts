@@ -174,8 +174,10 @@ describe('GET /balance', () => {
       await containerRuntimeClient.container.exec(containerCache, [
         'redis-cli',
         'SET',
-        `${CacheKeyPrefix.FINANCIAL_BALANCE}:2`,
-        JSON.stringify(cacheValue),
+        [CacheKeyPrefix.FINANCIAL_BALANCE, 2].join(':'),
+        JSON.stringify({
+          value: cacheValue,
+        }),
       ]);
 
       const now = Math.floor(Date.now() / 1000);
