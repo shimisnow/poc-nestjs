@@ -52,11 +52,14 @@ describe('POST /auth/logout', () => {
   });
 
   test('logout error for user already logged out', async () => {
+    const userId = '4b9cf2b7-1601-47a5-9668-6cb423b0d7ac';
+    const loginId = '1707755084516';
+
     const now = Math.floor(Date.now() / 1000);
     const refreshToken = jsonwebtoken.sign(
       {
-        userId: '4b9cf2b7-1601-47a5-9668-6cb423b0d7ac',
-        loginId: '1707755084516',
+        userId,
+        loginId,
         role: 'user',
         iat: now,
         exp: now + 60,
@@ -73,8 +76,8 @@ describe('POST /auth/logout', () => {
     await containerRuntimeClient.container.exec(containerCache, [
       'redis-cli',
       'SET',
-      'auth:logout:4b9cf2b7-1601-47a5-9668-6cb423b0d7ac:1707755084516',
-      '{}',
+      `auth:logout:${userId}:${loginId}`,
+      `{ "performedAt" : ${new Date().getTime()} }`,
     ]);
 
     await request(host)
