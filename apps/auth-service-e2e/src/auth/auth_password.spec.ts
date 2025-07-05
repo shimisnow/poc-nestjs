@@ -184,11 +184,11 @@ describe('POST /auth/password', () => {
         [
           'redis-cli',
           'GET',
-          `${CacheKeyPrefix.AUTH_PASSWORD_CHANGE}:${userId}`,
+          [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, userId].join(':'),
         ],
       );
 
-      const cacheValue = JSON.parse(cacheResult.output);
+      const cacheValue = JSON.parse(cacheResult.output).value;
 
       // * 1000 to convert it from seconds to milliseconds
       expect(accessToken.iat * 1000).toBeGreaterThan(cacheValue.changedAt);

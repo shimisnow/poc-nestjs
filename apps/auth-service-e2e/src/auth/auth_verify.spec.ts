@@ -1,3 +1,4 @@
+import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 import { verify } from 'crypto';
 import request from 'supertest';
 import { getContainerRuntimeClient } from 'testcontainers';
@@ -57,8 +58,13 @@ describe('POST /auth/verify', () => {
     await containerRuntimeClient.container.exec(containerCache, [
       'redis-cli',
       'SET',
-      `auth:logout:${userId}:${loginId}`,
-      '{}',
+      [CacheKeyPrefix.AUTH_SESSION_LOGOUT, userId, loginId].join(':'),
+      JSON.stringify({
+        value: {
+          performedAt: new Date().getTime(),
+          expires: new Date().getTime() + 60000,
+        },
+      }),
     ]);
 
     await request(host)
@@ -93,8 +99,13 @@ describe('POST /auth/verify', () => {
     await containerRuntimeClient.container.exec(containerCache, [
       'redis-cli',
       'SET',
-      `auth:password:${userId}`,
-      `{"changedAt": ${Date.now()}}`,
+      [CacheKeyPrefix.AUTH_PASSWORD_CHANGE, userId].join(':'),
+      JSON.stringify({
+        value: {
+          changedAt: Date.now(),
+          expires: new Date().getTime() + 60000,
+        },
+      }),
     ]);
 
     await request(host)
