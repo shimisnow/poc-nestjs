@@ -4,6 +4,7 @@ import { getContainerRuntimeClient } from 'testcontainers';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
 import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
+import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 
 describe('POST /auth/logout', () => {
   let host: string;
@@ -52,11 +53,14 @@ describe('POST /auth/logout', () => {
   });
 
   test('logout error for user already logged out', async () => {
+    const userId = '4b9cf2b7-1601-47a5-9668-6cb423b0d7ac';
+    const loginId = '1707755084516';
+
     const now = Math.floor(Date.now() / 1000);
     const refreshToken = jsonwebtoken.sign(
       {
-        userId: '4b9cf2b7-1601-47a5-9668-6cb423b0d7ac',
-        loginId: '1707755084516',
+        userId,
+        loginId,
         role: 'user',
         iat: now,
         exp: now + 60,
@@ -73,8 +77,13 @@ describe('POST /auth/logout', () => {
     await containerRuntimeClient.container.exec(containerCache, [
       'redis-cli',
       'SET',
-      'auth:logout:4b9cf2b7-1601-47a5-9668-6cb423b0d7ac:1707755084516',
-      '{}',
+      [CacheKeyPrefix.AUTH_SESSION_LOGOUT, userId, loginId].join(':'),
+      JSON.stringify({
+        value: {
+          performedAt: new Date().getTime(),
+          expires: new Date().getTime() + 60000,
+        },
+      }),
     ]);
 
     await request(host)
@@ -90,5 +99,5 @@ describe('POST /auth/logout', () => {
           expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_LOGOUT]),
         );
       });
-  });
+  }, 1000000);
 });

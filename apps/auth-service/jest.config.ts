@@ -7,6 +7,7 @@ export default {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
+  maxWorkers: '100%',
   coverageDirectory: '../../coverage/apps/auth-service',
   collectCoverageFrom: ['<rootDir>/src/**'],
   coveragePathIgnorePatterns: [

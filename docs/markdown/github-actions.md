@@ -8,28 +8,19 @@ Will be executed for pull request to the branches `milestone-**`, `develop`, `st
 
 - See the [workflow file](../../.github/workflows/lint-test.yml) for details.
 
-This workflow creates the `node_modules` folder at the `setup` step and uses it to test the code for the services (`auth-service` and `financial-service` steps) and for the shared code (`shared-code` step). At the end, generates a coverage report and adds it to a pull request comment (`coverage-report` step).
+This workflow creates the `node_modules` folder at the `project setup` step and uses it to lint and test the code for the services and shared code. At the end, generates a coverage report and adds it to a pull request comment.
 
 ```mermaid
 stateDiagram-v2
 direction LR
-state "auth-service" as auth
-state "financial-service" as financial
-state "shared-code" as shared
-state "coverage-report" as coverage
-state wait1 <<fork>>
-state wait2 <<fork>>
+state "project setup" as setup
+state "lint apps" as lint
+state "unit and integration tests" as test
 
 [*] --> setup
-setup --> wait1
-wait1 --> auth
-wait1 --> financial
-wait1 --> shared
-auth --> wait2
-financial --> wait2
-shared --> wait2
-wait2 --> coverage
-coverage --> [*]
+setup --> lint
+lint --> test
+test --> [*]
 ```
 
 ### E2E Testing (Supertest and Testcontainers)
