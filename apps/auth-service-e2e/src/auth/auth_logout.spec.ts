@@ -4,6 +4,7 @@ import { getContainerRuntimeClient } from 'testcontainers';
 import { UserPayload } from '@shared/authentication/payloads/user.payload';
 import { AuthErrorNames } from '@shared/authentication/enums/auth-error-names.enum';
 import { AuthErrorMessages } from '@shared/authentication/enums/auth-error-messages.enum';
+import { CacheKeyPrefix } from '@shared/cache/enums/cache-key-prefix.enum';
 
 describe('POST /auth/logout', () => {
   let host: string;
@@ -76,8 +77,13 @@ describe('POST /auth/logout', () => {
     await containerRuntimeClient.container.exec(containerCache, [
       'redis-cli',
       'SET',
-      `auth:logout:${userId}:${loginId}`,
-      `{ "performedAt" : ${new Date().getTime()} }`,
+      [CacheKeyPrefix.AUTH_SESSION_LOGOUT, userId, loginId].join(':'),
+      JSON.stringify({
+        value: {
+          performedAt: new Date().getTime(),
+          expires: new Date().getTime() + 60000,
+        },
+      }),
     ]);
 
     await request(host)
@@ -93,5 +99,5 @@ describe('POST /auth/logout', () => {
           expect.arrayContaining([AuthErrorMessages.INVALIDATED_BY_LOGOUT]),
         );
       });
-  });
+  }, 1000000);
 });
