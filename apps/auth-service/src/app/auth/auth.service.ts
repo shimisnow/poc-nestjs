@@ -243,11 +243,8 @@ export class AuthService {
       {
         performedAt,
       },
-      {
-        // the refreshToken is the one with the greater expire time
-        ttl: this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
+      // the refreshToken is the one with the greater expire time
+      this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
     );
 
     return {
@@ -430,11 +427,8 @@ export class AuthService {
       {
         changedAt: new Date().getTime(),
       } as PasswordChangeCachePayload,
-      {
-        // the refreshToken is the one with the greater expire time
-        ttl: this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
+      // the refreshToken is the one with the greater expire time
+      this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
     );
 
     // sleeps one second to garantee that the new token timestamp

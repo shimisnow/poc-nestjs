@@ -5,26 +5,22 @@ import * as redisStore from 'cache-manager-redis-store';
 import { JwtModule } from '@nestjs/jwt';
 import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './auth/auth.module';
-import KeyvRedis from '@keyv/redis';
+import { createKeyv } from '@keyv/redis';
 
 @Module({
   imports: [
     AuthModule,
     DatabaseModule,
-    /* CacheModule.register({
-      isGlobal: true,
-      store: redisStore,
-      host: process.env.REDIS_HOST,
-      port: process.env.REDIS_PORT,
-    }), */
     CacheModule.registerAsync({
       isGlobal: true,
       useFactory: async () => {
         return {
           stores: [
-            new KeyvRedis(
+            createKeyv(
               `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-            ),
+            ).on('error', (err: Error) => {
+              console.log(`Keyv Redis Connection Error: ${err.message}`);
+            }),
           ],
         };
       },
