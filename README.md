@@ -1,6 +1,6 @@
 ![POC NestJS](docs/markdown/images/poc-nestjs-bar//export/poc-nestjs-bar.png)
 
-# REST API with NestJS
+# Authentication API with NestJS
 
 [![Unit Integration](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/lint-test.yml)
 [![E2E Test](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml/badge.svg)](https://github.com/shimisnow/poc-nestjs/actions/workflows/e2e-test.yml)
@@ -10,21 +10,21 @@
 
 ## Project Overview
 
-This project is a robust authentication REST API built using the NestJS framework, designed for scalability and maintainability. Key features include a modular, testable architecture; comprehensive unit and integration testing with Jest to ensure code quality; end-to-end testing using Supertest and Testcontainers for application stack testing; and an integrated CI/CD pipeline with GitHub Actions to automate testing and deployment process.
+This project is a robust authentication REST API built using the NestJS framework. Key features include a modular, testable architecture; comprehensive unit and integration testing with Jest; end-to-end testing using Supertest and Testcontainers for application stack testing; and an integrated CI/CD pipeline with GitHub Actions to automate testing and deployment process.
 
 ## Key features
 
 - Shows [how to authenticate, issue and invalidate JWT tokens](docs/markdown//resolved-problems/authentication-flow.md) using Redis cache and without storing tokens in database
-- Shows [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md)
-- Shows how to e2e test using [Testcontainers](https://testcontainers.com/) to create isolated environments for testing the entire application flow from the user perspective
+- Shows how to E2E test using [Testcontainers](https://testcontainers.com/) to create isolated environments for testing the entire application flow from the api consumer perspective
 - Shows how to make automated deployment to [Docker Hub](https://hub.docker.com/) using [multi-stage builds](https://docs.docker.com/build/building/multi-stage/) and [Github Actions](https://github.com/features/actions)
+- Shows [how to retrieve the account balance in a financial application](docs/markdown/resolved-problems/account-balance.md).This service exists to apply the authentication in a more real scenario
 
-## Technology Stack
+## Tech Stack
 
 - Code organization: monorepo with [Nx](https://nx.dev/)
-- Backend: REST API, Node.js, [NestJS Framework](https://docs.nestjs.com/), TypeScript
+- Backend: [NestJS Framework](https://docs.nestjs.com/), TypeScript, Node.js, REST API
 - Database and cache: PostgreSQL, Redis, [TypeORM](https://typeorm.io/)
-- Security: [JWT](https://jwt.io/) and [BCrypt](https://www.npmjs.com/package/bcrypt)
+- Security: [JWT](https://jwt.io/)
 - Service-to-service communication with Axios
 - Tests: Unit and integration testing ([Jest](https://jestjs.io/)), E2E Testing ([SuperTest](https://github.com/ladjs/supertest) and [Testcontainers](https://testcontainers.com/)), Code coverage ([IstanbulJS](https://istanbul.js.org/))
 - CI/CD: [GitHub Actions](https://github.com/features/actions), [Docker Hub](https://hub.docker.com/u/shimisnow)
@@ -77,8 +77,8 @@ financial --> financial_db
 ## DevOps flow
 
 1. Development: lint, unit and integration tests (Jest), adds a coverage report as github pull request comment
-2. Staging: e2e test (Supertest) using [Testcontainers](https://testcontainers.com/) to replicate external dependencies
-3. Production: build all services, create Docker images, and deploy to Docker Hub
+2. Staging: E2E test (Supertest) using [Testcontainers](https://testcontainers.com/) to replicate external dependencies
+3. Production: build all services, create Docker images, and deploy them to Docker Hub
 
 ```mermaid
 stateDiagram-v2
@@ -88,17 +88,7 @@ classDef dev_style fill:#7f51ce
 classDef staging_style fill:#e3942a
 classDef prod_style fill:green
 
-
-state "Development" as development_stage {
-    state "Code" as dev_code
-    state "Commit" as dev_commit
-    state "Pull Request" as dev_pr
-    [*] --> dev_code
-    dev_code --> dev_commit
-    dev_commit --> dev_pr
-    dev_pr --> [*]
-}
-development_stage:::dev_style
+state "Development" as development_stage
 
 [*] --> development_stage
 
@@ -117,12 +107,7 @@ github_dev_stage:::dev_style
 
 development_stage --> github_dev_stage
 
-state "Staging" as staging_stage {
-    state "Pull Request" as staging_pr
-    [*] --> staging_pr
-    staging_pr --> [*]
-}
-staging_stage:::staging_style
+state "Staging" as staging_stage
 
 github_dev_stage --> staging_stage
 
@@ -137,12 +122,7 @@ github_staging_stage:::staging_style
 
 staging_stage --> github_staging_stage
 
-state "Production" as prod_stage {
-    state "Pull Request" as prod_pr
-    [*] --> prod_pr
-    prod_pr --> [*]
-}
-prod_stage:::prod_style
+state "Production" as prod_stage
 
 github_staging_stage --> prod_stage
 
@@ -161,7 +141,7 @@ prod_stage --> github_prod_stage
 github_prod_stage --> [*]
 ```
 
-## Documentation about
+## Documentation
 
 - [How to contribute](./CONTRIBUTING.md)
 - [How to run from code](docs/markdown/how-to-run.md)

@@ -14,7 +14,7 @@ docker compose up -d cache database-authentication database-financial
 
 See the [.env](../../.env) file to get database and cache ports.
 
-If you **want** to see the data stored at the redis, use:
+If you WANT to see the data stored at the redis, use:
 
 ```sh
 docker compose up -d cache-ui

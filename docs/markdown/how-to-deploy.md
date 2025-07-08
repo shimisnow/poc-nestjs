@@ -1,6 +1,13 @@
 # How to deploy
 
-## Build the Docker images locally
+## Pull the Docker images from Docker Hub
+
+```sh
+docker pull shimisnow/pocnestjs-auth-service:latest
+docker pull shimisnow/pocnestjs-financial-service:latest
+```
+
+## OR build the Docker images locally
 
 Build the Docker images for each service with the commands:
 
@@ -11,14 +18,7 @@ docker compose build auth-service
 docker compose build financial-service
 ```
 
-`base-image-development` and `base-image-production` are images with the node_modules folder. They are generated only one time to be used at Docker multi-stage builds.
-
-## Pull the Docker images from Docker Hub
-
-```sh
-docker pull shimisnow/pocnestjs-auth-service:latest
-docker pull shimisnow/pocnestjs-financial-service:latest
-```
+`base-image-development` and `base-image-production` are images with the node_modules folder. They need to be generated only when the package.json is modified and are used at Docker multi-stage builds.
 
 ## Deploy with Docker
 

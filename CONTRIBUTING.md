@@ -76,6 +76,6 @@ The commit message should be structured as follows:
 
 ## Regex
 
-The commit message will be validated using git hooks with the regex:
+The commit message will be validated using [Husky](https://typicode.github.io/husky/) with the regex:
 
 `^(build|ci|chore|docs|feat|fix|perf|refactor|revert|style|test)(\[(#\d+)\])?[!]?: .*`
