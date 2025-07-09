@@ -69,7 +69,7 @@ services:
       - ${FINANCIAL_SERVICE_PORT}:${FINANCIAL_SERVICE_PORT}
 
   cache:
-    image: valkey/valkey:8.0.1
+    image: valkey/valkey:8.1.2
     networks:
       - poc-nestjs
     restart: always
@@ -77,7 +77,7 @@ services:
       - ${REDIS_PORT}:6379
 
   cache-ui:
-    image: patrikx3/p3x-redis-ui:2024.10.106
+    image: patrikx3/p3x-redis-ui:2025.4.136
     networks:
       - poc-nestjs
     ports:
@@ -86,7 +86,7 @@ services:
       - ./deployment/redis-ui:/settings
 
   database-authentication:
-    image: postgres:17.0
+    image: postgres:17.5
     restart: always
     environment:
       POSTGRES_USER: ${DATABASE_AUTH_USERNAME}
@@ -100,7 +100,7 @@ services:
       - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
 
   database-financial:
-    image: postgres:17.0
+    image: postgres:17.5
     restart: always
     environment:
       POSTGRES_USER: ${DATABASE_FINANCIAL_USERNAME}
@@ -114,7 +114,7 @@ services:
       - ./deployment/database/financial:/docker-entrypoint-initdb.d:ro
 
   auth-service-openapi:
-    image: nginx:1.27.2-alpine3.20
+    image: nginx:1.29.0-alpine3.20
     restart: always
     ports:
       - 8081:80
@@ -122,7 +122,7 @@ services:
       - ./apps/auth-service/docs/openapi:/usr/share/nginx/html:ro
 
   financial-service-openapi:
-    image: nginx:1.27.2-alpine3.20
+    image: nginx:1.29.0-alpine3.20
     restart: always
     ports:
       - 8082:80
