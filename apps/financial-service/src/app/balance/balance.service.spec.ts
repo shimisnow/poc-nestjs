@@ -50,7 +50,7 @@ describe('balance.service', () => {
                   };
                 // no cache
                 default:
-                  return null;
+                  return undefined;
               }
             },
             set: (key, value) => {},

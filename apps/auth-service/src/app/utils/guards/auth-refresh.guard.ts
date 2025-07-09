@@ -107,7 +107,7 @@ export class AuthRefreshGuard implements CanActivate {
       ].join(':'),
     );
 
-    if (logoutVerification !== null) {
+    if (typeof logoutVerification !== 'undefined') {
       throw new UnauthorizedException({
         statusCode: HttpStatus.UNAUTHORIZED,
         data: {
@@ -124,7 +124,7 @@ export class AuthRefreshGuard implements CanActivate {
       );
 
     // if there is an cache entry
-    if (passwordChangeVerification != null) {
+    if (typeof passwordChangeVerification !== 'undefined') {
       // if this token was not issued after the password change
       // iat is in seconds and changedAt at milliseconds
       if (payload.iat * 1000 <= passwordChangeVerification.changedAt) {

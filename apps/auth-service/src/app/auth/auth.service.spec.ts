@@ -66,7 +66,7 @@ describe('auth.service', () => {
                     changedAt: new Date().getTime(),
                   } as PasswordChangeCachePayload;
                 default:
-                  return null;
+                  return undefined;
               }
             },
           },

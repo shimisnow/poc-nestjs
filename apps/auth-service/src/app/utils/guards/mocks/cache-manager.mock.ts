@@ -21,6 +21,6 @@ export class CacheManagerMock {
       }
     }
 
-    return null;
+    return undefined;
   }
 }

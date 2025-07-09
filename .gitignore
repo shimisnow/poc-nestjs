@@ -40,3 +40,5 @@ testem.log
 Thumbs.db
 debug.log
 *.bkp
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
