@@ -44,7 +44,7 @@ export class BalanceService {
     const cachedData =
       await this.cacheService.get<CacheBalancePayload>(cacheKey);
 
-    if (cachedData !== null) {
+    if (typeof cachedData !== 'undefined') {
       return {
         balance: cachedData.balance,
         cached: true,

@@ -500,7 +500,7 @@ export class AuthService {
       [CacheKeyPrefix.AUTH_SESSION_LOGOUT, body.userId, body.loginId].join(':'),
     );
 
-    if (logoutVerification !== null) {
+    if (typeof logoutVerification !== 'undefined') {
       result = {
         valid: false,
         invalidatedBy: InvalidatedErrorEnum.INVALIDATED_BY_LOGOUT,
@@ -514,7 +514,7 @@ export class AuthService {
       );
 
     // if there is an cache entry
-    if (passwordChangeVerification != null) {
+    if (typeof passwordChangeVerification !== 'undefined') {
       // if this token was not issued after the password change
       // iat is in seconds and changedAt at milliseconds
       if (body.iat * 1000 <= passwordChangeVerification.changedAt) {
