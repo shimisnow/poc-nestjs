@@ -12,8 +12,8 @@ module.exports = async function () {
   const DOCKER_IMAGE_AUTH_SERVICE = 'shimisnow/pocnestjs-auth-service:latest';
   const DOCKER_IMAGE_FINANCIAL_SERVICE =
     'shimisnow/pocnestjs-financial-service:latest';
-  const DOCKER_POSTGRES_TAG = 'postgres:17.0';
-  const DOCKER_REDIS_TAG = 'valkey/valkey:8.0.1';
+  const DOCKER_POSTGRES_TAG = 'postgres:17.5';
+  const DOCKER_REDIS_TAG = 'valkey/valkey:8.1.2';
 
   const dockerNetwork = await new Network().start();
 
