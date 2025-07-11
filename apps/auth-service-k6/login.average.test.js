@@ -68,3 +68,5 @@ export default () => {
 
   sleep(0.25);
 };
+
+// k6 run --out influxdb=http://localhost:8086/k6 .\apps\auth-service-k6\login.average.test.js

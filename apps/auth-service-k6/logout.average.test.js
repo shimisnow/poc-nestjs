@@ -61,4 +61,4 @@ export default () => {
   sleep(0.25);
 };
 
-// $env:K6_WEB_DASHBOARD_EXPORT="report.html" ; k6 run --out web-dashboard .\apps\auth-service-k6\logout.test.js
+// k6 run --out influxdb=http://localhost:8086/k6 .\apps\auth-service-k6\logout.average.test.js
