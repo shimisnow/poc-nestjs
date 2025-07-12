@@ -58,6 +58,24 @@ export default () => {
     },
   });
 
+  sleep(0.1);
+
+  const responseUnauthorized = http.post(`${host}${endpoint}`, '', { headers });
+
+  check(responseUnauthorized, {
+    'status is 401': (r) => r.status === 401,
+    'invalidated by logout': (r) => {
+      const body = r.json();
+      if (
+        body.data.name !== 'TokenInvalidatedByServer' ||
+        body.data.errors.findIndex((e) => e === 'invalidated by logout') === -1
+      ) {
+        return false;
+      }
+      return true;
+    },
+  });
+
   sleep(0.25);
 };
 
