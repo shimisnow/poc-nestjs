@@ -12,15 +12,16 @@ module.exports = async function () {
   const DOCKER_IMAGE_AUTH_SERVICE = 'shimisnow/pocnestjs-auth-service:latest';
   const DOCKER_IMAGE_FINANCIAL_SERVICE =
     'shimisnow/pocnestjs-financial-service:latest';
-  const DOCKER_POSTGRES_TAG = 'postgres:17.0';
-  const DOCKER_REDIS_TAG = 'valkey/valkey:8.0.1';
+  const DOCKER_POSTGRES_TAG = 'postgres:17.5';
+  const DOCKER_REDIS_TAG = 'valkey/valkey:8.1.2';
 
   const dockerNetwork = await new Network().start();
 
   /***** BUILD SERVICES DOCKER IMAGE *****/
 
+  console.log('|--------------------');
   console.log(
-    `Building docker images: ${DOCKER_IMAGE_AUTH_SERVICE} and ${DOCKER_IMAGE_FINANCIAL_SERVICE}`,
+    `|- Building docker images: ${DOCKER_IMAGE_AUTH_SERVICE} and ${DOCKER_IMAGE_FINANCIAL_SERVICE}`,
   );
 
   const [authServiceImage, financialServiceImage] = await Promise.all([
@@ -41,7 +42,7 @@ module.exports = async function () {
 
   /***** DEPENDENCIES SETUP *****/
 
-  console.log('Setting up database-authentication container');
+  console.log('|- Setting up database-authentication container');
 
   const authDatabaseContainerSetup = new PostgreSqlContainer(
     DOCKER_POSTGRES_TAG,
@@ -64,7 +65,7 @@ module.exports = async function () {
       ),
     );
 
-  console.log('Setting up database-financial container');
+  console.log('|- Setting up database-financial container');
 
   const financialDatabaseContainerSetup = new PostgreSqlContainer(
     DOCKER_POSTGRES_TAG,
@@ -87,7 +88,7 @@ module.exports = async function () {
       ),
     );
 
-  console.log('Setting up cache container');
+  console.log('|- Setting up cache container');
 
   const cacheContainerSetup = new RedisContainer(DOCKER_REDIS_TAG)
     .withLabels({ 'poc-nestjs-name': 'financial-service-cache' })
@@ -97,7 +98,7 @@ module.exports = async function () {
 
   /***** DEPENDENCIES START *****/
 
-  console.log('Starting databases and cache containers');
+  console.log('|- Starting databases and cache containers');
 
   const [authDatabaseContainer, financialDatabaseContainer, cacheContainer] =
     await Promise.all([
@@ -108,7 +109,7 @@ module.exports = async function () {
 
   /***** CODE *****/
 
-  console.log('Starting auth-service code container');
+  console.log('|- Starting auth-service code container');
 
   const authCodeContainer: StartedTestContainer = await authServiceImage
     .withLabels({ 'poc-nestjs-name': 'auth-service-code' })
@@ -141,7 +142,8 @@ module.exports = async function () {
     }) */
     .start();
 
-  console.log('Starting financial-service code container');
+  console.log('|- auth-service code container started');
+  console.log('|- Starting financial-service code container');
 
   const financialCodeContainer: StartedTestContainer =
     await financialServiceImage
@@ -169,6 +171,9 @@ module.exports = async function () {
         stream.on('end', () => console.log('Stream closed'));
       }) */
       .start();
+
+  console.log('|- financial-service code container started');
+  console.log('|--------------------');
 
   // Hint: Use `globalThis` to pass variables to global teardown.
   Object.assign(globalThis, {
