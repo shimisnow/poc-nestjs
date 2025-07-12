@@ -460,29 +460,29 @@ describe('auth.service', () => {
     });
   });
 
-  describe('convertStringToSeconds()', () => {
+  describe('convertStringToMilliseconds()', () => {
     test('with d (days)', () => {
-      const seconds = service.convertStringToSeconds('2d');
+      const milliseconds = service.convertStringToMilliseconds('2d');
 
-      expect(seconds).toBe(172800);
+      expect(milliseconds).toBe(172800000);
     });
 
     test('with h (hours)', () => {
-      const seconds = service.convertStringToSeconds('4h');
+      const milliseconds = service.convertStringToMilliseconds('4h');
 
-      expect(seconds).toBe(14400);
+      expect(milliseconds).toBe(14400000);
     });
 
     test('with m (minutes)', () => {
-      const seconds = service.convertStringToSeconds('5m');
+      const milliseconds = service.convertStringToMilliseconds('5m');
 
-      expect(seconds).toBe(300);
+      expect(milliseconds).toBe(300000);
     });
 
     test('with invalid letter', () => {
-      const seconds = service.convertStringToSeconds('2x');
+      const milliseconds = service.convertStringToMilliseconds('2x');
 
-      expect(seconds).toBe(2);
+      expect(milliseconds).toBe(NaN);
     });
   });
 });

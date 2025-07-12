@@ -244,7 +244,7 @@ export class AuthService {
         performedAt,
       },
       // the refreshToken is the one with the greater expire time
-      this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
+      this.convertStringToMilliseconds(process.env.JWT_REFRESH_EXPIRES_IN),
     );
 
     return {
@@ -428,7 +428,7 @@ export class AuthService {
         changedAt: new Date().getTime(),
       } as PasswordChangeCachePayload,
       // the refreshToken is the one with the greater expire time
-      this.convertStringToSeconds(process.env.JWT_REFRESH_EXPIRES_IN),
+      this.convertStringToMilliseconds(process.env.JWT_REFRESH_EXPIRES_IN),
     );
 
     // sleeps one second to garantee that the new token timestamp
@@ -549,30 +549,25 @@ export class AuthService {
   }
 
   /**
-   * Convertes a string to seconds
+   * Convertes a string to milliseconds
    *
    * @param timeString Time to be converted. Ex: 3m, 1h, 2d
-   * @returns Time converted to seconds
+   * @returns Time converted to milliseconds
    */
-  convertStringToSeconds(timeString: string): number {
-    const [value, type] = timeString.split(/(\d+)/).filter(Boolean);
+  convertStringToMilliseconds(timeString: string): number {
+    const match = timeString.match(/^(\d+)([mhd]+)$/);
 
-    let multiply = 1;
-
-    switch (type) {
-      case 'd':
-        multiply = 86400; // 24 * 60 * 60;
-        break;
-      case 'h':
-        multiply = 3600; // 60 * 60;
-        break;
-      case 'm':
-        multiply = 60;
-        break;
-      default:
-        Logger.log(`The time ${timeString} cannot be converted to seconds`);
+    if (!match) {
+      Logger.log(`The time ${timeString} cannot be converted to seconds`);
+      return NaN; // Return Not a Number for invalid input
     }
 
-    return parseInt(value) * multiply;
+    const millisecondsPerUnit: { [key: string]: number } = {
+      m: 60000, // 1000 * 60
+      h: 3600000, // 1000 * 60 * 60
+      d: 86400000, // 1000 * 60 * 60 * 24
+    };
+
+    return parseInt(match[1]) * millisecondsPerUnit[match[2]];
   }
 }
