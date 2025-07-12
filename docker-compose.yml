@@ -3,6 +3,10 @@ networks:
     driver: bridge
 
 services:
+  ########################################
+  ##### DOCKER BASE IMAGE GENERATION #####
+  ########################################
+
   base-image-development:
     image: pocnestjs-base-dev:latest
     build:
@@ -16,6 +20,59 @@ services:
       context: .
       args:
         NODE_ENV: production
+
+  ########################
+  ##### DEPENDENCIES #####
+  ########################
+
+  cache:
+    image: valkey/valkey:8.1.2
+    networks:
+      - poc-nestjs
+    restart: always
+    ports:
+      - ${REDIS_PORT}:6379
+
+  cache-ui:
+    image: patrikx3/p3x-redis-ui:2025.4.136
+    networks:
+      - poc-nestjs
+    ports:
+      - 7843:7843
+    volumes:
+      - ./deployment/redis-ui:/settings
+
+  database-authentication:
+    image: postgres:17.5
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_AUTH_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_AUTH_PASSWORD}
+      POSTGRES_DB: ${DATABASE_AUTH_DBNAME}
+    networks:
+      - poc-nestjs
+    ports:
+      - ${DATABASE_AUTH_PORT}:5432
+    volumes:
+      - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
+
+  database-financial:
+    image: postgres:17.5
+    restart: always
+    environment:
+      POSTGRES_USER: ${DATABASE_FINANCIAL_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_FINANCIAL_PASSWORD}
+      POSTGRES_DB: ${DATABASE_FINANCIAL_DBNAME}
+    networks:
+      - poc-nestjs
+    ports:
+      - ${DATABASE_FINANCIAL_PORT}:5432
+    volumes:
+      - ./deployment/database/financial:/docker-entrypoint-initdb.d:ro
+
+  ####################
+  ##### SERVICES #####
+  ####################
 
   auth-service:
     image: shimisnow/pocnestjs-auth-service:latest
@@ -68,50 +125,9 @@ services:
     ports:
       - ${FINANCIAL_SERVICE_PORT}:${FINANCIAL_SERVICE_PORT}
 
-  cache:
-    image: valkey/valkey:8.1.2
-    networks:
-      - poc-nestjs
-    restart: always
-    ports:
-      - ${REDIS_PORT}:6379
-
-  cache-ui:
-    image: patrikx3/p3x-redis-ui:2025.4.136
-    networks:
-      - poc-nestjs
-    ports:
-      - 7843:7843
-    volumes:
-      - ./deployment/redis-ui:/settings
-
-  database-authentication:
-    image: postgres:17.5
-    restart: always
-    environment:
-      POSTGRES_USER: ${DATABASE_AUTH_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_AUTH_PASSWORD}
-      POSTGRES_DB: ${DATABASE_AUTH_DBNAME}
-    networks:
-      - poc-nestjs
-    ports:
-      - ${DATABASE_AUTH_PORT}:5432
-    volumes:
-      - ./deployment/database/authentication:/docker-entrypoint-initdb.d:ro
-
-  database-financial:
-    image: postgres:17.5
-    restart: always
-    environment:
-      POSTGRES_USER: ${DATABASE_FINANCIAL_USERNAME}
-      POSTGRES_PASSWORD: ${DATABASE_FINANCIAL_PASSWORD}
-      POSTGRES_DB: ${DATABASE_FINANCIAL_DBNAME}
-    networks:
-      - poc-nestjs
-    ports:
-      - ${DATABASE_FINANCIAL_PORT}:5432
-    volumes:
-      - ./deployment/database/financial:/docker-entrypoint-initdb.d:ro
+  #########################
+  ##### DOCUMENTATION #####
+  #########################
 
   auth-service-openapi:
     image: nginx:1.29.0-alpine3.20
@@ -129,7 +145,40 @@ services:
     volumes:
       - ./apps/financial-service/docs/openapi:/usr/share/nginx/html:ro
 
+  ################################
+  ##### LOAD TESTING WITH K6 #####
+  ################################
+
+  influxdb:
+    image: influxdb:1.11.8 # Use 1.x for easier setup with k6's default output
+    ports:
+      - '8086:8086'
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=k6
+
+  grafana:
+    image: grafana/grafana:12.0.2
+    ports:
+      - '3003:3000'
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - influxdb
+
+  ########################
+  ##### HELPER TOOLS #####
+  ########################
+
   mermaid:
     image: ghcr.io/mermaid-js/mermaid-live-editor
     ports:
       - 8082:8080
+
+volumes:
+  influxdb_data:
+  grafana_data:
