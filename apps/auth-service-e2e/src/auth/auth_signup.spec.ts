@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { getContainerRuntimeClient } from 'testcontainers';
 
-describe('GET /auth/signup', () => {
+describe('POST /auth/signup', () => {
   let host: string;
   const endpoint = '/auth/signup';
 
